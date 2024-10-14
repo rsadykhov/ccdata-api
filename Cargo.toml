@@ -1,0 +1,15 @@
+[package]
+name = "ccdata-api"
+version = "0.1.0"
+edition = "2021"
+description = "Wrapper for CCData REST API endpoints."
+license = "MIT OR Apache-2.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+dotenv = "=0.15.0" # MIT
+serde = { version = "1.0.0", features = ["derive"] } # MIT or Apache 2.0
+serde_json = "1.0.0" # MIT or Apache 2.0
+reqwest = { version = "0.12.5", features = ["json"] } # MIT or Apache 2.0
+tokio = { version = "1.40.0", features = ["full"] } # MIT
