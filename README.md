@@ -16,7 +16,9 @@ or the information provided within the crate.
 
 The REST API functions in the crate will error if the data received does not fit into the pre-defined schemas provided
 in the crate. In the case of missing fields, unexpected null values or unexpected data types, the error message will state:
+
 - `data did not match any variant of untagged enum EmptyObject`
+
 If you encounter this error, please open the issue on GitHub with the parameters that you have used (e.g., asset symbol,
 timestamp, limit, etc.). **Do not provide your API key or any personal data!**
 
