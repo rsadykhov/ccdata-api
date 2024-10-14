@@ -5,8 +5,8 @@ you can check what endpoints are supported by checking the variants of the enum 
 supported endpoint URLs.
 
 For documentation on CCData REST API endpoints visit CCData online documentation:
-    - Min-API: https://developers.ccdata.io/documentation/legacy/Price/SingleSymbolPriceEndpoint
-    - Data-API: https://developers.ccdata.io/documentation/data-api/introduction
+- Min-API: https://developers.ccdata.io/documentation/legacy/Price/SingleSymbolPriceEndpoint
+- Data-API: https://developers.ccdata.io/documentation/data-api/introduction
 
 **Disclaimer:** This crate is an unofficial CCData REST API wrapper, the maintainers of the crate are independent developers.
 The developers of the crate do not accept any responsibility or liability for the accuracy, security, or completeness of the code,
@@ -16,7 +16,7 @@ or the information provided within the crate.
 
 The REST API functions in the crate will error if the data received does not fit into the pre-defined schemas provided
 in the crate. In the case of missing fields, unexpected null values or unexpected data types, the error message will state:
-    - `data did not match any variant of untagged enum EmptyObject`
+- `data did not match any variant of untagged enum EmptyObject`
 If you encounter this error, please open the issue on GitHub with the parameters that you have used (e.g., asset symbol,
 timestamp, limit, etc.). **Do not provide your API key or any personal data!**
 
@@ -33,10 +33,10 @@ use ccdata_api::CCData;
 
 let mut backend: CCData = CCData::new();
 
-let api_key: String = String::from("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+let api_key: String = String::from("xxxxxxx");
 backend.update_api_key(api_key);
 
-assert_eq!(backend.api_key().unwrap(), &String::from("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"));
+assert_eq!(backend.api_key().unwrap(), &String::from("xxxxxxx"));
 ```
 
 ## Build Backend Using .env File (Preferred method)
