@@ -15,7 +15,7 @@ pub fn some_or_error<T>(input: Option<T>, message: &str) -> Result<T, Error> {
 }
 
 
-/// Market interface that ensures all market enums implement to_string().
+/// Market interface that ensures all market enums implement .to_string().
 pub trait Market {
     fn to_string(&self) -> String;
 }
@@ -47,7 +47,7 @@ fn optional_vec_arguments(o: Option<Vec<String>>, api_argument: String) -> Strin
 }
 
 
-/// All possible parameter types for the API request.
+/// All possible parameter types for the REST API request.
 pub enum Param<'a> {
     // Instrument parameters
     Symbol { v: &'a String },
@@ -131,7 +131,7 @@ async fn process_request<T: DeserializeOwned>(url: String) -> Result<T, Error> {
 }
 
 
-/// Constructs a URL for API request, send the request, and returns the deserialzied response.
+/// Constructs a URL for API request, sends the request, and returns the deserialzied response.
 pub async fn call_api_endpoint<'a, R: DeserializeOwned>(api_key: &String, endpoint: CCAPIEndpoint, unit: CCUnit, params: Vec<Param<'a>>,
                                                         additional_params: Option<String>) -> Result<R, Error> {
     // Set up a URL for the API endpoint
