@@ -1,9 +1,12 @@
 [package]
 name = "ccdata-api"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "Wrapper for CCData REST API endpoints."
 license = "MIT OR Apache-2.0"
+homepage = "https://github.com/rsadykhov/ccdata-api"
+repository = "https://github.com/rsadykhov/ccdata-api"
+documentation = "https://docs.rs/ccdata-api"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
