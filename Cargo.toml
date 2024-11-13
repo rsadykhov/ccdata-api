@@ -1,6 +1,6 @@
 [package]
 name = "ccdata-api"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 description = "Wrapper for CCData REST API endpoints."
 license = "MIT OR Apache-2.0"

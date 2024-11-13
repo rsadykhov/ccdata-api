@@ -119,7 +119,7 @@ async fn test_get_futures_ohlcv() -> () {
     backend.build(&"API_KEY").unwrap();
     let market: CCFuturesMarket = CCFuturesMarket::BINANCE;
     let limit: usize = 2000;
-    let ohlcv: CCDataResponse<Vec<CCFuturesOHLCV>> = backend.get_futures_ohlcv(&String::from("BTC-USDT-VANILLA-PERPETUAL"), market, None, Some(limit), CCUnit::Day).await.unwrap();
+    let ohlcv: CCDataResponse<Vec<CCFuturesOHLCV>> = backend.get_futures_ohlcv(&String::from("BTC-USDT-VANILLA-PERPETUAL"), None, Some(limit), market, CCUnit::Day).await.unwrap();
     assert!(ohlcv.data_unwrap().unwrap().len() <= limit);
 }
 
@@ -143,7 +143,7 @@ async fn test_get_options_ohlcv() -> () {
     backend.build(&"API_KEY").unwrap();
     let market: CCOptionsMarket = CCOptionsMarket::OKEX;
     let limit: usize = 2000;
-    let ohlcv: CCDataResponse<Vec<CCOptionsOHLCV>> = backend.get_options_ohlcv(&String::from("BTC-USD-20241227-15000-P"), market, None, Some(limit), CCUnit::Day).await.unwrap();
+    let ohlcv: CCDataResponse<Vec<CCOptionsOHLCV>> = backend.get_options_ohlcv(&String::from("BTC-USD-20241227-15000-P"), None, Some(limit), market, CCUnit::Day).await.unwrap();
     assert!(ohlcv.data_unwrap().unwrap().len() <= limit);
 }
 
@@ -167,7 +167,7 @@ async fn test_get_der_indices_ohlcv() -> () {
     backend.build(&"API_KEY").unwrap();
     let market: CCDerIndicesMarket = CCDerIndicesMarket::BINANCE;
     let limit: usize = 2000;
-    let ohlcv: CCDataResponse<Vec<CCDerIndicesOHLCV>> = backend.get_der_indices_ohlcv(&String::from("BTCUSDT"), market, None, Some(limit), CCUnit::Day).await.unwrap();
+    let ohlcv: CCDataResponse<Vec<CCDerIndicesOHLCV>> = backend.get_der_indices_ohlcv(&String::from("BTCUSDT"), None, Some(limit), market, CCUnit::Day).await.unwrap();
     assert!(ohlcv.data_unwrap().unwrap().len() <= limit);
 }
 
@@ -191,7 +191,7 @@ async fn test_get_ocdex_ohlcv() -> () {
     backend.build(&"API_KEY").unwrap();
     let market: CCOCDEXMarket = CCOCDEXMarket::UNISWAPV2;
     let limit: usize = 2000;
-    let ohlcv: CCDataResponse<Vec<CCOCDEXOHLCV>> = backend.get_ocdex_ohlcv(&String::from("0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852_2"), market, None, Some(limit), CCUnit::Day).await.unwrap();
+    let ohlcv: CCDataResponse<Vec<CCOCDEXOHLCV>> = backend.get_ocdex_ohlcv(&String::from("0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852_2"), None, Some(limit), market, CCUnit::Day).await.unwrap();
     assert!(ohlcv.data_unwrap().unwrap().len() <= limit);
 }
 

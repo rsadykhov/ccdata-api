@@ -1,12 +1,17 @@
 use serde::Deserialize;
 
 
+/// List of statuses used to filter articles based on their source integration state.
+/// Current allowed values are: ACTIVE, INACTIVE. An ACTIVE status indicates that the source's integration, such as an RSS feed,
+/// is currently operational and actively providing data. An INACTIVE status is assigned to sources that have either blocked access,
+/// disabled their integration mechanisms, or ceased operations. More statuses may be added in the future as source integration scenarios evolve.
 pub enum CCNewsStatus {
     ACTIVE,
     INACTIVE,
 }
 
 impl CCNewsStatus {
+    /// Converts enum value to `String`
     pub fn to_string(&self) -> String {
         match self {
             CCNewsStatus::ACTIVE => String::from("ACTIVE"),
@@ -16,6 +21,7 @@ impl CCNewsStatus {
 }
 
 
+/// The preferred language for the sources or articles - English (EN), Espanol (ES), Turkish (TR), French (FR), Japanese (JP), Portuguese (PT).
 pub enum CCNewsLang {
     EN,
     ES,
@@ -26,6 +32,7 @@ pub enum CCNewsLang {
 }
 
 impl CCNewsLang {
+    /// Converts enum value to `String`.
     pub fn to_string(&self) -> String {
         match self {
             CCNewsLang::EN => String::from("EN"),
@@ -42,6 +49,8 @@ impl CCNewsLang {
 // News: Latest Articles
 
 
+/// Get articles from specific sources based on their keys. If left empty it will just return news from ACTIVE sources for the selected language,
+/// if you want to get inactive sources as well, please pass them in alongside the active ones in this array.
 pub enum CCNewsSourceID {
     CoinDesk,
     CoinTelegraph,
@@ -129,6 +138,7 @@ pub enum CCNewsSourceID {
 }
 
 impl CCNewsSourceID {
+    /// Converts enum value to `String`.
     pub fn to_string(&self) -> String {
         match self {
             CCNewsSourceID::CoinDesk => String::from("coindesk"),
@@ -221,10 +231,13 @@ impl CCNewsSourceID {
 #[derive(Deserialize, Debug)]
 pub struct CCCategoryData {
     #[serde(rename = "TYPE")]
+    /// Type of the message.
     pub type_: String,
     #[serde(rename = "ID")]
+    /// The unique identifier for the news category entry.
     pub id: i32,
     #[serde(rename = "NAME")]
+    /// The name of the news category.
     pub name: String,
     #[serde(rename = "CATEGORY")]
     pub category: String,
@@ -234,44 +247,71 @@ pub struct CCCategoryData {
 #[derive(Deserialize, Debug)]
 pub struct CCNewsLatestArticle {
     #[serde(rename = "TYPE")]
+    /// Type of the message.
     pub type_: String,
     #[serde(rename = "ID")]
+    /// The unique identifier for the article entry.
     pub id: i32,
     #[serde(rename = "GUID")]
+    /// The Global Unique Identifier (GUID) of the article. A GUID is a unique reference number used as an identifier in computer systems.
+    /// The "Article guid" is unique for every article and serves as its distinct identifier.
     pub guid: String,
     #[serde(rename = "PUBLISHED_ON")]
+    /// The unix timestamp when the article was first published. This information is useful for understanding the timeline of the content,
+    /// sorting articles by date, or determining the recency of the information.
     pub published_on: i64,
     #[serde(rename = "IMAGE_URL")]
+    /// The URL, or web address, of the article's associated or featured image. This URL can be used to retrieve the image for display,
+    /// providing a visual context for the article content. The URL points directly to the location where the image file is stored online.
     pub image_url: String,
     #[serde(rename = "TITLE")]
+    /// The heading or title of a specific article. It's a text string that gives a concise description of the article's content.
     pub title: String,
     #[serde(rename = "URL")]
+    /// The web address that directs to the specific content or article on a source website. It's a unique URL used for directly
+    /// linking to the article or for fetching additional data from the article page.
     pub url: String,
     #[serde(rename = "SOURCE_ID")]
+    /// The unique identifier for the source of the article or content. The "SOURCE_ID" allows for easy tracking and categorization of articles
+    /// based on their origin, facilitating analysis by source, or fetching additional content from the same source.
     pub source_id: i32,
     #[serde(rename = "BODY")]
+    /// The main textual content of the article. It includes the substance of the article but it it generally very limited since sources want
+    /// clients to visit their website. This is where the primary information of the article is found.
     pub body: String,
     #[serde(rename = "KEYWORDS")]
+    /// A list of words or phrases that are relevant to the content of the article. These keywords are given by the source and serve as
+    /// a summary of the main themes, topics, or subjects covered in the article.
     pub keywords: String,
     #[serde(rename = "LANG")]
+    /// The article Preferred language - English (EN), Portuguese (PT), Espanol (ES), Turkish (TR), French (FR).
     pub lang: String,
     #[serde(rename = "UPVOTES")]
+    /// The number of upvotes this article has.
     pub upvotes: i32,
     #[serde(rename = "DOWNVOTES")]
+    /// The number of downvotes this article has.
     pub downvotes: i32,
     #[serde(rename = "SCORE")]
+    /// The score of this article.
     pub score: i32,
     #[serde(rename = "SENTIMENT")]
+    /// The sentiment polarity of this article. We compute this using ChatGPT.
     pub sentiment: String,
     #[serde(rename = "STATUS")]
+    /// The status for the Article. Allowed values: ACTIVE, DELETED.
     pub status: String,
     #[serde(rename = "CREATED_ON")]
+    /// Article internal creation unix ts in our system.
     pub created_on: i64,
     #[serde(rename = "UPDATED_ON")]
+    /// Article internal last updated unix ts in our system.
     pub updated_on: i64,
     #[serde(rename = "SOURCE_DATA")]
+    /// The news source data of this article.
     pub source_data: CCNewsSource,
     #[serde(rename = "CATEGORY_DATA")]
+    /// An array of categories this article belongs to.
     pub category_date: Vec<CCCategoryData>,
 }
 
@@ -279,7 +319,11 @@ pub struct CCNewsLatestArticle {
 
 // News: Sources
 
-
+/// Specifies the type of integration used by the news source. Current allowed values are RSS, API, and TWITTER.
+/// 'RSS' indicates a source that distributes content via RSS feeds.
+/// 'API' refers to sources that provide data through a standardized programming interface.
+/// 'TWITTER' represents sources that disseminate information directly through Twitter.
+/// This parameter helps in selecting the method through which news content is retrieved.
 pub enum CCNewsSourceType {
     RSS,
     API,
@@ -287,6 +331,7 @@ pub enum CCNewsSourceType {
 }
 
 impl CCNewsSourceType {
+    /// Converts enum value to `String`.
     pub fn to_string(&self) -> String {
         match self {
             CCNewsSourceType::RSS => String::from("RSS"),
@@ -301,34 +346,48 @@ impl CCNewsSourceType {
 #[derive(Deserialize, Debug)]
 pub struct CCNewsSource {
     #[serde(rename = "TYPE")]
+    /// Type of the message.
     pub type_: String,
     #[serde(rename = "ID")]
+    /// The unique identifier for the news source entry.
     pub id: i32,
     #[serde(rename = "SOURCE_KEY")]
+    /// The unique key for a news source.
     pub source_key: String,
     #[serde(rename = "NAME")]
+    /// The name of the news source".
     pub name: String,
     #[serde(rename = "IMAGE_URL")]
+    /// The image url for the article source.
     pub image_url: String,
     #[serde(rename = "URL")]
+    /// The URL of the news source.
     pub url: String,
     #[serde(rename = "LANG")]
+    /// The Article Source Preferred language - English (EN), Portuguese (PT), Espanol (ES), Turkish (TR), French (FR).
     pub lang: String,
     #[serde(rename = "SOURCE_TYPE")]
+    /// RSS, API, TWITTER.
     pub source_type: String,
     #[serde(rename = "LAUNCH_DATE")]
+    /// The launch date of the source is indicated as (yyyy-mm-dd).
     pub launch_date: Option<i64>,
     #[serde(rename = "SORT_ORDER")]
+    /// Internal sort order of the source to define the field overwrites.
     pub sort_order: i32,
     #[serde(rename = "BENCHMARK_SCORE")]
     pub benchmark_score: i32,
     #[serde(rename = "STATUS")]
+    /// The status for the Article Source entry. Allowed values: ACTIVE, INACTIVE".
     pub status: String,
     #[serde(rename = "LAST_UPDATED_TS")]
+    /// The last script update timestamp for this article source.
     pub last_updated_ts: i64,
     #[serde(rename = "CREATED_ON")]
+    /// Article Source internal creation unix ts in our system.
     pub created_on: i64,
     #[serde(rename = "UPDATED_ON")]
+    /// Article Source internal last updated unix ts in our system.
     pub updated_on: i64,
 }
 
@@ -336,13 +395,17 @@ pub struct CCNewsSource {
 // News: Categories
 
 
+/// The filters for the news category.
 #[derive(Deserialize, Debug)]
 pub struct CCCategoryFilter {
     #[serde(rename = "INCLUDED_WORDS")]
+    /// Words related or included in news category.
     pub included_words: Option<Vec<String>>,
     #[serde(rename = "INCLUDED_PHRASES")]
+    /// Phrases that should be included in news category.
     pub included_phrases: Option<Vec<String>>,
     #[serde(rename = "EXCLUDED_PHRASES")]
+    /// Phrases to should be excluded from news category.
     pub excluded_phrases: Option<Vec<String>>,
 }
 
@@ -351,17 +414,24 @@ pub struct CCCategoryFilter {
 #[derive(Deserialize, Debug)]
 pub struct CCNewsCategory {
     #[serde(rename = "TYPE")]
+    /// Type of the message.
     pub type_: String,
     #[serde(rename = "ID")]
+    /// The unique identifier for the news category entry.
     pub id: i32,
     #[serde(rename = "NAME")]
+    /// The name of the news category.
     pub name: String,
     #[serde(rename = "FILTER")]
+    /// The filters for the news category.
     pub filter: Option<CCCategoryFilter>,
     #[serde(rename = "STATUS")]
+    /// The status for the News category entry. Allowed values: ACTIVE, INACTIVE.
     pub status: String,
     #[serde(rename = "CREATED_ON")]
+    /// News category internal creation unix ts in our system
     pub created_on: i64,
     #[serde(rename = "UPDATED_ON")]
+    /// News category internal last updated unix ts in our system.
     pub updated_on: Option<i64>,
 }

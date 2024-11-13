@@ -19,10 +19,12 @@ use crate::utils::{Market, Param, call_api_endpoint};
 
 /// API data collection backend.
 pub struct CCData {
+    /// CCData API key
     api_key: Option<String>,
 }
 
 impl CCData {
+    /// Creates a new CCData backend for data collection.
     pub fn new() -> Self {
         CCData { api_key: None }
     }
@@ -51,6 +53,9 @@ impl CCData {
 
     /// Updates the API key.
     ///
+    /// # Input
+    /// - `new_api_key`: New API key that will be used by the backend to send requests to CCData API endpoints
+    ///
     /// # Examples
     ///
     /// ```rust
@@ -68,6 +73,9 @@ impl CCData {
     }
 
     /// Initiates the API data collection backend with the API key stored in the environment variable.
+    ///
+    /// # Input
+    /// -`api_key_env_var`: Name of the environment variable in the local `.env` file that stores the CCData API key
     ///
     /// # Examples
     ///
@@ -138,6 +146,11 @@ impl CCData {
     /// You can only use this endpoint with a valid api_key. Retrieve the daily aggregated blockchain data for the requested coin,
     /// back through time for the number of points as specifed by the limit. Timestamp values are based on 00:00 GMT time.
     ///
+    /// # Input
+    /// - `symbol`: Asset symbol
+    /// - `to_timestamp`: Final timestamp up to which the data will be extracted
+    /// - `limit`: Maximum number of datapoints per API endpoint call
+    ///
     /// # Examples
     ///
     /// ```rust
@@ -177,6 +190,10 @@ impl CCData {
     /// You can only use this endpoint with a valid api_key. Retrieve the daily wallet balance distribution data for the requested coin,
     /// back through time for the number of points as specifed by the limit. Timestamp values are based on 00:00 GMT time.
     ///
+    /// # Input
+    /// - `to_timestamp`: Final timestamp up to which the data will be extracted
+    /// - `limit`: Maximum number of datapoints per API endpoint call
+    ///
     /// # Examples
     ///
     /// ```rust
@@ -212,6 +229,13 @@ impl CCData {
     /// The data encompasses crucial metrics such as OPEN, HIGH, LOW, CLOSE, VOLUME and additional trading-derived values (OHLCV+),
     /// offering a comprehensive view of an index's historical performance. This information is essential for conducting in-depth market analyses and making
     /// informed decisions based on past trends.
+    ///
+    /// # Input
+    /// - `instument`: Instrument symbol
+    /// - `to_timestamp`: Final timestamp up to which the data will be extracted
+    /// - `limit`: Maximum number of datapoints per API endpoint call
+    /// - `market`: Market name
+    /// - `unit`: Unit of the interval between successive data points
     ///
     /// # Examples
     ///
@@ -250,6 +274,13 @@ impl CCData {
     /// It offers vital trading metrics, including open, high, low, close (OHLC) prices, and trading volumes, both in base and quote currencies.
     /// This data is key for understanding historical price movements and market behavior, allowing for detailed analysis of trading patterns and trends over time.
     ///
+    /// # Input
+    /// - `instument`: Instrument symbol
+    /// - `to_timestamp`: Final timestamp up to which the data will be extracted
+    /// - `limit`: Maximum number of datapoints per API endpoint call
+    /// - `market`: Market name
+    /// - `unit`: Unit of the interval between successive data points
+    ///
     /// # Examples
     ///
     /// ```rust
@@ -286,6 +317,10 @@ impl CCData {
     /// This endpoint, specific to the Spot segment of the API, delivers vital metadata about financial instruments traded on specified exchanges,
     /// focusing solely on non-price related information. This endpoint is crucial for internal use, offering a comprehensive dataset that includes mappings,
     /// operational statuses, and historical data (first seen/last seen timestamps) about each instrument.
+    ///
+    /// # Input
+    /// - `instruments`: List of instrument symbols
+    /// - `market`: Market name
     ///
     /// # Examples
     ///
@@ -326,6 +361,9 @@ impl CCData {
     /// and compare the characteristics and trading conditions of different cryptocurrency exchanges or market segments, assisting in market analysis,
     /// strategic planning, and decision-making.
     ///
+    /// # Input
+    /// - `market`: Market name
+    ///
     /// # Examples
     ///
     /// ```rust
@@ -363,6 +401,11 @@ impl CCData {
     /// This endpoint is particularly valuable for users needing precise and standardized information on trading instruments, facilitating the tracking,
     // comparison, and analysis of different instruments within and across various spot markets. It is ideal for applications that depend on uniform identifiers
     /// to integrate and interpret market data effectively.
+    ///
+    /// # Input
+    /// - `instruments`: List of instrument symbols
+    /// - `market`: Market name
+    /// - `instrument_status`: Status of the instrument (e.g., `ACTIVE`, `EXPIRED`)
     ///
     /// # Examples
     ///
@@ -404,6 +447,13 @@ impl CCData {
     /// of parameters to tailor the data retrieval to specific needs, such as market selection, instrument details, and aggregation customization.
     /// This makes it a highly adaptable tool for historical data analysis in the context of futures markets.
     ///
+    /// # Input
+    /// - `instrument`: Instrument symbol
+    /// - `to_timestamp`: Final timestamp up to which the data will be extracted
+    /// - `limit`: Maximum number of datapoints per API endpoint call
+    /// - `market`: Market name
+    /// - `unit`: Unit of the interval between successive data points
+    ///
     /// # Examples
     ///
     /// ```rust
@@ -425,7 +475,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_futures_ohlcv(&self, instrument: &String, market: CCFuturesMarket, to_timestamp: Option<i64>, limit: Option<usize>, unit: CCUnit) -> Result<CCDataResponse<Vec<CCFuturesOHLCV>>, Error> {
+    pub async fn get_futures_ohlcv(&self, instrument: &String, to_timestamp: Option<i64>, limit: Option<usize>, market: CCFuturesMarket, unit: CCUnit) -> Result<CCDataResponse<Vec<CCFuturesOHLCV>>, Error> {
         call_api_endpoint::<CCDataResponse<Vec<CCFuturesOHLCV>>>(
             self.api_key()?,
             CCAPIEndpoint::FuturesOHLCV, unit,
@@ -443,6 +493,9 @@ impl CCData {
     /// If no specific market is specified, the endpoint returns information on all available futures markets. This capability is crucial for users who wish
     /// to explore and analyze the characteristics and trading conditions of different cryptocurrency futures exchanges or market segments,
     /// aiding in market analysis, strategic planning, and decision-making.
+    ///
+    /// # Input
+    /// - `market`: Market name
     ///
     /// # Examples
     ///
@@ -481,6 +534,13 @@ impl CCData {
     /// analysis of options market performance over time. It is essential for long-term market analysis, backtesting strategies, and informed
     /// decision-making based on historical trends.
     ///
+    /// # Input
+    /// - `instrument`: Instrument symbol
+    /// - `to_timestamp`: Final timestamp up to which the data will be extracted
+    /// - `limit`: Maximum number of datapoints per API endpoint call
+    /// - `market`: Market name
+    /// - `unit`: Unit of the interval between successive data points
+    ///
     /// # Examples
     ///
     /// ```rust
@@ -502,7 +562,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_options_ohlcv(&self, instrument: &String, market: CCOptionsMarket, to_timestamp: Option<i64>, limit: Option<usize>, unit: CCUnit) -> Result<CCDataResponse<Vec<CCOptionsOHLCV>>, Error> {
+    pub async fn get_options_ohlcv(&self, instrument: &String, to_timestamp: Option<i64>, limit: Option<usize>, market: CCOptionsMarket, unit: CCUnit) -> Result<CCDataResponse<Vec<CCOptionsOHLCV>>, Error> {
         call_api_endpoint::<CCDataResponse<Vec<CCOptionsOHLCV>>>(
             self.api_key()?,
             CCAPIEndpoint::OptionsOHLCV, unit,
@@ -520,6 +580,9 @@ impl CCData {
     /// relevant metadata. If no specific market is specified, the endpoint returns information on all integrated options markets.
     /// This capability is crucial for users who wish to explore and analyze the characteristics and trading conditions of different options exchanges
     /// or market segments, aiding in market analysis, strategic planning, and decision-making.
+    ///
+    /// # Input
+    /// - `market`: Market name
     ///
     /// # Examples
     ///
@@ -558,6 +621,13 @@ impl CCData {
     /// Ideal for long-term analysis, it supports thorough market research and historical data examination, essential for informed decision-making
     /// and strategic planning.
     ///
+    /// # Input
+    /// - `instrument`: Instrument symbol
+    /// - `to_timestamp`: Final timestamp up to which the data will be extracted
+    /// - `limit`: Maximum number of datapoints per API endpoint call
+    /// - `market`: Market name
+    /// - `unit`: Unit of the interval between successive data points
+    ///
     /// # Examples
     ///
     /// ```rust
@@ -579,7 +649,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_der_indices_ohlcv(&self, instrument: &String, market: CCDerIndicesMarket, to_timestamp: Option<i64>, limit: Option<usize>, unit: CCUnit) -> Result<CCDataResponse<Vec<CCDerIndicesOHLCV>>, Error> {
+    pub async fn get_der_indices_ohlcv(&self, instrument: &String, to_timestamp: Option<i64>, limit: Option<usize>, market: CCDerIndicesMarket, unit: CCUnit) -> Result<CCDataResponse<Vec<CCDerIndicesOHLCV>>, Error> {
         call_api_endpoint::<CCDataResponse<Vec<CCDerIndicesOHLCV>>>(
             self.api_key()?,
             CCAPIEndpoint::DerIndicesOHLCV, unit,
@@ -597,6 +667,9 @@ impl CCData {
     /// If no specific market is indicated, the endpoint delivers data on all available markets. This functionality is essential for users looking to explore
     /// and compare the characteristics and trading conditions of different derivatives exchanges or market segments, assisting in market analysis,
     /// strategic planning, and decision-making.
+    ///
+    /// # Input
+    /// - `market`: Market name
     ///
     /// # Examples
     ///
@@ -635,6 +708,13 @@ impl CCData {
     /// on a specified exchange. This endpoint is essential for traders and analysts looking to understand historical price movements and market behavior
     /// over specific periods.
     ///
+    /// # Input
+    /// - `instrument`: Instrument symbol
+    /// - `to_timestamp`: Final timestamp up to which the data will be extracted
+    /// - `limit`: Maximum number of datapoints per API endpoint call
+    /// - `market`: Market name
+    /// - `unit`: Unit of the interval between successive data points
+    ///
     /// # Examples
     ///
     /// ```rust
@@ -656,7 +736,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_ocdex_ohlcv(&self, instrument: &String, market: CCOCDEXMarket, to_timestamp: Option<i64>, limit: Option<usize>, unit: CCUnit) -> Result<CCDataResponse<Vec<CCOCDEXOHLCV>>, Error> {
+    pub async fn get_ocdex_ohlcv(&self, instrument: &String, to_timestamp: Option<i64>, limit: Option<usize>, market: CCOCDEXMarket, unit: CCUnit) -> Result<CCDataResponse<Vec<CCOCDEXOHLCV>>, Error> {
         call_api_endpoint::<CCDataResponse<Vec<CCOCDEXOHLCV>>>(
             self.api_key()?,
             CCAPIEndpoint::OCDEXOHLCV, unit,
@@ -674,6 +754,9 @@ impl CCData {
     /// liquidity, operational status, and other relevant metadata. If no specific market is indicated, the endpoint delivers data on all available on-chain markets.
     /// This functionality is essential for users looking to explore and compare the characteristics and trading conditions of different decentralized exchanges
     /// or market segments, aiding in market analysis, strategic planning, and decision-making.
+    ///
+    /// # Input
+    /// - `market`: Market name
     ///
     /// # Examples
     ///
@@ -716,6 +799,9 @@ impl CCData {
     /// will return the data relative to the block that is currently being produce: -1 for the latest available block, -2 for the block before that, and so on,
     /// allowing users to access past blocks with ease.
     ///
+    /// # Input
+    /// - `block_number`: Block number on the blockchain
+    ///
     /// # Examples
     ///
     /// ```rust
@@ -751,6 +837,9 @@ impl CCData {
     /// identified by its chain symbol. This endpoint provides detailed summaries of the supported assets on the given chain,
     /// including a complete list of all assets available. It is invaluable for users needing an overarching view of the asset landscape within a specific
     /// blockchain, offering insights into the diversity and characteristics of the assets supported by that chain.
+    ///
+    /// # Input
+    /// - `chain_asset`: Chain asset symbol
     ///
     /// # Examples
     ///
@@ -789,6 +878,11 @@ impl CCData {
     /// total supply, and other pertinent information. This endpoint is essential for developers, researchers, and users who need accurate and detailed asset
     /// information for blockchain-based applications, analysis, or integration.
     ///
+    /// # Input
+    /// - `chain_asset`: Chain asset symbol
+    /// - `address`: Blockchain address
+    /// - `quote_asset`: Asset to quote data in
+    ///
     /// # Examples
     ///
     /// ```rust
@@ -826,6 +920,11 @@ impl CCData {
     /// CCData asset ID or unique asset symbol. This endpoint offers a detailed view of an asset's supply dynamics on a daily basis, providing insights
     /// into circulating supply, total issued supply, staked supply, burnt tokens, and more.
     ///
+    /// # Input
+    /// - `asset`: Asset symbol
+    /// - `to_timestamp`: Final timestamp up to which the data will be extracted
+    /// - `limit`: Maximum number of datapoints per API endpoint call
+    ///
     /// # Examples
     ///
     /// ```rust
@@ -861,6 +960,9 @@ impl CCData {
     /// unique asset symbol, or asset URI. This includes extensive data on asset description, classification, blockchain properties, social metrics,
     /// token sale information, and equity sale details—all consolidated into a single response to facilitate in-depth analysis, development, and research.
     ///
+    /// # Input
+    /// - `asset`: Asset symbol
+    ///
     /// # Examples
     ///
     /// ```rust
@@ -894,6 +996,11 @@ impl CCData {
     /// # Description (CCData Documentation)
     /// The Asset Events endpoint retrieves an array of significant events related to digital assets, such as security incidents, rebrandings, blockchain forks,
     /// and other impactful developments. Events are returned in chronological order, with the most recent events appearing first.
+    ///
+    /// # Input
+    /// - `asset`: Asset symbol
+    /// - `to_timestamp`: Final timestamp up to which the data will be extracted
+    /// - `limit`: Maximum number of datapoints per API endpoint call
     ///
     /// # Examples
     ///
@@ -929,6 +1036,11 @@ impl CCData {
     /// The Historical Social Metrics Code Repository Day endpoint provides an in-depth, daily snapshot of a digital asset's code repositories.
     /// It is invaluable for gauging developer activity, community engagement, and the asset's overall health.
     ///
+    /// # Input
+    /// - `asset`: Asset symbol
+    /// - `to_timestamp`: Final timestamp up to which the data will be extracted
+    /// - `limit`: Maximum number of datapoints per API endpoint call
+    ///
     /// # Examples
     ///
     /// ```rust
@@ -963,6 +1075,11 @@ impl CCData {
     /// # Description (CCData Documentation)
     /// The Historical Social Metrics Discord Days endpoint aggregates detailed daily metrics from all Discord servers related to a specific digital asset,
     /// offering a multifaceted view into community engagement and the asset's standing within Discord communities.
+    ///
+    /// # Input
+    /// - `asset`: Asset symbol
+    /// - `to_timestamp`: Final timestamp up to which the data will be extracted
+    /// - `limit`: Maximum number of datapoints per API endpoint call
     ///
     /// # Examples
     ///
@@ -1000,6 +1117,11 @@ impl CCData {
     /// providing a comprehensive understanding of the asset's footprint on Reddit—a critical channel for community engagement and public sentiment
     /// in the digital asset industry.
     ///
+    /// # Input
+    /// - `asset`: Asset symbol
+    /// - `to_timestamp`: Final timestamp up to which the data will be extracted
+    /// - `limit`: Maximum number of datapoints per API endpoint call
+    ///
     /// # Examples
     ///
     /// ```rust
@@ -1035,6 +1157,11 @@ impl CCData {
     /// The Telegram Historical Daily Metrics endpoint collates essential data points across all Telegram groups affiliated with a particular cryptocurrency asset.
     /// Telegram often serves as a primary hub for real-time community engagement, announcements, and discussions in the crypto ecosystem.
     ///
+    /// # Input
+    /// - `asset`: Asset symbol
+    /// - `to_timestamp`: Final timestamp up to which the data will be extracted
+    /// - `limit`: Maximum number of datapoints per API endpoint call
+    ///
     /// # Examples
     ///
     /// ```rust
@@ -1069,6 +1196,11 @@ impl CCData {
     /// # Description (CCData Documentation)
     /// The X (Twitter) Historical Daily Metrics endpoint aggregates essential metrics from all X (Twitter) accounts associated with a specific cryptocurrency asset.
     /// X (Twitter) is a key platform for real-time updates, announcements, and community engagement in the digital asset industry.
+    ///
+    /// # Input
+    /// - `asset`: Asset symbol
+    /// - `to_timestamp`: Final timestamp up to which the data will be extracted
+    /// - `limit`: Maximum number of datapoints per API endpoint call
     ///
     /// # Examples
     ///
@@ -1106,6 +1238,14 @@ impl CCData {
     /// the industry. By drawing from a wide array of reputable sources, this endpoint curates a fresh, real-time stream of information, insights,
     /// and developments, ensuring that users remain at the forefront of crypto news narratives. Whether you are an investor, enthusiast, or industry professional,
     /// this endpoint delivers a comprehensive and up-to-the-minute news digest, placing you at the heart of the ever-evolving crypto conversation.
+    ///
+    /// # Input
+    /// - `language`: Language of the news
+    /// - `source_id`: Source ID of the news stream
+    /// - `categories`: List of news categories
+    /// - `exclude_categories`: List of news categories to exclude
+    /// - `to_timestamp`: Final timestamp up to which the data will be extracted
+    /// - `limit`: Maximum number of datapoints per API endpoint call
     ///
     /// # Examples
     ///
@@ -1150,6 +1290,11 @@ impl CCData {
     /// to identify and access a diverse array of reputable news outlets, blogs, and information platforms. It ensures that users can explore and select from
     /// a curated list of trusted industry voices, supporting a variety of applications in research, news aggregation, and content curation.
     ///
+    /// # Input
+    /// - `language`: Language of the news
+    /// - `source_type`: Type of news stream
+    /// - `status`: Status of the news stream (e.g., ACTIVE, INACTIVE)
+    ///
     /// # Examples
     ///
     /// ```rust
@@ -1190,6 +1335,9 @@ impl CCData {
     /// and technological advances to regulatory changes and cultural events. By offering a clear overview of these categories, it facilitates users
     /// in understanding and navigating the thematic organization of news content.
     ///
+    /// # Input
+    /// - `status`: Status of the news stream (e.g., ACTIVE, INACTIVE)
+    ///
     /// # Examples
     ///
     /// ```rust
@@ -1227,6 +1375,10 @@ impl CCData {
     /// for digital assets that meet the volume and listing criteria. Users can explore day-by-day total market cap figures, along with daily open-high-low values
     /// and top-tier trading volumes, for the entire digital asset industry. It's a fundamental tool for analysts, researchers, and investors looking
     /// to understand market trends, trace asset performance over time, and make data-driven decisions rooted in historical contexts.
+    ///
+    /// # Input
+    /// - `to_timestamp`: Final timestamp up to which the data will be extracted
+    /// - `limit`: Maximum number of datapoints per API endpoint call
     ///
     /// # Examples
     ///

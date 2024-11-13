@@ -112,11 +112,15 @@ pub mod utils;
 pub mod backend;
 
 
-/// Unit of historical data response.
+/// Unit of the interval between successive data points.
 pub enum CCUnit {
+    /// Daily data interval
     Day,
+    /// Hourly data interval
     Hour,
+    /// Minutely data interval
     Minute,
+    /// Used for API endpoints that do not have a specified unit for data or where unit is unapplicable
     NA,
 }
 
@@ -124,47 +128,204 @@ pub enum CCUnit {
 /// All supported API endpoints.
 pub enum CCAPIEndpoint {
     // Min-API
+    /// Min-API Endpoint
+    ///
+    /// Description: Returns a list of all coins for which CCData currently gets the blockchain data
+    ///
+    /// URL: https://min-api.cryptocompare.com/data/blockchain/list
     AvailableCoinList,
+    /// Min-API Endpoint
+    ///
+    /// Description: Retrieves the daily aggregated blockchain data for the requested coin
+    ///
+    /// URL: https://min-api.cryptocompare.com/data/blockchain/histo/day
     HistoricalDaily,
+    /// Min-API Endpoint
+    ///
+    /// Description: Retrieves the balance distribution for a specified asset over a specified time range at a daily interval
+    ///
+    /// Note: Only data for BTC (Bitcoin) is currently available
+    ///
+    /// URL: https://min-api.cryptocompare.com/data/blockchain/balancedistribution/histo/day
     BalanceDistribution,
     // Data-API
     // Indices & Reference Rates
+    /// Data-API Endpoint
+    ///
+    /// Description: Provides historical candlestick data for various indices
+    ///
+    /// URL: https://data-api.ccdata.io/index/cc/v1/historical
     IndicesOHLCV,
     // Spot
+    /// Data-API Endpoint
+    ///
+    /// Description: Provides candlestick data for specific cryptocurrency instruments across selected exchanges
+    ///
+    /// URL: https://data-api.ccdata.io/spot/v1/historical
     SpotOHLCV,
+    /// Data-API Endpoint
+    ///
+    /// Description: Delivers vital metadata about financial instruments traded on specified exchanges, focusing solely on non-price related information
+    ///
+    /// URL: https://data-api.ccdata.io/spot/v1/latest/instrument/metadata
     SpotInstrumentMetadata,
+    /// Data-API Endpoint
+    ///
+    /// Description: Provides comprehensive information about various cryptocurrency spot markets
+    ///
+    /// URL: https://data-api.ccdata.io/spot/v1/markets
     SpotMarkets,
+    /// Data-API Endpoint
+    ///
+    /// Description: Retrieves a comprehensive dictionary of mapped instruments across one or more spot markets, filtered by a specified state or status
+    ///
+    /// URL: https://data-api.ccdata.io/spot/v1/markets/instruments
     SpotMarketsInstruments,
     // Futures
+    /// Data-API Endpoint
+    ///
+    /// Description: Provides aggregated candlestick data for specific futures instruments on designated exchanges
+    ///
+    /// URL: https://data-api.ccdata.io/futures/v1/historical
     FuturesOHLCV,
+    /// Data-API Endpoint
+    ///
+    /// Description: Provides comprehensive information about various cryptocurrency futures markets
+    ///
+    /// URL: https://data-api.ccdata.io/futures/v1/markets
     FuturesMarkets,
     // Options
+    /// Data-API Endpoint
+    ///
+    /// Description: Provides historical OHLCV (open, high, low, close, volume) data for specified options instruments on a chosen exchange
+    ///
+    /// URL: https://data-api.ccdata.io/options/v1/historical
     OptionsOHLCV,
+    /// Data-API Endpoint
+    ///
+    /// Description: Provides comprehensive information about the various options markets integrated by our platform
+    ///
+    /// URL: https://data-api.ccdata.io/options/v1/markets
     OptionsMarkets,
     // Derivatives Indices
+    /// Data-API Endpoint
+    ///
+    /// Description: Provides historical OHLC (open, high, low, close) data for specified index instruments on a selected market
+    ///
+    /// URL: https://data-api.ccdata.io/index/v1/historical
     DerIndicesOHLCV,
+    /// Data-API Endpoint
+    ///
+    /// Description: Provides comprehensive information about various derivatives index markets
+    ///
+    /// URL: https://data-api.ccdata.io/index/v1/markets
     DerIndicesMarkets,
     // On-Chain DEX
+    /// Data-API Endpoint
+    ///
+    /// Description: Retrieves aggregated candlestick data for AMM swap transactions
+    ///
+    /// URL: https://data-api.ccdata.io/onchain/v1/amm/historical/swap
     OCDEXOHLCV,
+    /// Data-API Endpoint
+    ///
+    /// Description: Provides comprehensive information about various decentralized exchange (DEX) markets within the blockchain ecosystem
+    ///
+    /// URL: https://data-api.ccdata.io/onchain/v1/amm/markets
     OCDEXMarkets,
     // On-Chain Core
+    /// Data-API Endpoint
+    ///
+    /// Description: Delivers exhaustive details on a specific Ethereum block in a meticulously processed format, complete with detailed explanations for each field
+    ///
+    /// URL: https://data-api.ccdata.io/onchain/v1/block/2
     OCCoreETHBlocks,
+    /// Data-API Endpoint
+    ///
+    /// Description: Retrieves a comprehensive summary of chain asset information for a specified blockchain, identified by its chain symbol
+    ///
+    /// URL: https://data-api.ccdata.io/onchain/v3/summary/by/chain
     OCCoreAssetsByChain,
+    /// Data-API Endpoint
+    ///
+    /// Description: Retrieves comprehensive asset information for a specific asset identified by its smart contract address and associated blockchain asset
+    ///
+    /// URL: https://data-api.ccdata.io/onchain/v2/data/by/address
     OCCoreAssetByAddress,
+    /// Data-API Endpoint
+    ///
+    /// Description: Retrieves comprehensive historical supply data for various digital assets identified by either their CCData asset ID or unique asset symbol
+    ///
+    /// URL: https://data-api.ccdata.io/onchain/v2/historical/supply/days
     OCCoreSupply,
     // Asset
+    /// Data-API Endpoint
+    ///
+    /// Description:  Returns an object that provides detailed and comprehensive information about multiple cryptocurrency assets in response to a request
+    ///
+    /// URL: https://data-api.ccdata.io/asset/v1/metadata
     AssetMetadata,
+    /// Data-API Endpoint
+    ///
+    /// Description: Retrieves an array of significant events related to digital assets, such as security incidents, rebrandings, blockchain forks, and other impactful developments
+    ///
+    /// URL: https://data-api.ccdata.io/asset/v1/events
     AssetEvents,
+    /// Data-API Endpoint
+    ///
+    /// Description: Provides an in-depth, daily snapshot of a digital asset's code repositories
+    ///
+    /// URL: https://data-api.ccdata.io/asset/v1/historical/code-repository/days
     AssetCodeRepo,
+    /// Data-API Endpoint
+    ///
+    /// Description: Aggregates detailed daily metrics from all Discord servers related to a specific digital asset, offering a multifaceted view into community engagement and the asset's standing within Discord communities
+    ///
+    /// URL: https://data-api.ccdata.io/asset/v1/historical/discord/days
     AssetDiscord,
+    /// Data-API Endpoint
+    ///
+    /// Description: Aggregates key performance indicators from all the subreddits related to a specific digital asset, providing a comprehensive understanding of the asset's footprint on Reddit
+    ///
+    /// URL: https://data-api.ccdata.io/asset/v1/historical/reddit/days
     AssetReddit,
+    /// Data-API Endpoint
+    ///
+    /// Description: Collates essential data points across all Telegram groups affiliated with a particular cryptocurrency asset
+    ///
+    /// URL: https://data-api.ccdata.io/asset/v1/historical/telegram/days
     AssetTelegram,
+    /// Data-API Endpoint
+    ///
+    /// Description: Aggregates essential metrics from all X (Twitter) accounts associated with a specific cryptocurrency asset
+    ///
+    /// URL: https://data-api.ccdata.io/asset/v1/historical/twitter/days
     AssetTwitter,
     // News
+    /// Data-API Endpoint
+    ///
+    /// Description: Serves as the pulse of the crypto news landscape, providing users with instant access to the most recent articles across the industry
+    ///
+    /// URL: https://data-api.ccdata.io/news/v1/article/list
     NewsLatestArticles,
+    /// Data-API Endpoint
+    ///
+    /// Description: Offers a comprehensive listing of all news sources available through CCData API
+    ///
+    /// URL: https://data-api.ccdata.io/news/v1/source/list
     NewsSources,
+    /// Data-API Endpoint
+    ///
+    /// Description: Provide a straightforward listing of all news categories available through CCData API
+    ///
+    /// URL: https://data-api.ccdata.io/news/v1/category/list
     NewsCategories,
     // Overview
+    /// Data-API Endpoint
+    ///
+    /// Description: Presents a thorough historical daily overview of market capitalisation for digital assets that meet the volume and listing criteria
+    ///
+    /// URL: https://data-api.ccdata.io/overview/v1/historical/marketcap/all/assets/days
     OverviewMktCapOHLCV,
 }
 
@@ -232,6 +393,9 @@ impl CCAPIEndpoint {
     }
 
     /// Produces URL for a given API endpoint.
+    ///
+    /// # Inputs
+    /// - `unit`: Unit of the interval between successive data points
     pub fn url(&self, unit: &CCUnit) -> String {
         let mut url: String = self.resolve_url();
         self.add_unit_to_url(&mut url, unit);

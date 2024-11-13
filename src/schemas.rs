@@ -132,14 +132,20 @@ impl<T> DataUnwrap<T> for CCMinResponse<T> {
 
 #[derive(Deserialize, Debug)]
 pub struct CCErrorOtherInfo {
+    /// The parameter that is responsible for the error.
     pub param: Option<String>,
+    /// The values responsible for the error.
     pub values: Option<Vec<String>>,
 }
 
 #[derive(Deserialize, Debug)]
+/// This object provides detailed information about an error encountered while processing the request. It includes an error code, a message explaining the error,
+/// and additional context about the parameters or values that caused the issue. This helps clients identify and resolve issues with their requests.
 pub struct CCError {
     #[serde(rename = "type")]
+    /// A public facing error type. If you want to treat a specific error use the type.
     pub type_: i32,
+    /// A message describing the error.
     pub message: String,
     pub other_info: Option<CCErrorOtherInfo>,
 }
@@ -149,6 +155,9 @@ pub struct CCDataResponse<T> {
     #[serde(rename = "Data")]
     pub data: EmptyObject<T>,
     #[serde(rename = "Err")]
+    /// This object provides detailed information about an error encountered while processing the request. It includes an error code,
+    /// a message explaining the error, and additional context about the parameters or values that caused the issue.
+    /// This helps clients identify and resolve issues with their requests.
     pub error: EmptyObject<CCError>,
 }
 

@@ -7,6 +7,10 @@ use crate::schemas::data_api::news::{CCNewsLang, CCNewsSourceID, CCNewsSourceTyp
 
 
 /// Returns the value inside the Option or an Error with the message.
+///
+/// # Input
+/// - `input`: `Option` that will converted to `Result`
+/// - `message`: Error message if `Option` is `None`
 pub fn some_or_error<T>(input: Option<T>, message: &str) -> Result<T, Error> {
     match input {
         Some(v) => Ok(v),
@@ -17,6 +21,7 @@ pub fn some_or_error<T>(input: Option<T>, message: &str) -> Result<T, Error> {
 
 /// Market interface that ensures all market enums implement .to_string().
 pub trait Market {
+    /// Converts enum value to `String`.
     fn to_string(&self) -> String;
 }
 
@@ -50,26 +55,45 @@ fn optional_vec_arguments(o: Option<Vec<String>>, api_argument: String) -> Strin
 /// All possible parameter types for the REST API request.
 pub enum Param<'a> {
     // Instrument parameters
+    /// Asset symbol
     Symbol { v: &'a String },
+    /// Instrument symbol
     Instrument { v: &'a String },
+    /// List of instrument symbols
     Instruments { v: &'a Vec<String> },
+    /// Chain asset symbol
     ChainAsset { v: &'a String },
+    /// Asset symbol
     Asset {v: &'a String},
     // Overlapping parameters
+    /// Final timestamp up to which the data will be extracted
     ToTs {v: Option<i64>},
+    /// Final timestamp up to which the data will be extracted
     ToTimestamp { v: Option<i64> },
+    /// Maximum number of datapoints per API endpoint call
     Limit { v: Option<usize> },
     // Special parameters
+    /// Market name
     Market {v: String},
+    /// Status of the instrument (e.g., `ACTIVE`, `EXPIRED`)
     InstrumentStatus { v: CCSpotInstrumentStatus },
+    /// Block number on the blockchain
     OCCoreBlockNumber { v: i64 },
+    /// Blockchain address
     OCCoreAddress { v: &'a String },
+    /// Asset to quote data in
     OCCoreQuoteAsset { v: &'a String },
+    /// Language of the news
     NewsLanguage { v: CCNewsLang },
+    /// Source ID of the news stream
     NewsSourceID { v: CCNewsSourceID },
+    /// List of news categories
     NewsCategories { v: Option<Vec<String>> },
+    /// List of news categories to exclude
     NewsExcludeCategories { v: Option<Vec<String>> },
+    /// Type of news stream
     NewsSourceType { v: CCNewsSourceType },
+    /// Status of the news stream (e.g., `ACTIVE`, `INACTIVE`)
     NewsStatus { v: CCNewsStatus },
 }
 
@@ -132,6 +156,13 @@ async fn process_request<T: DeserializeOwned>(url: String) -> Result<T, Error> {
 
 
 /// Constructs a URL for API request, sends the request, and returns the deserialzied response.
+///
+/// # Input
+/// - `api_key`: CCData API key
+/// - `endpoint`: Enum that represents the CCData API endpoint for function to send the request to
+/// - `unit`: Unit for data to be binned by (e.g., `Day`, `Hour`)
+/// - `params`: List of parameters expected by the CCData API endpoint
+/// - `additional_params`: Additional parameters to add to the request
 pub async fn call_api_endpoint<'a, R: DeserializeOwned>(api_key: &String, endpoint: CCAPIEndpoint, unit: CCUnit, params: Vec<Param<'a>>,
                                                         additional_params: Option<String>) -> Result<R, Error> {
     // Set up a URL for the API endpoint
