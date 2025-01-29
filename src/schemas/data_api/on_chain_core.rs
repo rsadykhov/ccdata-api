@@ -166,7 +166,7 @@ pub struct CCOCCoreETHMetadata {
     pub mix_hash: String,
     #[serde(rename = "DIFFICULTY")]
     /// This indicates how hard it was to mine the block. It's adjusted based on the overall network's hash rate to maintain a consistent block generation rate.
-    pub difficulty: i64,
+    pub difficulty: String,
     #[serde(rename = "TOTAL_DIFFICULTY")]
     /// This field accumulates the difficulty values of all previous blocks, providing a measure of the blockchain's security.
     pub total_difficulty: String,
@@ -186,9 +186,9 @@ pub struct CCOCCoreETHMetadata {
     /// The median time of the last 11 blocks. It's used to ensure the network's time consistency.
     pub median_time: Option<f64>,
     #[serde(rename = "BLOB_GAS_USED")]
-    pub blob_gas_used: i64,
+    pub blob_gas_used: String,
     #[serde(rename = "EXCESS_BLOB_GAS")]
-    pub excess_blob_gas: i64,
+    pub excess_blob_gas: String,
     #[serde(rename = "EXTRA_DATA")]
     /// This allows miners to include arbitrary information in the block. It's often used to add contextual information or messages.
     pub extra_data: String,
@@ -307,7 +307,7 @@ pub struct CCOCCoreETHTransaction {
     #[serde(rename = "GAS")]
     /// The amount of computational work a transaction requires to be executed.
     /// This is used to determine the fees paid by the sender to incentivize miners to include the transaction in a block.
-    pub gas: i64,
+    pub gas: String,
     #[serde(rename = "LOGS_BLOOM")]
     pub logs_bloom: Option<String>,
     #[serde(rename = "L1_GAS_USED")]
@@ -323,22 +323,22 @@ pub struct CCOCCoreETHTransaction {
     pub deposit_receipt_version: Option<i32>,
     #[serde(rename = "GAS_PRICE")]
     /// The price the sender is willing to pay for each unit of gas. Together with the gas limit, it determines the total fee for the transaction.
-    pub gas_price: i64,
+    pub gas_price: String,
     #[serde(rename = "INPUT")]
     /// The data associated with the transaction, often used in smart contract interactions. It can contain parameters and instructions for contract execution.
     pub input: String,
     #[serde(rename = "RECEIPT_BLOB_GAS_PRICE")]
     /// The total gas price of the transaction blobs.
-    pub receipt_blob_gas_price: Option<i64>,
+    pub receipt_blob_gas_price: Option<String>,
     #[serde(rename = "RECEIPT_BLOB_GAS_USED")]
     /// The total amount of gas used by the transaction blobs.
-    pub receipt_blob_gas_used: Option<i64>,
+    pub receipt_blob_gas_used: Option<String>,
     #[serde(rename = "RECEIPT_CUMULATIVE_GAS_USED")]
     /// The total amount of gas used by the transaction and all preceding transactions within the same block.
-    pub receipt_cumulative_gas_used: Option<i64>,
+    pub receipt_cumulative_gas_used: Option<String>,
     #[serde(rename = "RECEIPT_GAS_USED")]
     /// The amount of gas used specifically by the current transaction.
-    pub receipt_gas_used: Option<i64>,
+    pub receipt_gas_used: Option<String>,
     #[serde(rename = "RECEIPT_CONTACT_ADDRESS")]
     /// This is the address created when a contract is deployed. The *TO* field should be null in this case.
     pub receipt_contact_address: Option<String>,
@@ -351,16 +351,16 @@ pub struct CCOCCoreETHTransaction {
     pub receipt_status: i32,
     #[serde(rename = "MAX_FEE_PER_GAS")]
     /// The maximum fee per gas unit that the sender is willing to pay for a transaction to be included promptly in a block.
-    pub max_fee_per_gas: Option<i64>,
+    pub max_fee_per_gas: Option<String>,
     #[serde(rename = "MAX_PRIORITY_FEE_PER_GAS")]
     /// The maximum fee per gas unit that the sender is willing to pay for higher priority processing of the transaction.
-    pub max_priority_fee_per_gas: Option<i64>,
+    pub max_priority_fee_per_gas: Option<String>,
     #[serde(rename = "MAX_FEE_PER_BLOB_GAS")]
     /// The maximum fee per gas unit that the sender is willing to pay for higher priority processing of the transaction.
-    pub max_fee_per_blob_gas: Option<i64>,
+    pub max_fee_per_blob_gas: Option<String>,
     #[serde(rename = "RECEIPT_EFFECTIVE_GAS_PRICE")]
     /// The total base charge plus tip paid for each unit of gas.
-    pub receipt_effective_gas_price: Option<i64>,
+    pub receipt_effective_gas_price: Option<String>,
     #[serde(rename = "ACCESS_LIST")]
     /// This causes a transaction to warm (i.e. pre-cache) another addresses state and the specified storage keys, Available on EIP-2930 transactions.
     pub access_list: Option<Vec<CCOCCoreETHTransactionAccessList>>,
@@ -425,7 +425,7 @@ pub struct CCOCCoreETHWithdrawal {
     #[serde(rename = "AMOUNT")]
     /// The quantity of cryptocurrency being withdrawn in the transaction. It specifies the numerical value of the cryptocurrency units
     /// being transferred from the withdrawal source to the recipient's address.
-    pub amount: f64,
+    pub amount: String,
     #[serde(rename = "UNIT")]
     /// The type of cryptocurrency being withdrawn. It could be a symbol or code that represents the specific cryptocurrency asset
     /// being transferred, such as "BTC" for Bitcoin or "GWEI" for Ethereum.

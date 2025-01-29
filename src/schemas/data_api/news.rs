@@ -306,7 +306,7 @@ pub struct CCNewsLatestArticle {
     pub created_on: i64,
     #[serde(rename = "UPDATED_ON")]
     /// Article internal last updated unix ts in our system.
-    pub updated_on: i64,
+    pub updated_on: Option<i64>,
     #[serde(rename = "SOURCE_DATA")]
     /// The news source data of this article.
     pub source_data: CCNewsSource,

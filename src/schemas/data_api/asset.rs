@@ -365,7 +365,7 @@ pub struct CCAssetDiscord {
     pub total_premium_subscribers: Option<i32>,
     #[serde(rename = "DISCORD_SERVERS")]
     /// An array with all the data for each Discord server used to calculate the total stats.
-    pub discord_servers: Option<Vec<CCAssetDiscordServer>>,
+    pub discord_servers: Vec<Option<CCAssetDiscordServer>>,
 }
 
 

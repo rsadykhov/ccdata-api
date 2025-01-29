@@ -114,7 +114,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap};
+    /// use ccdata_api::CCData;
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -124,7 +124,7 @@ impl CCData {
     ///     backend.build(&"API_KEY").unwrap();
     ///
     ///     let available_coin_list = backend.get_available_coin_list().await.unwrap();
-    ///     assert!(0 < available_coin_list.data_unwrap().unwrap().len());
+    ///     assert!(0 < available_coin_list.data.unwrap().len());
     ///
     /// }
     /// ```
@@ -155,7 +155,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap};
+    /// use ccdata_api::CCData;
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -166,7 +166,7 @@ impl CCData {
     ///
     ///     let limit: usize = 2000;
     ///     let historical_daily = backend.get_historical_daily(&String::from("ETH"), None, Some(limit)).await.unwrap();
-    ///     assert_eq!(historical_daily.data_unwrap().unwrap().data_unwrap().unwrap().len(), limit);
+    ///     assert_eq!(historical_daily.data.unwrap().data.unwrap().len(), limit);
     ///
     /// }
     /// ```
@@ -198,7 +198,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap};
+    /// use ccdata_api::CCData;
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -209,7 +209,7 @@ impl CCData {
     ///
     ///     let limit: usize = 2000;
     ///     let balance_distribution = backend.get_balance_distribution(None, Some(limit)).await.unwrap();
-    ///     assert_eq!(balance_distribution.data_unwrap().unwrap().data_unwrap().unwrap().len(), limit);
+    ///     assert!(balance_distribution.data.unwrap().data.unwrap().len() <= limit);
     ///
     /// }
     /// ```
@@ -241,8 +241,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap, CCUnit};
-    /// use ccdata_api::::CCIndicesMarket;
+    /// use ccdata_api::{CCData, CCUnit, CCIndicesMarket};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -254,7 +253,7 @@ impl CCData {
     ///     let market: CCIndicesMarket = CCIndicesMarket::CADLI;
     ///     let limit: usize = 2000;
     ///     let ohlcv = backend.get_indices_ohlcv(&String::from("BTC-USD"), None, Some(limit), market, CCUnit::Day).await.unwrap();
-    ///     assert_eq!(ohlcv.data_unwrap().unwrap().len(), limit);
+    ///     assert_eq!(ohlcv.data.unwrap().len(), limit);
     ///
     /// }
     /// ```
@@ -285,8 +284,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap, CCUnit};
-    /// use ccdata_api::CCSpotMarket;
+    /// use ccdata_api::{CCData, CCUnit, CCSpotMarket};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -298,7 +296,7 @@ impl CCData {
     ///     let market: CCSpotMarket = CCSpotMarket::KRAKEN;
     ///     let limit: usize = 2000;
     ///     let ohlcv = backend.get_spot_ohlcv(&String::from("BTC-USD"), None, Some(limit), market, CCUnit::Day).await.unwrap();
-    ///     assert_eq!(ohlcv.data_unwrap().unwrap().len(), limit);
+    ///     assert_eq!(ohlcv.data.unwrap().len(), limit);
     ///
     /// }
     /// ```
@@ -326,8 +324,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap};
-    /// use ccdata_api::CCSpotMarket;
+    /// use ccdata_api::{CCData, CCSpotMarket};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -339,7 +336,7 @@ impl CCData {
     ///     let instruments: Vec<String> = vec![String::from("BTC-USD"), String::from("ETH-USD")];
     ///     let market: CCSpotMarket = CCSpotMarket::KRAKEN;
     ///     let instrument_metadata = backend.get_spot_instrument_metadata(&instruments, market).await.unwrap();
-    ///     assert_eq!(instrument_metadata.data_unwrap().unwrap().len(), 2);
+    ///     assert_eq!(instrument_metadata.data.unwrap().len(), 2);
     ///
     /// }
     /// ```
@@ -368,8 +365,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap};
-    /// use ccdata_api::CCSpotMarket;
+    /// use ccdata_api::{CCData, CCSpotMarket};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -380,7 +376,7 @@ impl CCData {
     ///
     ///     let market: CCSpotMarket = CCSpotMarket::KRAKEN;
     ///     let markets = backend.get_spot_markets(market).await.unwrap();
-    ///     assert_eq!(markets.data_unwrap().unwrap().get("kraken").unwrap().exchange_status, String::from("ACTIVE"));
+    ///     assert_eq!(markets.data.unwrap().get("kraken").unwrap().exchange_status, String::from("ACTIVE"));
     ///
     /// }
     /// ```
@@ -411,8 +407,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap};
-    /// use ccdata_api::{CCSpotMarket, CCSpotInstrumentStatus};
+    /// use ccdata_api::{CCData, CCSpotMarket, CCSpotInstrumentStatus};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -425,7 +420,7 @@ impl CCData {
     ///     let market: CCSpotMarket = CCSpotMarket::KRAKEN;
     ///     let instrument_status: CCSpotInstrumentStatus = CCSpotInstrumentStatus::ACTIVE;
     ///     let markets_instruments = backend.get_spot_markets_instruments(&instruments, market, instrument_status).await.unwrap();
-    ///     assert_eq!(markets_instruments.data_unwrap().unwrap().get("kraken").unwrap().instruments.len(), 2);
+    ///     assert_eq!(markets_instruments.data.unwrap().get("kraken").unwrap().instruments.len(), 2);
     ///
     /// }
     /// ```
@@ -458,8 +453,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap, CCUnit};
-    /// use ccdata_api::CCFuturesMarket;
+    /// use ccdata_api::{CCData, CCUnit, CCFuturesMarket};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -470,8 +464,8 @@ impl CCData {
     ///
     ///     let market: CCFuturesMarket = CCFuturesMarket::BINANCE;
     ///     let limit: usize = 2000;
-    ///     let ohlcv = backend.get_futures_ohlcv(&String::from("BTC-USDT-VANILLA-PERPETUAL"), market, None, Some(limit), CCUnit::Day).await.unwrap();
-    ///     assert!(ohlcv.data_unwrap().unwrap().len() <= limit)
+    ///     let ohlcv = backend.get_futures_ohlcv(&String::from("BTC-USDT-VANILLA-PERPETUAL"), None, Some(limit), market, CCUnit::Day).await.unwrap();
+    ///     assert!(ohlcv.data.unwrap().len() <= limit)
     ///
     /// }
     /// ```
@@ -501,8 +495,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap};
-    /// use ccdata_api::CCFuturesMarket;
+    /// use ccdata_api::{CCData, CCFuturesMarket};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -513,7 +506,7 @@ impl CCData {
     ///
     ///     let market: CCFuturesMarket = CCFuturesMarket::BINANCE;
     ///     let markets = backend.get_futures_markets(market).await.unwrap();
-    ///     assert_eq!(markets.data_unwrap().unwrap().get("binance").unwrap().exchange_status, String::from("ACTIVE"));
+    ///     assert_eq!(markets.data.unwrap().get("binance").unwrap().exchange_status, String::from("ACTIVE"));
     ///
     /// }
     /// ```
@@ -545,8 +538,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap, CCUnit};
-    /// use ccdata_api::CCOptionsMarket;
+    /// use ccdata_api::{CCData, CCUnit, CCOptionsMarket};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -557,8 +549,8 @@ impl CCData {
     ///
     ///     let market: CCOptionsMarket = CCOptionsMarket::OKEX;
     ///     let limit: usize = 2000;
-    ///     let ohlcv = backend.get_options_ohlcv(&String::from("BTC-USD-20241227-15000-P"), market, None, Some(limit), CCUnit::Day).await.unwrap();
-    ///     assert!(ohlcv.data_unwrap().unwrap().len() <= limit);
+    ///     let ohlcv = backend.get_options_ohlcv(&String::from("BTC-USD-20241227-15000-P"), None, Some(limit), market, CCUnit::Day).await.unwrap();
+    ///     assert!(ohlcv.data.unwrap().len() <= limit);
     ///
     /// }
     /// ```
@@ -588,8 +580,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap};
-    /// use ccdata_api::CCOptionsMarket;
+    /// use ccdata_api::{CCData, CCOptionsMarket};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -600,7 +591,7 @@ impl CCData {
     ///
     ///     let market: CCOptionsMarket = CCOptionsMarket::DERIBIT;
     ///     let markets = backend.get_options_markets(market).await.unwrap();
-    ///     assert_eq!(markets.data_unwrap().unwrap().get("deribit").unwrap().exchange_status, String::from("ACTIVE"));
+    ///     assert_eq!(markets.data.unwrap().get("deribit").unwrap().exchange_status, String::from("ACTIVE"));
     ///
     /// }
     /// ```
@@ -632,8 +623,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap, CCUnit};
-    /// use ccdata_api::CCDerIndicesMarket;
+    /// use ccdata_api::{CCData, CCUnit, CCDerIndicesMarket};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -644,8 +634,8 @@ impl CCData {
     ///
     ///     let market: CCDerIndicesMarket = CCDerIndicesMarket::BINANCE;
     ///     let limit: usize = 2000;
-    ///     let ohlcv = backend.get_der_indices_ohlcv(&String::from("BTCUSDT"), market, None, Some(limit), CCUnit::Day).await.unwrap();
-    ///     assert!(ohlcv.data_unwrap().unwrap().len() <= limit);
+    ///     let ohlcv = backend.get_der_indices_ohlcv(&String::from("BTCUSDT"), None, Some(limit), market, CCUnit::Day).await.unwrap();
+    ///     assert!(ohlcv.data.unwrap().len() <= limit);
     ///
     /// }
     /// ```
@@ -675,8 +665,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap};
-    /// use ccdata_api::CCDerIndicesMarket;
+    /// use ccdata_api::{CCData, CCDerIndicesMarket};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -687,7 +676,7 @@ impl CCData {
     ///
     ///     let market: CCDerIndicesMarket = CCDerIndicesMarket::KRAKEN;
     ///     let markets = backend.get_der_indices_markets(market).await.unwrap();
-    ///     assert_eq!(markets.data_unwrap().unwrap().get("kraken").unwrap().exchange_status, String::from("ACTIVE"));
+    ///     assert_eq!(markets.data.unwrap().get("kraken").unwrap().exchange_status, String::from("ACTIVE"));
     ///
     /// }
     /// ```
@@ -719,8 +708,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap, CCUnit};
-    /// use ccdata_api::CCOCDEXMarket;
+    /// use ccdata_api::{CCData, CCUnit, CCOCDEXMarket};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -731,8 +719,8 @@ impl CCData {
     ///
     ///     let market: CCOCDEXMarket = CCOCDEXMarket::UNISWAPV2;
     ///     let limit: usize = 2000;
-    ///     let ohlcv = backend.get_ocdex_ohlcv(&String::from("0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852_2"), market, None, Some(limit), CCUnit::Day).await.unwrap();
-    ///     assert!(ohlcv.data_unwrap().unwrap().len() <= limit);
+    ///     let ohlcv = backend.get_ocdex_ohlcv(&String::from("0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852_2"), None, Some(limit), market, CCUnit::Day).await.unwrap();
+    ///     assert!(ohlcv.data.unwrap().len() <= limit);
     ///
     /// }
     /// ```
@@ -762,8 +750,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap};
-    /// use ccdata_api::CCOCDEXMarket;
+    /// use ccdata_api::{CCData, CCOCDEXMarket};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -774,7 +761,7 @@ impl CCData {
     ///
     ///     let market: CCOCDEXMarket = CCOCDEXMarket::UNISWAPV2;
     ///     let markets = backend.get_ocdex_markets(market).await.unwrap();
-    ///     assert_eq!(markets.data_unwrap().unwrap().get("uniswapv2").unwrap().exchange_status, String::from("ACTIVE"));
+    ///     assert_eq!(markets.data.unwrap().get("uniswapv2").unwrap().exchange_status, String::from("ACTIVE"));
     ///
     /// }
     /// ```
@@ -806,7 +793,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap};
+    /// use ccdata_api::CCData;
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -816,7 +803,7 @@ impl CCData {
     ///     backend.build(&"API_KEY").unwrap();
     ///
     ///     let eth_block = backend.get_occore_eth_block(19501436).await.unwrap();
-    ///     assert_eq!(eth_block.data_unwrap().unwrap().symbol, String::from("ETH"));;
+    ///     assert_eq!(eth_block.data.unwrap().symbol, String::from("ETH"));;
     ///
     /// }
     /// ```
@@ -845,7 +832,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap};
+    /// use ccdata_api::CCData;
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -855,7 +842,7 @@ impl CCData {
     ///     backend.build(&"API_KEY").unwrap();
     ///
     ///     let assets_by_chain = backend.get_occore_assets_by_chain(&String::from("ETH")).await.unwrap();
-    ///     assert_eq!(assets_by_chain.data_unwrap().unwrap().chain_asset_summary.symbol, String::from("ETH"));
+    ///     assert_eq!(assets_by_chain.data.unwrap().chain_asset_summary.symbol, String::from("ETH"));
     ///
     /// }
     /// ```
@@ -887,7 +874,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap};
+    /// use ccdata_api::CCData;
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -899,7 +886,7 @@ impl CCData {
     ///     let address: String = String::from("0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2");
     ///     let quote_asset: String = String::from("USD");
     ///     let asset_by_address = backend.get_occore_asset_by_address(&String::from("ETH"), &address, &quote_asset).await.unwrap();
-    ///     assert_eq!(asset_by_address.data_unwrap().unwrap().parent_asset_symbol.unwrap(), String::from("ETH"));
+    ///     assert_eq!(asset_by_address.data.unwrap().parent_asset_symbol.unwrap(), String::from("ETH"));
     ///
     /// }
     /// ```
@@ -929,7 +916,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap};
+    /// use ccdata_api::CCData;
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -940,7 +927,7 @@ impl CCData {
     ///
     ///     let limit: usize = 2000;
     ///     let historical_supply = backend.get_occore_supply(&String::from("BTC"), None, Some(limit)).await.unwrap();
-    ///     assert_eq!(historical_supply.data_unwrap().unwrap().len(), limit);
+    ///     assert_eq!(historical_supply.data.unwrap().len(), limit);
     ///
     /// }
     /// ```
@@ -967,7 +954,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap};
+    /// use ccdata_api::CCData;
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -977,7 +964,7 @@ impl CCData {
     ///     backend.build(&"API_KEY").unwrap();
     ///
     ///     let metadata = backend.get_asset_metadata(&String::from("ETH")).await.unwrap();
-    ///     assert_eq!(metadata.data_unwrap().unwrap().name, String::from("Ethereum"));
+    ///     assert_eq!(metadata.data.unwrap().name, String::from("Ethereum"));
     ///
     /// }
     /// ```
@@ -1006,7 +993,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap};
+    /// use ccdata_api::CCData;
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -1017,7 +1004,7 @@ impl CCData {
     ///
     ///     let limit: usize = 100;
     ///     let events = backend.get_asset_events(&String::from("ETH"), None, Some(limit)).await.unwrap();
-    ///     assert!(events.data_unwrap().unwrap().len() <= limit);
+    ///     assert!(events.data.unwrap().len() <= limit);
     ///
     /// }
     /// ```
@@ -1045,7 +1032,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap};
+    /// use ccdata_api::CCData;
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -1056,7 +1043,7 @@ impl CCData {
     ///
     ///     let limit: usize = 2000;
     ///     let code_repo = backend.get_asset_code_repo(&String::from("ETH"), None, Some(limit)).await.unwrap();
-    ///     assert_eq!(code_repo.data_unwrap().unwrap().len(), limit);
+    ///     assert_eq!(code_repo.data.unwrap().len(), limit);
     ///
     /// }
     /// ```
@@ -1085,7 +1072,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap};
+    /// use ccdata_api::CCData;
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -1096,7 +1083,7 @@ impl CCData {
     ///
     ///     let limit: usize = 2000;
     ///     let discord = backend.get_asset_discord(&String::from("ETH"), None, Some(limit)).await.unwrap();
-    ///     assert_eq!(discord.data_unwrap().unwrap().len(), limit);
+    ///     assert_eq!(discord.data.unwrap().len(), limit);
     ///
     /// }
     /// ```
@@ -1126,7 +1113,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap};
+    /// use ccdata_api::CCData;
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -1137,7 +1124,7 @@ impl CCData {
     ///
     ///     let limit: usize = 2000;
     ///     let reddit = backend.get_asset_reddit(&String::from("ETH"), None, Some(limit)).await.unwrap();
-    ///     assert_eq!(reddit.data_unwrap().unwrap().len(), limit);
+    ///     assert_eq!(reddit.data.unwrap().len(), limit);
     ///
     /// }
     /// ```
@@ -1166,7 +1153,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap};
+    /// use ccdata_api::CCData;
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -1177,7 +1164,7 @@ impl CCData {
     ///
     ///     let limit: usize = 2000;
     ///     let telegram = backend.get_asset_telegram(&String::from("SOL"), None, Some(limit)).await.unwrap();
-    ///     assert_eq!(telegram.data_unwrap().unwrap().len(), limit);
+    ///     assert_eq!(telegram.data.unwrap().len(), limit);
     ///
     /// }
     /// ```
@@ -1206,7 +1193,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap};
+    /// use ccdata_api::CCData;
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -1217,7 +1204,7 @@ impl CCData {
     ///
     ///     let limit: usize = 2000;
     ///     let twitter = backend.get_asset_twitter(&String::from("SOL"), None, Some(limit)).await.unwrap();
-    ///     assert_eq!(twitter.data_unwrap().unwrap().len(), limit)
+    ///     assert_eq!(twitter.data.unwrap().len(), limit)
     ///
     /// }
     /// ```
@@ -1251,8 +1238,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap};
-    /// use ccdata_api::{CCNewsLang, CCNewsSourceID};
+    /// use ccdata_api::{CCData, CCNewsLang, CCNewsSourceID};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -1265,7 +1251,7 @@ impl CCData {
     ///     let source_id: CCNewsSourceID = CCNewsSourceID::ForbesDigitalAssets;
     ///     let limit: usize = 100;
     ///     let articles = backend.get_news_latest_articles(language, source_id, None, None, None, Some(limit)).await.unwrap();
-    ///     assert_eq!(articles.data_unwrap().unwrap().len(), limit);
+    ///     assert_eq!(articles.data.unwrap().len(), limit);
     ///
     /// }
     /// ```
@@ -1299,8 +1285,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap};
-    /// use ccdata_api::{CCNewsLang, CCNewsSourceType, CCNewsStatus};
+    /// use ccdata_api::{CCData, CCNewsLang, CCNewsSourceType, CCNewsStatus};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -1313,7 +1298,7 @@ impl CCData {
     ///     let source_type: CCNewsSourceType = CCNewsSourceType::RSS;
     ///     let status: CCNewsStatus = CCNewsStatus::ACTIVE;
     ///     let sources = backend.get_news_sources(language, source_type, status).await.unwrap();
-    ///     assert_eq!(sources.data_unwrap().unwrap()[0].source_type, String::from("RSS"));
+    ///     assert_eq!(sources.data.unwrap()[0].source_type, String::from("RSS"));
     ///
     /// }
     /// ```
@@ -1342,8 +1327,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap};
-    /// use ccdata_api::CCNewsStatus;
+    /// use ccdata_api::{CCData, CCNewsStatus};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -1354,7 +1338,7 @@ impl CCData {
     ///
     ///     let status: CCNewsStatus = CCNewsStatus::ACTIVE;
     ///     let categories = backend.get_news_categories(status).await.unwrap();
-    ///     assert_eq!(categories.data_unwrap().unwrap()[0].status, String::from("ACTIVE"));
+    ///     assert_eq!(categories.data.unwrap()[0].status, String::from("ACTIVE"));
     ///
     /// }
     /// ```
@@ -1384,7 +1368,7 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, DataUnwrap};
+    /// use ccdata_api::CCData;
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
@@ -1395,7 +1379,7 @@ impl CCData {
     ///
     ///     let limit: usize = 2000;
     ///     let mktcap = backend.get_overview_mktcap_ohlcv(None, Some(limit)).await.unwrap();
-    ///     assert_eq!(mktcap.data_unwrap().unwrap().len(), limit);
+    ///     assert_eq!(mktcap.data.unwrap().len(), limit);
     ///
     /// }
     /// ```

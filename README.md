@@ -15,11 +15,7 @@ or the information provided within the crate.
 # Errors
 
 The REST API functions in the crate will error if the data received does not fit into the pre-defined schemas provided
-in the crate. In the case of missing fields, unexpected null values or unexpected data types, the error message will state:
-
-- `data did not match any variant of untagged enum EmptyObject`
-
-If you encounter this error, please open the issue on GitHub with the parameters that you have used (e.g., asset symbol,
+in the crate. If you encounter any errors, please open an issue on GitHub with the parameters that you have used (e.g., asset symbol,
 timestamp, limit, etc.). **Do not provide your API key or any personal data!**
 
 # Examples
@@ -60,8 +56,7 @@ get a daily spot OHLCV data for Bitcoin you can do the following (note that the 
 
 ```rust
 
-use ccdata_api::{CCData, CCUnit, DataUnwrap};
-use ccdata_api::CCSpotMarket;
+use ccdata_api::{CCData, CCUnit, CCSpotMarket};
 
 #[tokio::main]
 async fn main() -> () {
@@ -73,11 +68,11 @@ async fn main() -> () {
     // Define the API parameters
     let market: CCSpotMarket = CCSpotMarket::KRAKEN;
     let limit: usize = 2000;
-    let to_timestamp: Option<i64> - Some(1728860400);
+    let to_timestamp: Option<i64> = Some(1728860400);
 
     // Make the API call
     let ohlcv = backend.get_spot_ohlcv(&String::from("BTC-USD"), to_timestamp, Some(limit), market, CCUnit::Day).await.unwrap();
-    assert_eq!(ohlcv.data_unwrap().unwrap().len(), limit);
+    assert_eq!(ohlcv.data.unwrap().len(), limit);
 
 }
 ```
