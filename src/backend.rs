@@ -1,4 +1,4 @@
-use std::{io::{Error, ErrorKind}, env::var, collections::HashMap};
+use std::{io, error::Error, env::var, collections::HashMap};
 use dotenv::dotenv;
 use crate::{CCUnit, CCAPIEndpoint};
 use crate::schemas::{self as sh, CCDataResponse};
@@ -42,11 +42,11 @@ impl CCData {
     ///
     /// println!("{}", backend.api_key().unwrap());
     /// ```
-    pub fn api_key(&self) -> Result<&String, Error> {
+    pub fn api_key(&self) -> Result<&String, io::Error> {
         match &self.api_key {
             Some(v) => Ok(v),
             None => {
-                Err(Error::new(ErrorKind::InvalidInput, "No API key is defined."))
+                Err(io::Error::new(io::ErrorKind::InvalidInput, "CCData: No API key is defined."))
             },
         }
     }
@@ -88,16 +88,16 @@ impl CCData {
     ///
     /// println!("{}", backend.api_key().unwrap());
     /// ```
-    pub fn build(&mut self, api_key_env_var: &str) -> Result<(), Error> {
+    pub fn build(&mut self, api_key_env_var: &str) -> Result<(), io::Error> {
         match dotenv() {
             Ok(_b) => (),
             Err(e) => {
-                return Err(Error::new(ErrorKind::NotFound, e.to_string()));
+                return Err(io::Error::new(io::ErrorKind::NotFound, e.to_string()));
             },
         }
         match var(api_key_env_var) {
             Ok(k) => self.update_api_key(k),
-            Err(e) => return Err(Error::new(ErrorKind::NotFound, e.to_string())),
+            Err(e) => return Err(io::Error::new(io::ErrorKind::NotFound, e.to_string())),
         }
         Ok(())
     }
@@ -128,7 +128,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_available_coin_list(&self) -> Result<sh::CCMinResponse<HashMap<String, min_api::CCAvailableCoinList>>, Error> {
+    pub async fn get_available_coin_list(&self) -> Result<sh::CCMinResponse<HashMap<String, min_api::CCAvailableCoinList>>, Box<dyn Error>> {
         call_api_endpoint::<sh::CCMinResponse<HashMap<String, min_api::CCAvailableCoinList>>>(
             self.api_key()?,
             CCAPIEndpoint::AvailableCoinList, CCUnit::NA,
@@ -170,7 +170,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_historical_daily(&self, symbol: &String, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<sh::CCMinResponse<sh::CCMinWrapper<Vec<min_api::CCHistoricalDaily>>>, Error> {
+    pub async fn get_historical_daily(&self, symbol: &String, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<sh::CCMinResponse<sh::CCMinWrapper<Vec<min_api::CCHistoricalDaily>>>, Box<dyn Error>> {
         call_api_endpoint::<sh::CCMinResponse<sh::CCMinWrapper<Vec<min_api::CCHistoricalDaily>>>>(
             self.api_key()?,
             CCAPIEndpoint::HistoricalDaily, CCUnit::NA,
@@ -213,7 +213,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_balance_distribution(&self, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<sh::CCMinResponse<sh::CCMinWrapper<Vec<min_api::CCBalanceDistribution>>>, Error> {
+    pub async fn get_balance_distribution(&self, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<sh::CCMinResponse<sh::CCMinWrapper<Vec<min_api::CCBalanceDistribution>>>, Box<dyn Error>> {
         call_api_endpoint::<sh::CCMinResponse<sh::CCMinWrapper<Vec<min_api::CCBalanceDistribution>>>>(
             self.api_key()?,
             CCAPIEndpoint::BalanceDistribution, CCUnit::NA,
@@ -258,7 +258,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_indices_ohlcv(&self, instrument: &String, to_timestamp: Option<i64>, limit: Option<usize>, market: CCIndicesMarket, unit: CCUnit) -> Result<CCDataResponse<Vec<CCIndicesOHLCV>>, Error> {
+    pub async fn get_indices_ohlcv(&self, instrument: &String, to_timestamp: Option<i64>, limit: Option<usize>, market: CCIndicesMarket, unit: CCUnit) -> Result<CCDataResponse<Vec<CCIndicesOHLCV>>, Box<dyn Error>> {
         call_api_endpoint::<CCDataResponse<Vec<CCIndicesOHLCV>>>(
             self.api_key()?,
             CCAPIEndpoint::IndicesOHLCV, unit,
@@ -302,7 +302,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_spot_ohlcv(&self, instrument: &String, to_timestamp: Option<i64>, limit: Option<usize>, market: CCSpotMarket, unit: CCUnit) -> Result<CCDataResponse<Vec<CCSpotOHLCV>>, Error> {
+    pub async fn get_spot_ohlcv(&self, instrument: &String, to_timestamp: Option<i64>, limit: Option<usize>, market: CCSpotMarket, unit: CCUnit) -> Result<CCDataResponse<Vec<CCSpotOHLCV>>, Box<dyn Error>> {
         call_api_endpoint::<CCDataResponse<Vec<CCSpotOHLCV>>>(
             self.api_key()?,
             CCAPIEndpoint::SpotOHLCV, unit,
@@ -343,7 +343,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_spot_instrument_metadata(&self, instruments: &Vec<String>, market: CCSpotMarket) -> Result<CCDataResponse<HashMap<String, CCSpotInstrumentMetdata>>, Error> {
+    pub async fn get_spot_instrument_metadata(&self, instruments: &Vec<String>, market: CCSpotMarket) -> Result<CCDataResponse<HashMap<String, CCSpotInstrumentMetdata>>, Box< dyn Error>> {
         call_api_endpoint::<CCDataResponse<HashMap<String, CCSpotInstrumentMetdata>>>(
             self.api_key()?,
             CCAPIEndpoint::SpotInstrumentMetadata, CCUnit::NA,
@@ -384,7 +384,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_spot_markets(&self, market: CCSpotMarket) -> Result<CCDataResponse<HashMap<String, CCSpotMarkets>>, Error> {
+    pub async fn get_spot_markets(&self, market: CCSpotMarket) -> Result<CCDataResponse<HashMap<String, CCSpotMarkets>>, Box<dyn Error>> {
         call_api_endpoint::<CCDataResponse<HashMap<String, CCSpotMarkets>>>(
             self.api_key()?,
             CCAPIEndpoint::SpotMarkets, CCUnit::NA,
@@ -429,7 +429,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_spot_markets_instruments(&self, instruments: &Vec<String>, market: CCSpotMarket, instrument_status: CCSpotInstrumentStatus) -> Result<CCDataResponse<HashMap<String, CCSpotMarketsInstruments>>, Error> {
+    pub async fn get_spot_markets_instruments(&self, instruments: &Vec<String>, market: CCSpotMarket, instrument_status: CCSpotInstrumentStatus) -> Result<CCDataResponse<HashMap<String, CCSpotMarketsInstruments>>, Box<dyn Error>> {
         call_api_endpoint::<CCDataResponse<HashMap<String, CCSpotMarketsInstruments>>>(
             self.api_key()?,
             CCAPIEndpoint::SpotMarketsInstruments, CCUnit::NA,
@@ -475,7 +475,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_futures_ohlcv(&self, instrument: &String, to_timestamp: Option<i64>, limit: Option<usize>, market: CCFuturesMarket, unit: CCUnit) -> Result<CCDataResponse<Vec<CCFuturesOHLCV>>, Error> {
+    pub async fn get_futures_ohlcv(&self, instrument: &String, to_timestamp: Option<i64>, limit: Option<usize>, market: CCFuturesMarket, unit: CCUnit) -> Result<CCDataResponse<Vec<CCFuturesOHLCV>>, Box<dyn Error>> {
         call_api_endpoint::<CCDataResponse<Vec<CCFuturesOHLCV>>>(
             self.api_key()?,
             CCAPIEndpoint::FuturesOHLCV, unit,
@@ -517,7 +517,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_futures_markets(&self, market: CCFuturesMarket) -> Result<CCDataResponse<HashMap<String, CCFuturesMarkets>>, Error> {
+    pub async fn get_futures_markets(&self, market: CCFuturesMarket) -> Result<CCDataResponse<HashMap<String, CCFuturesMarkets>>, Box<dyn Error>> {
         call_api_endpoint::<CCDataResponse<HashMap<String, CCFuturesMarkets>>>(
             self.api_key()?,
             CCAPIEndpoint::FuturesMarkets, CCUnit::NA,
@@ -562,7 +562,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_options_ohlcv(&self, instrument: &String, to_timestamp: Option<i64>, limit: Option<usize>, market: CCOptionsMarket, unit: CCUnit) -> Result<CCDataResponse<Vec<CCOptionsOHLCV>>, Error> {
+    pub async fn get_options_ohlcv(&self, instrument: &String, to_timestamp: Option<i64>, limit: Option<usize>, market: CCOptionsMarket, unit: CCUnit) -> Result<CCDataResponse<Vec<CCOptionsOHLCV>>, Box<dyn Error>> {
         call_api_endpoint::<CCDataResponse<Vec<CCOptionsOHLCV>>>(
             self.api_key()?,
             CCAPIEndpoint::OptionsOHLCV, unit,
@@ -604,7 +604,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_options_markets(&self, market: CCOptionsMarket) -> Result<CCDataResponse<HashMap<String, CCOptionsMarkets>>, Error> {
+    pub async fn get_options_markets(&self, market: CCOptionsMarket) -> Result<CCDataResponse<HashMap<String, CCOptionsMarkets>>, Box<dyn Error>> {
         call_api_endpoint::<CCDataResponse<HashMap<String, CCOptionsMarkets>>>(
             self.api_key()?,
             CCAPIEndpoint::OptionsMarkets, CCUnit::NA,
@@ -649,7 +649,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_der_indices_ohlcv(&self, instrument: &String, to_timestamp: Option<i64>, limit: Option<usize>, market: CCDerIndicesMarket, unit: CCUnit) -> Result<CCDataResponse<Vec<CCDerIndicesOHLCV>>, Error> {
+    pub async fn get_der_indices_ohlcv(&self, instrument: &String, to_timestamp: Option<i64>, limit: Option<usize>, market: CCDerIndicesMarket, unit: CCUnit) -> Result<CCDataResponse<Vec<CCDerIndicesOHLCV>>, Box<dyn Error>> {
         call_api_endpoint::<CCDataResponse<Vec<CCDerIndicesOHLCV>>>(
             self.api_key()?,
             CCAPIEndpoint::DerIndicesOHLCV, unit,
@@ -691,7 +691,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_der_indices_markets(&self, market: CCDerIndicesMarket) -> Result<CCDataResponse<HashMap<String, CCDerIndicesMarkets>>, Error> {
+    pub async fn get_der_indices_markets(&self, market: CCDerIndicesMarket) -> Result<CCDataResponse<HashMap<String, CCDerIndicesMarkets>>, Box<dyn Error>> {
         call_api_endpoint::<CCDataResponse<HashMap<String, CCDerIndicesMarkets>>>(
             self.api_key()?,
             CCAPIEndpoint::DerIndicesMarkets, CCUnit::NA,
@@ -736,7 +736,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_ocdex_ohlcv(&self, instrument: &String, to_timestamp: Option<i64>, limit: Option<usize>, market: CCOCDEXMarket, unit: CCUnit) -> Result<CCDataResponse<Vec<CCOCDEXOHLCV>>, Error> {
+    pub async fn get_ocdex_ohlcv(&self, instrument: &String, to_timestamp: Option<i64>, limit: Option<usize>, market: CCOCDEXMarket, unit: CCUnit) -> Result<CCDataResponse<Vec<CCOCDEXOHLCV>>, Box<dyn Error>> {
         call_api_endpoint::<CCDataResponse<Vec<CCOCDEXOHLCV>>>(
             self.api_key()?,
             CCAPIEndpoint::OCDEXOHLCV, unit,
@@ -778,7 +778,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_ocdex_markets(&self, market: CCOCDEXMarket) -> Result<CCDataResponse<HashMap<String, CCOCDEXMarkets>>, Error> {
+    pub async fn get_ocdex_markets(&self, market: CCOCDEXMarket) -> Result<CCDataResponse<HashMap<String, CCOCDEXMarkets>>, Box<dyn Error>> {
         call_api_endpoint::<CCDataResponse<HashMap<String, CCOCDEXMarkets>>>(
             self.api_key()?,
             CCAPIEndpoint::OCDEXMarkets, CCUnit::NA,
@@ -820,7 +820,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_occore_eth_block(&self, block_number: i64) -> Result<CCDataResponse<CCOCCoreETHBlock>, Error> {
+    pub async fn get_occore_eth_block(&self, block_number: i64) -> Result<CCDataResponse<CCOCCoreETHBlock>, Box<dyn Error>> {
         call_api_endpoint::<CCDataResponse<CCOCCoreETHBlock>>(
             self.api_key()?,
             CCAPIEndpoint::OCCoreETHBlocks, CCUnit::NA,
@@ -859,7 +859,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_occore_assets_by_chain(&self, chain_asset: &String) -> Result<CCDataResponse<CCOCCoreAssetByChain>, Error> {
+    pub async fn get_occore_assets_by_chain(&self, chain_asset: &String) -> Result<CCDataResponse<CCOCCoreAssetByChain>, Box<dyn Error>> {
         call_api_endpoint::<CCDataResponse<CCOCCoreAssetByChain>>(
             self.api_key()?,
             CCAPIEndpoint::OCCoreAssetsByChain, CCUnit::NA,
@@ -903,7 +903,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_occore_asset_by_address(&self, chain_asset: &String, address: &String, quote_asset: &String) -> Result<CCDataResponse<CCOCCoreAssetByAddress>, Error> {
+    pub async fn get_occore_asset_by_address(&self, chain_asset: &String, address: &String, quote_asset: &String) -> Result<CCDataResponse<CCOCCoreAssetByAddress>, Box<dyn Error>> {
         call_api_endpoint::<CCDataResponse<CCOCCoreAssetByAddress>>(
             self.api_key()?,
             CCAPIEndpoint::OCCoreAssetByAddress, CCUnit::NA,
@@ -944,7 +944,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_occore_supply(&self, asset: &String, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CCDataResponse<Vec<CCOCCoreSupply>>, Error> {
+    pub async fn get_occore_supply(&self, asset: &String, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CCDataResponse<Vec<CCOCCoreSupply>>, Box<dyn Error>> {
         call_api_endpoint::<CCDataResponse<Vec<CCOCCoreSupply>>>(
             self.api_key()?,
             CCAPIEndpoint::OCCoreSupply, CCUnit::NA,
@@ -981,7 +981,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_asset_metadata(&self, asset: &String) -> Result<CCDataResponse<CCAssetMetadata>, Error> {
+    pub async fn get_asset_metadata(&self, asset: &String) -> Result<CCDataResponse<CCAssetMetadata>, Box<dyn Error>> {
         call_api_endpoint::<CCDataResponse<CCAssetMetadata>>(
             self.api_key()?,
             CCAPIEndpoint::AssetMetadata, CCUnit::NA,
@@ -1021,7 +1021,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_asset_events(&self, asset: &String, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CCDataResponse<Vec<CCAssetEvent>>, Error> {
+    pub async fn get_asset_events(&self, asset: &String, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CCDataResponse<Vec<CCAssetEvent>>, Box<dyn Error>> {
         call_api_endpoint::<CCDataResponse<Vec<CCAssetEvent>>>(
             self.api_key()?,
             CCAPIEndpoint::AssetEvents, CCUnit::NA,
@@ -1060,7 +1060,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_asset_code_repo(&self, asset: &String, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CCDataResponse<Vec<CCAssetCodeRepoMetrics>>, Error> {
+    pub async fn get_asset_code_repo(&self, asset: &String, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CCDataResponse<Vec<CCAssetCodeRepoMetrics>>, Box<dyn Error>> {
         call_api_endpoint::<CCDataResponse<Vec<CCAssetCodeRepoMetrics>>>(
             self.api_key()?,
             CCAPIEndpoint::AssetCodeRepo, CCUnit::NA,
@@ -1100,7 +1100,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_asset_discord(&self, asset: &String, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CCDataResponse<Vec<CCAssetDiscord>>, Error> {
+    pub async fn get_asset_discord(&self, asset: &String, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CCDataResponse<Vec<CCAssetDiscord>>, Box<dyn Error>> {
         call_api_endpoint::<CCDataResponse<Vec<CCAssetDiscord>>>(
             self.api_key()?,
             CCAPIEndpoint::AssetDiscord, CCUnit::NA,
@@ -1141,7 +1141,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_asset_reddit(&self, asset: &String, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CCDataResponse<Vec<CCAssetReddit>>, Error> {
+    pub async fn get_asset_reddit(&self, asset: &String, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CCDataResponse<Vec<CCAssetReddit>>, Box<dyn Error>> {
         call_api_endpoint::<CCDataResponse<Vec<CCAssetReddit>>>(
             self.api_key()?,
             CCAPIEndpoint::AssetReddit, CCUnit::NA,
@@ -1181,7 +1181,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_asset_telegram(&self, asset: &String, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CCDataResponse<Vec<CCAssetTelegram>>, Error> {
+    pub async fn get_asset_telegram(&self, asset: &String, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CCDataResponse<Vec<CCAssetTelegram>>, Box<dyn Error>> {
         call_api_endpoint::<CCDataResponse<Vec<CCAssetTelegram>>>(
             self.api_key()?,
             CCAPIEndpoint::AssetTelegram, CCUnit::NA,
@@ -1221,7 +1221,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_asset_twitter(&self, asset: &String, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CCDataResponse<Vec<CCAssetTwitter>>, Error> {
+    pub async fn get_asset_twitter(&self, asset: &String, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CCDataResponse<Vec<CCAssetTwitter>>, Box<dyn Error>> {
         call_api_endpoint::<CCDataResponse<Vec<CCAssetTwitter>>>(
             self.api_key()?,
             CCAPIEndpoint::AssetTwitter, CCUnit::NA,
@@ -1270,7 +1270,7 @@ impl CCData {
     /// }
     /// ```
     pub async fn get_news_latest_articles(&self, language: CCNewsLang, source_id: CCNewsSourceID, categories: Option<Vec<String>>,
-                                          exclude_categories: Option<Vec<String>>, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CCDataResponse<Vec<CCNewsLatestArticle>>, Error> {
+                                          exclude_categories: Option<Vec<String>>, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CCDataResponse<Vec<CCNewsLatestArticle>>, Box<dyn Error>> {
         call_api_endpoint::<CCDataResponse<Vec<CCNewsLatestArticle>>>(
             self.api_key()?,
             CCAPIEndpoint::NewsLatestArticles, CCUnit::NA,
@@ -1317,7 +1317,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_news_sources(&self, language: CCNewsLang, source_type: CCNewsSourceType, status: CCNewsStatus) -> Result<CCDataResponse<Vec<CCNewsSource>>, Error> {
+    pub async fn get_news_sources(&self, language: CCNewsLang, source_type: CCNewsSourceType, status: CCNewsStatus) -> Result<CCDataResponse<Vec<CCNewsSource>>, Box<dyn Error>> {
         call_api_endpoint::<CCDataResponse<Vec<CCNewsSource>>>(
             self.api_key()?,
             CCAPIEndpoint::NewsSources, CCUnit::NA,
@@ -1358,7 +1358,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_news_categories(&self, status: CCNewsStatus) -> Result<CCDataResponse<Vec<CCNewsCategory>>, Error> {
+    pub async fn get_news_categories(&self, status: CCNewsStatus) -> Result<CCDataResponse<Vec<CCNewsCategory>>, Box<dyn Error>> {
         call_api_endpoint::<CCDataResponse<Vec<CCNewsCategory>>>(
             self.api_key()?,
             CCAPIEndpoint::NewsCategories, CCUnit::NA,
@@ -1399,7 +1399,7 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_overview_mktcap_ohlcv(&self, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CCDataResponse<Vec<CCOverviewMktCapOHLCV>>, Error> {
+    pub async fn get_overview_mktcap_ohlcv(&self, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CCDataResponse<Vec<CCOverviewMktCapOHLCV>>, Box<dyn Error>> {
         call_api_endpoint::<CCDataResponse<Vec<CCOverviewMktCapOHLCV>>>(
             self.api_key()?,
             CCAPIEndpoint::OverviewMktCapOHLCV, CCUnit::NA,

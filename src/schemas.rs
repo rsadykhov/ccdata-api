@@ -4,7 +4,7 @@ pub mod data_api;
 
 use std::io::Error;
 use serde::Deserialize;
-use crate::utils::some_or_error;
+use crate::utils::other_error;
 
 
 // Helper wrapper to parse empty JSON objects.
@@ -100,7 +100,7 @@ pub struct CCMinWrapper<T> {
 
 impl<T> DataUnwrap<T> for CCMinWrapper<T> {
     fn data_unwrap(self) -> Result<T, Error> {
-        some_or_error(self.data, "No data inside the CCMinWrapper.")
+        self.data.ok_or(other_error("Data Unwrap: No data inside the CCMinWrapper."))
     }
 }
 
@@ -122,7 +122,7 @@ pub struct CCMinResponse<T> {
 
 impl<T> DataUnwrap<T> for CCMinResponse<T> {
     fn data_unwrap(self) -> Result<T, Error> {
-        some_or_error(self.data.into_option(), "No data inside the CCMinResponse.")
+        self.data.into_option().ok_or(other_error("Data Unwrap: No data inside the CCMinResponse."))
     }
 }
 
@@ -163,7 +163,7 @@ pub struct CCDataResponse<T> {
 
 impl<T> DataUnwrap<T> for CCDataResponse<T> {
     fn data_unwrap(self) -> Result<T, Error> {
-        some_or_error(self.data.into_option(), "No data inside the CCDataResponse.")
+        self.data.into_option().ok_or(other_error("Data Unwrap: No data inside the CCDataResponse."))
     }
 }
 

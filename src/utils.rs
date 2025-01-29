@@ -1,21 +1,15 @@
-use std::io::{Error, ErrorKind};
-use reqwest::{Error as RequestError, Response};
+use std::{io, error::Error};
+use reqwest::Response;
 use serde::de::DeserializeOwned;
 use crate::{CCUnit, CCAPIEndpoint};
 use crate::schemas::data_api::spot::CCSpotInstrumentStatus;
 use crate::schemas::data_api::news::{CCNewsLang, CCNewsSourceID, CCNewsSourceType, CCNewsStatus};
 
 
-/// Returns the value inside the Option or an Error with the message.
-///
-/// # Input
-/// - `input`: `Option` that will converted to `Result`
-/// - `message`: Error message if `Option` is `None`
-pub fn some_or_error<T>(input: Option<T>, message: &str) -> Result<T, Error> {
-    match input {
-        Some(v) => Ok(v),
-        None => Err(Error::new(ErrorKind::InvalidData, message))
-    }
+/// # Description
+/// Creates an other standard io error with the custom message.
+pub fn other_error<T: Into<Box<dyn Error + Send + Sync>>>(msg: T) -> io::Error {
+    io::Error::new(io::ErrorKind::Other, msg)
 }
 
 
@@ -137,19 +131,12 @@ impl<'a> Param<'a> {
 }
 
 
-/// Converts reqwest::Error to std::io::Error.
-fn request_err_to_io_err<T>(res: Result<T, RequestError>) -> Result<T, Error> {
-    match res {
-        Ok(r) => Ok(r),
-        Err(e) => Err(Error::new(ErrorKind::Other, e.without_url().to_string()))
-    }
-}
-
-
 /// Make a request to the provided URL, validate the status code of the response, and return deserialized data.
-async fn process_request<T: DeserializeOwned>(url: String) -> Result<T, Error> {
-    let response: Response = request_err_to_io_err(reqwest::get(url).await)?;
-    let response_body: String = request_err_to_io_err(response.text().await)?;
+async fn process_request<T: DeserializeOwned>(url: String) -> Result<T, Box<dyn Error>> {
+    let response: Response = reqwest::get(url).await?;
+    let response_body: String = response.text().await?;
+    // Replace empty object placeholder
+    let response_body: String = response_body.replace("{}", "null");
     let data: T = serde_json::from_str(&response_body)?;
     Ok(data)
 }
@@ -164,7 +151,7 @@ async fn process_request<T: DeserializeOwned>(url: String) -> Result<T, Error> {
 /// - `params`: List of parameters expected by the CCData API endpoint
 /// - `additional_params`: Additional parameters to add to the request
 pub async fn call_api_endpoint<'a, R: DeserializeOwned>(api_key: &String, endpoint: CCAPIEndpoint, unit: CCUnit, params: Vec<Param<'a>>,
-                                                        additional_params: Option<String>) -> Result<R, Error> {
+                                                        additional_params: Option<String>) -> Result<R, Box<dyn Error>> {
     // Set up a URL for the API endpoint
     let mut url: String = endpoint.url(&unit);
     // Add parameters to the URL

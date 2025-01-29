@@ -394,7 +394,7 @@ impl CCAPIEndpoint {
 
     /// Produces URL for a given API endpoint.
     ///
-    /// # Inputs
+    /// # Input
     /// - `unit`: Unit of the interval between successive data points
     pub fn url(&self, unit: &CCUnit) -> String {
         let mut url: String = self.resolve_url();
