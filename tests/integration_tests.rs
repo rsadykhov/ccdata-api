@@ -381,12 +381,13 @@ async fn test_extra() -> () {
     let symbol: String = String::from("BTC");
     // let to_timestamp: Option<i64> = Some(1577145600); // 24 Dec 2019
     // let to_timestamp: Option<i64> = Some(1404342000); // 03 Jul 2014
-    let to_timestamp: Option<i64> = Some(1231545600); // 10 Jan 2009
+    // let to_timestamp: Option<i64> = Some(1231545600); // 10 Jan 2009
+    let to_timestamp: Option<i64> = Some(1231598000);
     let limit: Option<usize> = Some(2000);
     // let data = backend.get_asset_metadata(&symbol).await.unwrap();
     // let data = backend.get_historical_daily(&symbol, to_timestamp, limit).await.unwrap();
     // let data = backend.get_asset_code_repo(&symbol, to_timestamp, limit).await.unwrap();
     // let data = backend.get_occore_supply(&symbol, to_timestamp, limit).await.unwrap();
-    let data = backend.get_spot_ohlcv(&symbol, to_timestamp, limit, CCSpotMarket::KRAKEN, CCUnit::Day).await.unwrap();
+    let data = backend.get_spot_ohlcv(&format!("{}-USD", symbol), to_timestamp, limit, CCSpotMarket::KRAKEN, CCUnit::Day).await.unwrap();
     println!("{:?}", data);
 }

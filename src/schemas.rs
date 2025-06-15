@@ -2,7 +2,44 @@ pub mod min_api;
 pub mod data_api;
 
 
-use serde::Deserialize;
+use serde::{Deserialize, Deserializer};
+
+
+#[derive(Debug, PartialEq)]
+/// Custom response type that may use different types for the same value.
+pub enum StringOrInt {
+    String(String),
+    Int64(i64),
+    UInt64(u64),
+}
+
+impl<'de> Deserialize<'de> for StringOrInt {
+    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        struct Visitor;
+
+        impl<'de> serde::de::Visitor<'de> for Visitor {
+            type Value = StringOrInt;
+
+            fn expecting(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+                write!(f, "a String, i64 or u64")
+            }
+
+            fn visit_string<E: serde::de::Error>(self, s: String) -> Result<Self::Value, E> {
+                Ok(StringOrInt::String(s))
+            }
+
+            fn visit_i64<E: serde::de::Error>(self, v: i64) -> Result<Self::Value, E> {
+                Ok(StringOrInt::Int64(v))
+            }
+
+            fn visit_u64<E: serde::de::Error>(self, v: u64) -> Result<Self::Value, E> {
+                Ok(StringOrInt::UInt64(v))
+            }
+        }
+
+        deserializer.deserialize_any(Visitor)
+    }
+}
 
 
 // Min-API Wrappers
@@ -70,13 +107,16 @@ pub struct CCErrorOtherInfo {
     /// The parameter that is responsible for the error.
     pub param: Option<String>,
     /// The values responsible for the error.
-    pub values: Option<Vec<String>>,
+    pub values: Option<Vec<StringOrInt>>,
+    // Instrument specific information
     /// Status of the instrument.
     pub instrument_status: Option<String>,
     /// First available timestamp.
     pub first: Option<i64>,
     /// Last available timestamp.
     pub last: Option<i64>,
+    /// Earliest bucket timestamp.
+    pub first_bucket: Option<i64>,
 }
 
 #[derive(Deserialize, Debug)]
