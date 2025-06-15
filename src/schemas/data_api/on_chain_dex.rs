@@ -197,5 +197,5 @@ pub struct CCOCDEXMarkets {
     /// The total number of defi liquidity updates this exchange has processed.
     pub total_amm_liquidity_updates_onchain: i64,
     #[serde(rename = "HAS_ORDERBOOK_L2_MINUTE_SNAPSHOTS_ENABLED")]
-    pub has_orderbook_l2_minute_snapshots_enabled: bool,
+    pub has_orderbook_l2_minute_snapshots_enabled: Option<bool>,
 }

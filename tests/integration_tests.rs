@@ -142,8 +142,9 @@ async fn test_get_options_ohlcv() -> () {
     let mut backend: CCData = CCData::new();
     backend.build(&"API_KEY").unwrap();
     let market: CCOptionsMarket = CCOptionsMarket::OKEX;
+    let to_timestamp: Option<i64> = Some(1735084800);
     let limit: usize = 2000;
-    let ohlcv: CCDataResponse<Vec<CCOptionsOHLCV>> = backend.get_options_ohlcv(&String::from("BTC-USD-20241227-15000-P"), None, Some(limit), market, CCUnit::Day).await.unwrap();
+    let ohlcv: CCDataResponse<Vec<CCOptionsOHLCV>> = backend.get_options_ohlcv(&String::from("BTC-USD-20241227-15000-P"), to_timestamp, Some(limit), market, CCUnit::Day).await.unwrap();
     assert!(ohlcv.data.unwrap().len() <= limit);
 }
 
@@ -367,4 +368,25 @@ async fn test_get_overview_mktcap_ohlcv() -> () {
     let limit: usize = 2000;
     let mktcap: CCDataResponse<Vec<CCOverviewMktCapOHLCV>> = backend.get_overview_mktcap_ohlcv(None, Some(limit)).await.unwrap();
     assert_eq!(mktcap.data.unwrap().len(), limit);
+}
+
+
+// Extra test
+
+
+#[tokio::test]
+async fn test_extra() -> () {
+    let mut backend: CCData = CCData::new();
+    backend.build(&"API_KEY").unwrap();
+    let symbol: String = String::from("BTC");
+    // let to_timestamp: Option<i64> = Some(1577145600); // 24 Dec 2019
+    // let to_timestamp: Option<i64> = Some(1404342000); // 03 Jul 2014
+    let to_timestamp: Option<i64> = Some(1231545600); // 10 Jan 2009
+    let limit: Option<usize> = Some(2000);
+    // let data = backend.get_asset_metadata(&symbol).await.unwrap();
+    // let data = backend.get_historical_daily(&symbol, to_timestamp, limit).await.unwrap();
+    // let data = backend.get_asset_code_repo(&symbol, to_timestamp, limit).await.unwrap();
+    // let data = backend.get_occore_supply(&symbol, to_timestamp, limit).await.unwrap();
+    let data = backend.get_spot_ohlcv(&symbol, to_timestamp, limit, CCSpotMarket::KRAKEN, CCUnit::Day).await.unwrap();
+    println!("{:?}", data);
 }

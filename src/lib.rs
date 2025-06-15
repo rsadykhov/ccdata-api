@@ -17,6 +17,10 @@
 //! The REST API functions in the crate will error if the data received does not fit into the pre-defined schemas provided
 //! in the crate. If you encounter any errors, please open an issue on GitHub with the parameters that you have used (e.g., asset symbol,
 //! timestamp, limit, etc.). **Do not provide your API key or any personal data!**
+//! 
+//! # Features
+//! - `debug`: If this feature is enabled, you can set `CCDATA_API_DEBUG` environment variable to `true`, which will print the response body
+//! for every request to the command line.
 //!
 //! # Examples
 //!
@@ -101,6 +105,7 @@ pub use self::schemas::data_api::news::{CCNewsStatus, CCNewsLang, CCNewsSourceID
 pub use self::schemas::data_api::overview::CCOverviewMktCapOHLCV;
 
 
+pub mod error;
 pub mod schemas;
 pub mod utils;
 pub mod backend;

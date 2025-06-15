@@ -71,6 +71,12 @@ pub struct CCErrorOtherInfo {
     pub param: Option<String>,
     /// The values responsible for the error.
     pub values: Option<Vec<String>>,
+    /// Status of the instrument.
+    pub instrument_status: Option<String>,
+    /// First available timestamp.
+    pub first: Option<i64>,
+    /// Last available timestamp.
+    pub last: Option<i64>,
 }
 
 #[derive(Deserialize, Debug)]

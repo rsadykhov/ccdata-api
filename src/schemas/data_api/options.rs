@@ -194,5 +194,5 @@ pub struct CCOptionsMarkets {
     /// The total number of options open interest updates that this exchange has processed.
     pub total_open_interest_updates: i64,
     #[serde(rename = "HAS_ORDERBOOK_L2_MINUTE_SNAPSHOTS_ENABLED")]
-    pub has_orderbook_l2_minute_snapshots_enabled: bool,
+    pub has_orderbook_l2_minute_snapshots_enabled: Option<bool>,
 }
