@@ -1,14 +1,14 @@
-# CCData API Wrapper
+# CoinDesk API Wrapper
 
-`ccdata-api` is a wrapper for CCData REST API endpoints. This crate supports non-exhausitve list of CCData endpoints,
+`ccdata-api` is a wrapper for CoinDesk REST API endpoints (Formerly CCData). This crate supports non-exhausitve list of CoinDesk endpoints,
 you can check what endpoints are supported by checking the variants of the enum `CCAPIEndpoint` - it contains all
 supported endpoint URLs.
 
-For documentation on CCData REST API endpoints visit CCData online documentation:
-- Min-API: https://developers.ccdata.io/documentation/legacy/Price/SingleSymbolPriceEndpoint
-- Data-API: https://developers.ccdata.io/documentation/data-api/introduction
+For documentation on CoinDesk REST API endpoints visit CoinDesk online documentation:
+- API Documentation: https://developers.coindesk.com/documentation/data-api/introduction
+- Legacy API Documentation: https://developers.coindesk.com/documentation/legacy/Price/SingleSymbolPriceEndpoint
 
-**Disclaimer:** This crate is an unofficial CCData REST API wrapper, the maintainers of the crate are independent developers.
+**Disclaimer:** This crate is an unofficial CoinDesk REST API wrapper, the maintainers of the crate are independent developers.
 The developers of the crate do not accept any responsibility or liability for the accuracy, security, or completeness of the code,
 or the information provided within the crate.
 
@@ -17,6 +17,10 @@ or the information provided within the crate.
 The REST API functions in the crate will error if the data received does not fit into the pre-defined schemas provided
 in the crate. If you encounter any errors, please open an issue on GitHub with the parameters that you have used (e.g., asset symbol,
 timestamp, limit, etc.). **Do not provide your API key or any personal data!**
+
+# Deprecated API Endpoints
+
+Some API endpoints have been deprecated by CoinDesk, who strongly recommend migrating to newer alternatives suggested in their API documentation.
 
 # Examples
 
@@ -34,7 +38,7 @@ let mut backend: CCData = CCData::new();
 let api_key: String = String::from("xxxxxxx");
 backend.update_api_key(api_key);
 
-assert_eq!(backend.api_key().unwrap(), &String::from("xxxxxxx"));
+assert_eq!(backend.api_key().unwrap(), "xxxxxxx");
 ```
 
 ## Build Backend Using .env File (Preferred method)
@@ -71,7 +75,7 @@ async fn main() -> () {
     let to_timestamp: Option<i64> = Some(1728860400);
 
     // Make the API call
-    let ohlcv = backend.get_spot_ohlcv(&String::from("BTC-USD"), to_timestamp, Some(limit), market, CCUnit::Day).await.unwrap();
+    let ohlcv = backend.get_spot_ohlcv("BTC-USD", to_timestamp, Some(limit), market, CCUnit::Day).await.unwrap();
     assert_eq!(ohlcv.data.unwrap().len(), limit);
 
 }

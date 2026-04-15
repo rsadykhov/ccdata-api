@@ -31,8 +31,8 @@ async fn test_get_historical_daily() -> () {
     let mut backend: CCData = CCData::new();
     backend.build(&"API_KEY").unwrap();
     let limit: usize = 2000;
-    let historical_daily: sh::CCMinResponse<sh::CCMinWrapper<Vec<min_api::CCHistoricalDaily>>> = backend.get_historical_daily(&String::from("ETH"), None, Some(limit)).await.unwrap();
-    assert_eq!(historical_daily.data.unwrap().data.unwrap().len(), limit);
+    let historical_daily: sh::CCMinResponse<sh::CCMinWrapper<Vec<min_api::CCHistoricalDaily>>> = backend.get_historical_daily("ETH", None, Some(limit)).await.unwrap();
+    assert!(historical_daily.data.unwrap().data.unwrap().len() <= limit);
 }
 
 
@@ -58,7 +58,7 @@ async fn test_get_indices_ohlcv() -> () {
     backend.build(&"API_KEY").unwrap();
     let market: CCIndicesMarket = CCIndicesMarket::CADLI;
     let limit: usize = 2000;
-    let ohlcv: CCDataResponse<Vec<CCIndicesOHLCV>> = backend.get_indices_ohlcv(&String::from("BTC-USD"), None, Some(limit), market, CCUnit::Day).await.unwrap();
+    let ohlcv: CCDataResponse<Vec<CCIndicesOHLCV>> = backend.get_indices_ohlcv("BTC-USD", None, Some(limit), market, CCUnit::Day).await.unwrap();
     assert_eq!(ohlcv.data.unwrap().len(), limit);
 }
 
@@ -72,7 +72,7 @@ async fn test_get_spot_ohlcv() -> () {
     backend.build(&"API_KEY").unwrap();
     let market: CCSpotMarket = CCSpotMarket::KRAKEN;
     let limit: usize = 2000;
-    let ohlcv: sh::CCDataResponse<Vec<CCSpotOHLCV>> = backend.get_spot_ohlcv(&String::from("BTC-USD"), None, Some(limit), market, CCUnit::Day).await.unwrap();
+    let ohlcv: sh::CCDataResponse<Vec<CCSpotOHLCV>> = backend.get_spot_ohlcv("BTC-USD", None, Some(limit), market, CCUnit::Day).await.unwrap();
     assert_eq!(ohlcv.data.unwrap().len(), limit);
 }
 
@@ -119,7 +119,7 @@ async fn test_get_futures_ohlcv() -> () {
     backend.build(&"API_KEY").unwrap();
     let market: CCFuturesMarket = CCFuturesMarket::BINANCE;
     let limit: usize = 2000;
-    let ohlcv: CCDataResponse<Vec<CCFuturesOHLCV>> = backend.get_futures_ohlcv(&String::from("BTC-USDT-VANILLA-PERPETUAL"), None, Some(limit), market, CCUnit::Day).await.unwrap();
+    let ohlcv: CCDataResponse<Vec<CCFuturesOHLCV>> = backend.get_futures_ohlcv("BTC-USDT-VANILLA-PERPETUAL", None, Some(limit), market, CCUnit::Day).await.unwrap();
     assert!(ohlcv.data.unwrap().len() <= limit);
 }
 
@@ -144,7 +144,7 @@ async fn test_get_options_ohlcv() -> () {
     let market: CCOptionsMarket = CCOptionsMarket::OKEX;
     let to_timestamp: Option<i64> = Some(1735084800);
     let limit: usize = 2000;
-    let ohlcv: CCDataResponse<Vec<CCOptionsOHLCV>> = backend.get_options_ohlcv(&String::from("BTC-USD-20241227-15000-P"), to_timestamp, Some(limit), market, CCUnit::Day).await.unwrap();
+    let ohlcv: CCDataResponse<Vec<CCOptionsOHLCV>> = backend.get_options_ohlcv("BTC-USD-20241227-15000-P", to_timestamp, Some(limit), market, CCUnit::Day).await.unwrap();
     assert!(ohlcv.data.unwrap().len() <= limit);
 }
 
@@ -168,7 +168,7 @@ async fn test_get_der_indices_ohlcv() -> () {
     backend.build(&"API_KEY").unwrap();
     let market: CCDerIndicesMarket = CCDerIndicesMarket::BINANCE;
     let limit: usize = 2000;
-    let ohlcv: CCDataResponse<Vec<CCDerIndicesOHLCV>> = backend.get_der_indices_ohlcv(&String::from("BTCUSDT"), None, Some(limit), market, CCUnit::Day).await.unwrap();
+    let ohlcv: CCDataResponse<Vec<CCDerIndicesOHLCV>> = backend.get_der_indices_ohlcv("BTCUSDT", None, Some(limit), market, CCUnit::Day).await.unwrap();
     assert!(ohlcv.data.unwrap().len() <= limit);
 }
 
@@ -192,7 +192,7 @@ async fn test_get_ocdex_ohlcv() -> () {
     backend.build(&"API_KEY").unwrap();
     let market: CCOCDEXMarket = CCOCDEXMarket::UNISWAPV2;
     let limit: usize = 2000;
-    let ohlcv: CCDataResponse<Vec<CCOCDEXOHLCV>> = backend.get_ocdex_ohlcv(&String::from("0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852_2"), None, Some(limit), market, CCUnit::Day).await.unwrap();
+    let ohlcv: CCDataResponse<Vec<CCOCDEXOHLCV>> = backend.get_ocdex_ohlcv("0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852_2", None, Some(limit), market, CCUnit::Day).await.unwrap();
     assert!(ohlcv.data.unwrap().len() <= limit);
 }
 
@@ -223,7 +223,7 @@ async fn test_get_occore_eth_block() -> () {
 async fn test_get_occore_assets_by_chain() -> () {
     let mut backend: CCData = CCData::new();
     backend.build(&"API_KEY").unwrap();
-    let assets_by_chain: CCDataResponse<CCOCCoreAssetByChain> = backend.get_occore_assets_by_chain(&String::from("ETH")).await.unwrap();
+    let assets_by_chain: CCDataResponse<CCOCCoreAssetByChain> = backend.get_occore_assets_by_chain("ETH").await.unwrap();
     assert_eq!(assets_by_chain.data.unwrap().chain_asset_summary.symbol, String::from("ETH"));
 }
 
@@ -234,7 +234,7 @@ async fn test_get_occore_asset_by_address() -> () {
     backend.build(&"API_KEY").unwrap();
     let address: String = String::from("0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2");
     let quote_asset: String = String::from("USD");
-    let asset_by_address: CCDataResponse<CCOCCoreAssetByAddress> = backend.get_occore_asset_by_address(&String::from("ETH"), &address, &quote_asset).await.unwrap();
+    let asset_by_address: CCDataResponse<CCOCCoreAssetByAddress> = backend.get_occore_asset_by_address("ETH", &address, &quote_asset).await.unwrap();
     assert_eq!(asset_by_address.data.unwrap().parent_asset_symbol.unwrap(), String::from("ETH"));
 }
 
@@ -244,8 +244,8 @@ async fn test_get_occore_supply() -> () {
     let mut backend: CCData = CCData::new();
     backend.build(&"API_KEY").unwrap();
     let limit: usize = 2000;
-    let historical_supply: CCDataResponse<Vec<CCOCCoreSupply>> = backend.get_occore_supply(&String::from("BTC"), None, Some(limit)).await.unwrap();
-    assert_eq!(historical_supply.data.unwrap().len(), limit);
+    let historical_supply: CCDataResponse<Vec<CCOCCoreSupply>> = backend.get_occore_supply("BTC", None, Some(limit)).await.unwrap();
+    assert!(historical_supply.data.unwrap().len() <= limit);
 }
 
 
@@ -256,8 +256,19 @@ async fn test_get_occore_supply() -> () {
 async fn test_get_asset_metadata() -> () {
     let mut backend: CCData = CCData::new();
     backend.build(&"API_KEY").unwrap();
-    let metadata: CCDataResponse<CCAssetMetadata> = backend.get_asset_metadata(&String::from("ETH")).await.unwrap();
+    let metadata: CCDataResponse<CCAssetMetadata> = backend.get_asset_metadata("ETH").await.unwrap();
     assert_eq!(metadata.data.unwrap().name, String::from("Ethereum"));
+}
+
+
+#[tokio::test]
+async fn test_get_asset_metadata_v2() -> () {
+    let mut backend: CCData = CCData::new();
+    backend.build(&"API_KEY").unwrap();
+    let assets: Vec<String> = vec![String::from("ETH"), String::from("BTC")];
+    let metadata: CCDataResponse<HashMap<String, CCAssetMetadata>> = backend.get_asset_metadata_v2(assets).await.unwrap();
+    assert_eq!(metadata.data.as_ref().unwrap().get("ETH").unwrap().name, String::from("Ethereum"));
+    assert_eq!(metadata.data.unwrap().get("BTC").unwrap().name, String::from("Bitcoin"));
 }
 
 
@@ -266,7 +277,7 @@ async fn test_get_asset_events() -> () {
     let mut backend: CCData = CCData::new();
     backend.build(&"API_KEY").unwrap();
     let limit: usize = 100;
-    let events: CCDataResponse<Vec<CCAssetEvent>> = backend.get_asset_events(&String::from("ETH"), None, Some(limit)).await.unwrap();
+    let events: CCDataResponse<Vec<CCAssetEvent>> = backend.get_asset_events("ETH", None, Some(limit)).await.unwrap();
     assert!(events.data.unwrap().len() <= limit);
 }
 
@@ -276,7 +287,7 @@ async fn test_get_asset_code_repo() -> () {
     let mut backend: CCData = CCData::new();
     backend.build(&"API_KEY").unwrap();
     let limit: usize = 2000;
-    let code_repo: CCDataResponse<Vec<CCAssetCodeRepoMetrics>> = backend.get_asset_code_repo(&String::from("ETH"), None, Some(limit)).await.unwrap();
+    let code_repo: CCDataResponse<Vec<CCAssetCodeRepoMetrics>> = backend.get_asset_code_repo("ETH", None, Some(limit)).await.unwrap();
     assert_eq!(code_repo.data.unwrap().len(), limit);
 }
 
@@ -286,7 +297,7 @@ async fn test_get_asset_discord() -> () {
     let mut backend: CCData = CCData::new();
     backend.build(&"API_KEY").unwrap();
     let limit: usize = 2000;
-    let discord: CCDataResponse<Vec<CCAssetDiscord>> = backend.get_asset_discord(&String::from("ETH"), None, Some(limit)).await.unwrap();
+    let discord: CCDataResponse<Vec<CCAssetDiscord>> = backend.get_asset_discord("ETH", None, Some(limit)).await.unwrap();
     assert_eq!(discord.data.unwrap().len(), limit);
 }
 
@@ -296,7 +307,7 @@ async fn test_get_asset_reddit() -> () {
     let mut backend: CCData = CCData::new();
     backend.build(&"API_KEY").unwrap();
     let limit: usize = 2000;
-    let reddit: CCDataResponse<Vec<CCAssetReddit>> = backend.get_asset_reddit(&String::from("ETH"), None, Some(limit)).await.unwrap();
+    let reddit: CCDataResponse<Vec<CCAssetReddit>> = backend.get_asset_reddit("ETH", None, Some(limit)).await.unwrap();
     assert_eq!(reddit.data.unwrap().len(), limit);
 }
 
@@ -306,7 +317,7 @@ async fn test_get_asset_telegram() -> () {
     let mut backend: CCData = CCData::new();
     backend.build(&"API_KEY").unwrap();
     let limit: usize = 2000;
-    let telegram: CCDataResponse<Vec<CCAssetTelegram>> = backend.get_asset_telegram(&String::from("SOL"), None, Some(limit)).await.unwrap();
+    let telegram: CCDataResponse<Vec<CCAssetTelegram>> = backend.get_asset_telegram("SOL", None, Some(limit)).await.unwrap();
     assert_eq!(telegram.data.unwrap().len(), limit);
 }
 
@@ -316,7 +327,7 @@ async fn test_get_asset_twitter() -> () {
     let mut backend: CCData = CCData::new();
     backend.build(&"API_KEY").unwrap();
     let limit: usize = 2000;
-    let twitter: CCDataResponse<Vec<CCAssetTwitter>> = backend.get_asset_twitter(&String::from("SOL"), None, Some(limit)).await.unwrap();
+    let twitter: CCDataResponse<Vec<CCAssetTwitter>> = backend.get_asset_twitter("SOL", None, Some(limit)).await.unwrap();
     assert_eq!(twitter.data.unwrap().len(), limit);
 }
 

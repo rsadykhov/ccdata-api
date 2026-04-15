@@ -53,15 +53,17 @@ fn optional_vec_arguments(o: Option<Vec<String>>, api_argument: String) -> Strin
 pub enum Param<'a> {
     // Instrument parameters
     /// Asset symbol
-    Symbol { v: &'a String },
+    Symbol { v: &'a str },
     /// Instrument symbol
-    Instrument { v: &'a String },
+    Instrument { v: &'a str },
     /// List of instrument symbols
     Instruments { v: &'a Vec<String> },
     /// Chain asset symbol
-    ChainAsset { v: &'a String },
+    ChainAsset { v: &'a str },
     /// Asset symbol
-    Asset {v: &'a String},
+    Asset {v: &'a str},
+    /// Assets' symbols
+    Assets {v: Vec<String>},
     // Overlapping parameters
     /// Final timestamp up to which the data will be extracted
     ToTs {v: Option<i64>},
@@ -77,9 +79,9 @@ pub enum Param<'a> {
     /// Block number on the blockchain
     OCCoreBlockNumber { v: i64 },
     /// Blockchain address
-    OCCoreAddress { v: &'a String },
+    OCCoreAddress { v: &'a str },
     /// Asset to quote data in
-    OCCoreQuoteAsset { v: &'a String },
+    OCCoreQuoteAsset { v: &'a str },
     /// Language of the news
     NewsLanguage { v: CCNewsLang },
     /// Source ID of the news stream
@@ -98,36 +100,37 @@ impl<'a> Param<'a> {
     fn add_param_to_url(&self, url: &mut String) -> () {
         let url_param: String = match self {
             // Instrument parameters
-            Param::Symbol { v } => format!("&fsym={}", v),
-            Param::Instrument { v } => format!("&instrument={}", v),
-            Param::Instruments { v } => format!("&instruments={}", vec_to_str(v.to_owned())),
-            Param::ChainAsset { v } => format!("&chain_asset={}", v),
-            Param::Asset { v } => format!("&asset={}", v),
+            Self::Symbol { v } => format!("&fsym={}", v),
+            Self::Instrument { v } => format!("&instrument={}", v),
+            Self::Instruments { v } => format!("&instruments={}", vec_to_str(v.to_owned())),
+            Self::ChainAsset { v } => format!("&chain_asset={}", v),
+            Self::Asset { v } => format!("&asset={}", v),
+            Self::Assets { v } => format!("&assets={}", v.join(",")),
             // Overlapping parameters
-            Param::ToTs { v } => match v {
+            Self::ToTs { v } => match v {
                 Some(v_) => format!("&toTs={}", v_),
                 None => String::from(""),
             },
-            Param::ToTimestamp { v } => match v {
+            Self::ToTimestamp { v } => match v {
                 Some(v_) => format!("&to_ts={}", v_),
                 None => String::from(""),
             },
-            Param::Limit { v } => match v {
+            Self::Limit { v } => match v {
                 Some(v_) => format!("&limit={}", v_),
                 None => String::from("&limit=2000"),
             },
             // Special parameters
-            Param::Market { v } => format!("&market={}", v),
-            Param::InstrumentStatus { v } => format!("&instrument_status={}", v.to_string()),
-            Param::OCCoreBlockNumber { v } => format!("&block_number={}", v),
-            Param::OCCoreAddress { v } => format!("&address={}", v),
-            Param::OCCoreQuoteAsset { v } => format!("&quote_asset={}", v),
-            Param::NewsLanguage { v } => format!("&lang={}", v.to_string()),
-            Param::NewsSourceID { v } => format!("&source_ids={}", v.to_string()),
-            Param::NewsCategories { v } => optional_vec_arguments(v.to_owned(), String::from("&categories=")),
-            Param::NewsExcludeCategories { v } => optional_vec_arguments(v.to_owned(), String::from("&exclude_categories=")),
-            Param::NewsSourceType { v } => format!("&source_type={}", v.to_string()),
-            Param::NewsStatus { v } => format!("&status={}", v.to_string()),
+            Self::Market { v } => format!("&market={}", v),
+            Self::InstrumentStatus { v } => format!("&instrument_status={}", v.to_string()),
+            Self::OCCoreBlockNumber { v } => format!("&block_number={}", v),
+            Self::OCCoreAddress { v } => format!("&address={}", v),
+            Self::OCCoreQuoteAsset { v } => format!("&quote_asset={}", v),
+            Self::NewsLanguage { v } => format!("&lang={}", v.to_string()),
+            Self::NewsSourceID { v } => format!("&source_ids={}", v.to_string()),
+            Self::NewsCategories { v } => optional_vec_arguments(v.to_owned(), String::from("&categories=")),
+            Self::NewsExcludeCategories { v } => optional_vec_arguments(v.to_owned(), String::from("&exclude_categories=")),
+            Self::NewsSourceType { v } => format!("&source_type={}", v.to_string()),
+            Self::NewsStatus { v } => format!("&status={}", v.to_string()),
         };
         url.push_str(&url_param);
     }
@@ -152,13 +155,13 @@ async fn process_request<T: DeserializeOwned>(url: String) -> Result<T, Error> {
 /// Constructs a URL for API request, sends the request, and returns the deserialzied response.
 ///
 /// # Input
-/// - `api_key`: CCData API key
-/// - `endpoint`: Enum that represents the CCData API endpoint for function to send the request to
+/// - `api_key`: CoinDesk API key
+/// - `endpoint`: Enum that represents the CoinDesk API endpoint for function to send the request to
 /// - `unit`: Unit for data to be binned by (e.g., `Day`, `Hour`)
-/// - `params`: List of parameters expected by the CCData API endpoint
+/// - `params`: List of parameters expected by the CoinDesk API endpoint
 /// - `additional_params`: Additional parameters to add to the request
 pub async fn call_api_endpoint<'a, R: DeserializeOwned>(
-    api_key: &String, endpoint: CCAPIEndpoint, unit: CCUnit, params: Vec<Param<'a>>, additional_params: Option<String>) -> Result<R, Error>
+    api_key: &str, endpoint: CCAPIEndpoint, unit: CCUnit, params: Vec<Param<'a>>, additional_params: Option<String>) -> Result<R, Error>
 {
     // Set up a URL for the API endpoint
     let mut url: String = endpoint.url(&unit);

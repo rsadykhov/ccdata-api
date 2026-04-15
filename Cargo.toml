@@ -1,8 +1,8 @@
 [package]
 name = "ccdata-api"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2021"
-description = "Wrapper for CCData REST API endpoints."
+description = "Wrapper for CoinDesk REST API endpoints (Fomerly CCData REST API)."
 license = "MIT OR Apache-2.0"
 homepage = "https://github.com/rsadykhov/ccdata-api"
 repository = "https://github.com/rsadykhov/ccdata-api"
@@ -16,10 +16,10 @@ exclude = [".env", "commands.md", "notes.md"]
 dotenv = "=0.15.0" # MIT
 serde = { version = "1.0", features = ["derive"] } # MIT or Apache 2.0
 serde_json = "1.0" # MIT or Apache 2.0
-reqwest = { version = "0.12.20", features = ["json"] } # MIT or Apache 2.0
+reqwest = { version = "0.13.2", features = ["json"] } # MIT or Apache 2.0
 
 [dev-dependencies]
-tokio = { version = "1.45", features=["macros"] } # MIT
+tokio = { version = "1.52", features=["macros", "rt-multi-thread"] } # MIT
 
 [features]
 # default = ["debug"]

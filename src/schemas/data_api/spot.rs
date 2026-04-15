@@ -399,14 +399,14 @@ pub struct CCInstrumentMapping {
     /// The current mapping information for this instrument.
     pub base: String,
     #[serde(rename = "BASE_ID")]
-    /// Represents the internal CCData ID for the base asset or coin (e.g., 1 for BTC). This ID is unique and immutable,
+    /// Represents the internal CoinDesk ID for the base asset or coin (e.g., 1 for BTC). This ID is unique and immutable,
     /// ensuring consistent identification. Applicable only to instruments with a mapping.
     pub base_id: i32,
     #[serde(rename = "QUOTE")]
     /// The current mapping vs for this instrument.
     pub quote: String,
     #[serde(rename = "QUOTE_ID")]
-    /// Represents the internal CCData ID for the quote asset or counter coin (e.g., 5 for USD). This ID is unique and immutable,
+    /// Represents the internal CoinDesk ID for the quote asset or counter coin (e.g., 5 for USD). This ID is unique and immutable,
     /// ensuring consistent identification. Applicable only to instruments with a mapping.
     pub quote_id: i32,
     #[serde(rename = "TRANSFORM_FUNCTION")]
@@ -452,11 +452,11 @@ pub struct CCSpotOHLCV {
     /// Applicable only to instruments with a mapping.
     pub quote: String,
     #[serde(rename = "BASE_ID")]
-    /// Represents the internal CCData ID for the base asset or coin (e.g., 1 for BTC). This ID is unique and immutable, ensuring consistent identification.
+    /// Represents the internal CoinDesk ID for the base asset or coin (e.g., 1 for BTC). This ID is unique and immutable, ensuring consistent identification.
     /// Applicable only to instruments with a mapping.
     pub base_id: i32,
     #[serde(rename = "QUOTE_ID")]
-    /// Represents the internal CCData ID for the quote asset or counter coin (e.g., 5 for USD). This ID is unique and immutable, ensuring consistent identification.
+    /// Represents the internal CoinDesk ID for the quote asset or counter coin (e.g., 5 for USD). This ID is unique and immutable, ensuring consistent identification.
     /// Applicable only to instruments with a mapping.
     pub quote_id: i32,
     #[serde(rename = "TRANSFORM_FUNCTION")]
@@ -625,7 +625,7 @@ pub struct CCInstrument {
     /// up to 3 weeks and we ship it to blob storage afterwards. The API utilizes multiple replicas of a single shard in a round-robin manner.
     pub histo_shard: String,
     #[serde(rename = "MAPPED_INSTRUMENT")]
-    /// The ccdata mapped instrument ID.
+    /// The CoinDesk mapped instrument ID.
     pub mapped_instrument: String,
     #[serde(rename = "INSTRUMENT_MAPPING")]
     /// The current mapping information for this instrument.

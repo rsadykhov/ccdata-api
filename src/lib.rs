@@ -1,14 +1,14 @@
-//! # CCData API Wrapper
+//! # CoinDesk API Wrapper
 //!
-//! `ccdata-api` is a wrapper for CCData REST API endpoints. This crate supports non-exhausitve list of CCData endpoints,
+//! `ccdata-api` is a wrapper for CoinDesk REST API endpoints (Formerly CCData). This crate supports non-exhausitve list of CoinDesk endpoints,
 //! you can check what endpoints are supported by checking the variants of the enum `CCAPIEndpoint` - it contains all
 //! supported endpoint URLs.
 //!
-//! For documentation on CCData REST API endpoints visit CCData online documentation:
-//! - Min-API: <https://developers.ccdata.io/documentation/legacy/Price/SingleSymbolPriceEndpoint>
-//! - Data-API: <https://developers.ccdata.io/documentation/data-api/introduction>
+//! For documentation on CoinDesk REST API endpoints visit CoinDesk online documentation:
+//! - API Documentation: <https://developers.coindesk.com/documentation/data-api/introduction>
+//! - Legacy API Documentation: <https://developers.coindesk.com/documentation/legacy/Price/SingleSymbolPriceEndpoint>
 //!
-//! **Disclaimer:** This crate is an unofficial CCData REST API wrapper, the maintainers of the crate are independent developers.
+//! **Disclaimer:** This crate is an unofficial CoinDesk REST API wrapper, the maintainers of the crate are independent developers.
 //! The developers of the crate do not accept any responsibility or liability for the accuracy, security, or completeness of the code,
 //! or the information provided within the crate.
 //!
@@ -17,6 +17,10 @@
 //! The REST API functions in the crate will error if the data received does not fit into the pre-defined schemas provided
 //! in the crate. If you encounter any errors, please open an issue on GitHub with the parameters that you have used (e.g., asset symbol,
 //! timestamp, limit, etc.). **Do not provide your API key or any personal data!**
+//! 
+//! # Deprecated API Endpoints
+//! 
+//! Some API endpoints have been deprecated by CoinDesk, who strongly recommend migrating to newer alternatives suggested in their API documentation.
 //! 
 //! # Features
 //! - `debug`: If this feature is enabled, you can set `CCDATA_API_DEBUG` environment variable to `true`, which will print the response body
@@ -38,7 +42,7 @@
 //! let api_key: String = String::from("xxxxxxx");
 //! backend.update_api_key(api_key);
 //!
-//! assert_eq!(backend.api_key().unwrap(), &String::from("xxxxxxx"));
+//! assert_eq!(backend.api_key().unwrap(), "xxxxxxx");
 //! ```
 //!
 //! ## Build Backend Using .env File (Preferred method)
@@ -75,7 +79,7 @@
 //!     let to_timestamp: Option<i64> = Some(1728860400);
 //!
 //!     // Make the API call
-//!     let ohlcv = backend.get_spot_ohlcv(&String::from("BTC-USD"), to_timestamp, Some(limit), market, CCUnit::Day).await.unwrap();
+//!     let ohlcv = backend.get_spot_ohlcv("BTC-USD", to_timestamp, Some(limit), market, CCUnit::Day).await.unwrap();
 //!     assert_eq!(ohlcv.data.unwrap().len(), limit);
 //!
 //! }
@@ -126,19 +130,22 @@ pub enum CCUnit {
 
 /// All supported API endpoints.
 pub enum CCAPIEndpoint {
+    #[deprecated(since="1.0.6", note="Deprecated by CoinDesk")]
     // Min-API
     /// Min-API Endpoint
     ///
-    /// Description: Returns a list of all coins for which CCData currently gets the blockchain data
+    /// Description: Returns a list of all coins for which CoinDesk currently gets the blockchain data
     ///
     /// URL: https://min-api.cryptocompare.com/data/blockchain/list
     AvailableCoinList,
+    #[deprecated(since="1.0.6", note="Deprecated by CoinDesk")]
     /// Min-API Endpoint
     ///
     /// Description: Retrieves the daily aggregated blockchain data for the requested coin
     ///
     /// URL: https://min-api.cryptocompare.com/data/blockchain/histo/day
     HistoricalDaily,
+    #[deprecated(since="1.0.6", note="Deprecated by CoinDesk")]
     /// Min-API Endpoint
     ///
     /// Description: Retrieves the balance distribution for a specified asset over a specified time range at a daily interval
@@ -153,178 +160,190 @@ pub enum CCAPIEndpoint {
     ///
     /// Description: Provides historical candlestick data for various indices
     ///
-    /// URL: https://data-api.ccdata.io/index/cc/v1/historical
+    /// URL: https://data-api.coindesk.com/index/cc/v1/historical
     IndicesOHLCV,
     // Spot
     /// Data-API Endpoint
     ///
     /// Description: Provides candlestick data for specific cryptocurrency instruments across selected exchanges
     ///
-    /// URL: https://data-api.ccdata.io/spot/v1/historical
+    /// URL: https://data-api.coindesk.com/spot/v1/historical
     SpotOHLCV,
     /// Data-API Endpoint
     ///
     /// Description: Delivers vital metadata about financial instruments traded on specified exchanges, focusing solely on non-price related information
     ///
-    /// URL: https://data-api.ccdata.io/spot/v1/latest/instrument/metadata
+    /// URL: https://data-api.coindesk.com/spot/v1/latest/instrument/metadata
     SpotInstrumentMetadata,
+    #[deprecated(since="1.0.6", note="Deprecated by CoinDesk")]
     /// Data-API Endpoint
     ///
     /// Description: Provides comprehensive information about various cryptocurrency spot markets
     ///
-    /// URL: https://data-api.ccdata.io/spot/v1/markets
+    /// URL: https://data-api.coindesk.com/spot/v1/markets
     SpotMarkets,
     /// Data-API Endpoint
     ///
     /// Description: Retrieves a comprehensive dictionary of mapped instruments across one or more spot markets, filtered by a specified state or status
     ///
-    /// URL: https://data-api.ccdata.io/spot/v1/markets/instruments
+    /// URL: https://data-api.coindesk.com/spot/v1/markets/instruments
     SpotMarketsInstruments,
     // Futures
     /// Data-API Endpoint
     ///
     /// Description: Provides aggregated candlestick data for specific futures instruments on designated exchanges
     ///
-    /// URL: https://data-api.ccdata.io/futures/v1/historical
+    /// URL: https://data-api.coindesk.com/futures/v1/historical
     FuturesOHLCV,
+    #[deprecated(since="1.0.6", note="Deprecated by CoinDesk")]
     /// Data-API Endpoint
     ///
     /// Description: Provides comprehensive information about various cryptocurrency futures markets
     ///
-    /// URL: https://data-api.ccdata.io/futures/v1/markets
+    /// URL: https://data-api.coindesk.com/futures/v1/markets
     FuturesMarkets,
     // Options
     /// Data-API Endpoint
     ///
     /// Description: Provides historical OHLCV (open, high, low, close, volume) data for specified options instruments on a chosen exchange
     ///
-    /// URL: https://data-api.ccdata.io/options/v1/historical
+    /// URL: https://data-api.coindesk.com/options/v1/historical
     OptionsOHLCV,
+    #[deprecated(since="1.0.6", note="Deprecated by CoinDesk")]
     /// Data-API Endpoint
     ///
     /// Description: Provides comprehensive information about the various options markets integrated by our platform
     ///
-    /// URL: https://data-api.ccdata.io/options/v1/markets
+    /// URL: https://data-api.coindesk.com/options/v1/markets
     OptionsMarkets,
     // Derivatives Indices
     /// Data-API Endpoint
     ///
     /// Description: Provides historical OHLC (open, high, low, close) data for specified index instruments on a selected market
     ///
-    /// URL: https://data-api.ccdata.io/index/v1/historical
+    /// URL: https://data-api.coindesk.com/index/v1/historical
     DerIndicesOHLCV,
+    #[deprecated(since="1.0.6", note="Deprecated by CoinDesk")]
     /// Data-API Endpoint
     ///
     /// Description: Provides comprehensive information about various derivatives index markets
     ///
-    /// URL: https://data-api.ccdata.io/index/v1/markets
+    /// URL: https://data-api.coindesk.com/index/v1/markets
     DerIndicesMarkets,
     // On-Chain DEX
     /// Data-API Endpoint
     ///
     /// Description: Retrieves aggregated candlestick data for AMM swap transactions
     ///
-    /// URL: https://data-api.ccdata.io/onchain/v1/amm/historical/swap
+    /// URL: https://data-api.coindesk.com/onchain/v1/amm/historical/swap
     OCDEXOHLCV,
+    #[deprecated(since="1.0.6", note="Deprecated by CoinDesk")]
     /// Data-API Endpoint
     ///
     /// Description: Provides comprehensive information about various decentralized exchange (DEX) markets within the blockchain ecosystem
     ///
-    /// URL: https://data-api.ccdata.io/onchain/v1/amm/markets
+    /// URL: https://data-api.coindesk.com/onchain/v1/amm/markets
     OCDEXMarkets,
     // On-Chain Core
     /// Data-API Endpoint
     ///
     /// Description: Delivers exhaustive details on a specific Ethereum block in a meticulously processed format, complete with detailed explanations for each field
     ///
-    /// URL: https://data-api.ccdata.io/onchain/v1/block/2
+    /// URL: https://data-api.coindesk.com/onchain/v1/block/2
     OCCoreETHBlocks,
     /// Data-API Endpoint
     ///
     /// Description: Retrieves a comprehensive summary of chain asset information for a specified blockchain, identified by its chain symbol
     ///
-    /// URL: https://data-api.ccdata.io/onchain/v3/summary/by/chain
+    /// URL: https://data-api.coindesk.com/onchain/v3/summary/by/chain
     OCCoreAssetsByChain,
     /// Data-API Endpoint
     ///
     /// Description: Retrieves comprehensive asset information for a specific asset identified by its smart contract address and associated blockchain asset
     ///
-    /// URL: https://data-api.ccdata.io/onchain/v2/data/by/address
+    /// URL: https://data-api.coindesk.com/onchain/v2/data/by/address
     OCCoreAssetByAddress,
     /// Data-API Endpoint
     ///
-    /// Description: Retrieves comprehensive historical supply data for various digital assets identified by either their CCData asset ID or unique asset symbol
+    /// Description: Retrieves comprehensive historical supply data for various digital assets identified by either their CoinDesk asset ID or unique asset symbol
     ///
-    /// URL: https://data-api.ccdata.io/onchain/v2/historical/supply/days
+    /// URL: https://data-api.coindesk.com/onchain/v2/historical/supply/days
     OCCoreSupply,
+    #[deprecated(since="1.0.6", note="Deprecated by CoinDesk")]
     // Asset
     /// Data-API Endpoint
     ///
-    /// Description:  Returns an object that provides detailed and comprehensive information about multiple cryptocurrency assets in response to a request
+    /// Description: Returns an object that provides detailed and comprehensive information about multiple cryptocurrency assets in response to a request
     ///
-    /// URL: https://data-api.ccdata.io/asset/v1/metadata
+    /// URL: https://data-api.coindesk.com/asset/v1/metadata
     AssetMetadata,
+    /// Data-API Endpoint
+    /// 
+    /// Descriptions: Returns an object that provides detailed and comprehensive information about multiple cryptocurrency assets in response to a request
+    /// 
+    /// URL: https://data-api.coindesk.com/asset/v2/metadata
+    AssetMetadataV2,
     /// Data-API Endpoint
     ///
     /// Description: Retrieves an array of significant events related to digital assets, such as security incidents, rebrandings, blockchain forks, and other impactful developments
     ///
-    /// URL: https://data-api.ccdata.io/asset/v1/events
+    /// URL: https://data-api.coindesk.com/asset/v1/events
     AssetEvents,
     /// Data-API Endpoint
     ///
     /// Description: Provides an in-depth, daily snapshot of a digital asset's code repositories
     ///
-    /// URL: https://data-api.ccdata.io/asset/v1/historical/code-repository/days
+    /// URL: https://data-api.coindesk.com/asset/v1/historical/code-repository/days
     AssetCodeRepo,
     /// Data-API Endpoint
     ///
     /// Description: Aggregates detailed daily metrics from all Discord servers related to a specific digital asset, offering a multifaceted view into community engagement and the asset's standing within Discord communities
     ///
-    /// URL: https://data-api.ccdata.io/asset/v1/historical/discord/days
+    /// URL: https://data-api.coindesk.com/asset/v1/historical/discord/days
     AssetDiscord,
     /// Data-API Endpoint
     ///
     /// Description: Aggregates key performance indicators from all the subreddits related to a specific digital asset, providing a comprehensive understanding of the asset's footprint on Reddit
     ///
-    /// URL: https://data-api.ccdata.io/asset/v1/historical/reddit/days
+    /// URL: https://data-api.coindesk.com/asset/v1/historical/reddit/days
     AssetReddit,
     /// Data-API Endpoint
     ///
     /// Description: Collates essential data points across all Telegram groups affiliated with a particular cryptocurrency asset
     ///
-    /// URL: https://data-api.ccdata.io/asset/v1/historical/telegram/days
+    /// URL: https://data-api.coindesk.com/asset/v1/historical/telegram/days
     AssetTelegram,
     /// Data-API Endpoint
     ///
     /// Description: Aggregates essential metrics from all X (Twitter) accounts associated with a specific cryptocurrency asset
     ///
-    /// URL: https://data-api.ccdata.io/asset/v1/historical/twitter/days
+    /// URL: https://data-api.coindesk.com/asset/v1/historical/twitter/days
     AssetTwitter,
     // News
     /// Data-API Endpoint
     ///
     /// Description: Serves as the pulse of the crypto news landscape, providing users with instant access to the most recent articles across the industry
     ///
-    /// URL: https://data-api.ccdata.io/news/v1/article/list
+    /// URL: https://data-api.coindesk.com/news/v1/article/list
     NewsLatestArticles,
     /// Data-API Endpoint
     ///
-    /// Description: Offers a comprehensive listing of all news sources available through CCData API
+    /// Description: Offers a comprehensive listing of all news sources available through CoinDesk API
     ///
-    /// URL: https://data-api.ccdata.io/news/v1/source/list
+    /// URL: https://data-api.coindesk.com/news/v1/source/list
     NewsSources,
     /// Data-API Endpoint
     ///
-    /// Description: Provide a straightforward listing of all news categories available through CCData API
+    /// Description: Provide a straightforward listing of all news categories available through CoinDesk API
     ///
-    /// URL: https://data-api.ccdata.io/news/v1/category/list
+    /// URL: https://data-api.coindesk.com/news/v1/category/list
     NewsCategories,
     // Overview
     /// Data-API Endpoint
     ///
     /// Description: Presents a thorough historical daily overview of market capitalisation for digital assets that meet the volume and listing criteria
     ///
-    /// URL: https://data-api.ccdata.io/overview/v1/historical/marketcap/all/assets/days
+    /// URL: https://data-api.coindesk.com/overview/v1/historical/marketcap/all/assets/days
     OverviewMktCapOHLCV,
 }
 
@@ -332,55 +351,56 @@ impl CCAPIEndpoint {
     fn resolve_url(&self) -> String {
         match self {
             // Min-API
-            CCAPIEndpoint::AvailableCoinList => String::from("https://min-api.cryptocompare.com/data/blockchain/list"),
-            CCAPIEndpoint::HistoricalDaily => String::from("https://min-api.cryptocompare.com/data/blockchain/histo/day"),
-            CCAPIEndpoint::BalanceDistribution => String::from("https://min-api.cryptocompare.com/data/blockchain/balancedistribution/histo/day"),
+            Self::AvailableCoinList => String::from("https://min-api.cryptocompare.com/data/blockchain/list"),
+            Self::HistoricalDaily => String::from("https://min-api.cryptocompare.com/data/blockchain/histo/day"),
+            Self::BalanceDistribution => String::from("https://min-api.cryptocompare.com/data/blockchain/balancedistribution/histo/day"),
             // Data-API
             // Indices & Reference Rates
-            CCAPIEndpoint::IndicesOHLCV => String::from("https://data-api.ccdata.io/index/cc/v1/historical"),
+            Self::IndicesOHLCV => String::from("https://data-api.coindesk.com/index/cc/v1/historical"),
             // Spot
-            CCAPIEndpoint::SpotOHLCV => String::from("https://data-api.ccdata.io/spot/v1/historical"),
-            CCAPIEndpoint::SpotInstrumentMetadata => String::from("https://data-api.ccdata.io/spot/v1/latest/instrument/metadata"),
-            CCAPIEndpoint::SpotMarkets => String::from("https://data-api.ccdata.io/spot/v1/markets"),
-            CCAPIEndpoint::SpotMarketsInstruments => String::from("https://data-api.ccdata.io/spot/v1/markets/instruments"),
+            Self::SpotOHLCV => String::from("https://data-api.coindesk.com/spot/v1/historical"),
+            Self::SpotInstrumentMetadata => String::from("https://data-api.coindesk.com/spot/v1/latest/instrument/metadata"),
+            Self::SpotMarkets => String::from("https://data-api.coindesk.com/spot/v1/markets"),
+            Self::SpotMarketsInstruments => String::from("https://data-api.coindesk.com/spot/v1/markets/instruments"),
             // Futures
-            CCAPIEndpoint::FuturesOHLCV => String::from("https://data-api.ccdata.io/futures/v1/historical"),
-            CCAPIEndpoint::FuturesMarkets => String::from("https://data-api.ccdata.io/futures/v1/markets"),
+            Self::FuturesOHLCV => String::from("https://data-api.coindesk.com/futures/v1/historical"),
+            Self::FuturesMarkets => String::from("https://data-api.coindesk.com/futures/v1/markets"),
             // Options
-            CCAPIEndpoint::OptionsOHLCV => String::from("https://data-api.ccdata.io/options/v1/historical"),
-            CCAPIEndpoint::OptionsMarkets => String::from("https://data-api.ccdata.io/options/v1/markets"),
+            Self::OptionsOHLCV => String::from("https://data-api.coindesk.com/options/v1/historical"),
+            Self::OptionsMarkets => String::from("https://data-api.coindesk.com/options/v1/markets"),
             // Derivatives Indices
-            CCAPIEndpoint::DerIndicesOHLCV => String::from("https://data-api.ccdata.io/index/v1/historical"),
-            CCAPIEndpoint::DerIndicesMarkets => String::from("https://data-api.ccdata.io/index/v1/markets"),
+            Self::DerIndicesOHLCV => String::from("https://data-api.coindesk.com/index/v1/historical"),
+            Self::DerIndicesMarkets => String::from("https://data-api.coindesk.com/index/v1/markets"),
             // On-Chain DEX
-            CCAPIEndpoint::OCDEXOHLCV => String::from("https://data-api.ccdata.io/onchain/v1/amm/historical/swap"),
-            CCAPIEndpoint::OCDEXMarkets => String::from("https://data-api.ccdata.io/onchain/v1/amm/markets"),
+            Self::OCDEXOHLCV => String::from("https://data-api.coindesk.com/onchain/v1/amm/historical/swap"),
+            Self::OCDEXMarkets => String::from("https://data-api.coindesk.com/onchain/v1/amm/markets"),
             // On-Chain Core
-            CCAPIEndpoint::OCCoreETHBlocks => String::from("https://data-api.ccdata.io/onchain/v1/block/2"),
-            CCAPIEndpoint::OCCoreAssetsByChain => String::from("https://data-api.ccdata.io/onchain/v3/summary/by/chain"),
-            CCAPIEndpoint::OCCoreAssetByAddress => String::from("https://data-api.ccdata.io/onchain/v2/data/by/address"),
-            CCAPIEndpoint::OCCoreSupply => String::from("https://data-api.ccdata.io/onchain/v2/historical/supply/days"),
+            Self::OCCoreETHBlocks => String::from("https://data-api.coindesk.com/onchain/v1/block/2"),
+            Self::OCCoreAssetsByChain => String::from("https://data-api.coindesk.com/onchain/v3/summary/by/chain"),
+            Self::OCCoreAssetByAddress => String::from("https://data-api.coindesk.com/onchain/v2/data/by/address"),
+            Self::OCCoreSupply => String::from("https://data-api.coindesk.com/onchain/v2/historical/supply/days"),
             // Asset
-            CCAPIEndpoint::AssetMetadata => String::from("https://data-api.ccdata.io/asset/v1/metadata"),
-            CCAPIEndpoint::AssetEvents => String::from("https://data-api.ccdata.io/asset/v1/events"),
-            CCAPIEndpoint::AssetCodeRepo => String::from("https://data-api.ccdata.io/asset/v1/historical/code-repository/days"),
-            CCAPIEndpoint::AssetDiscord => String::from("https://data-api.ccdata.io/asset/v1/historical/discord/days"),
-            CCAPIEndpoint::AssetReddit => String::from("https://data-api.ccdata.io/asset/v1/historical/reddit/days"),
-            CCAPIEndpoint::AssetTelegram => String::from("https://data-api.ccdata.io/asset/v1/historical/telegram/days"),
-            CCAPIEndpoint::AssetTwitter => String::from("https://data-api.ccdata.io/asset/v1/historical/twitter/days"),
+            Self::AssetMetadata => String::from("https://data-api.coindesk.com/asset/v1/metadata"),
+            Self::AssetMetadataV2 => String::from("https://data-api.coindesk.com/asset/v2/metadata"),
+            Self::AssetEvents => String::from("https://data-api.coindesk.com/asset/v1/events"),
+            Self::AssetCodeRepo => String::from("https://data-api.coindesk.com/asset/v1/historical/code-repository/days"),
+            Self::AssetDiscord => String::from("https://data-api.coindesk.com/asset/v1/historical/discord/days"),
+            Self::AssetReddit => String::from("https://data-api.coindesk.com/asset/v1/historical/reddit/days"),
+            Self::AssetTelegram => String::from("https://data-api.coindesk.com/asset/v1/historical/telegram/days"),
+            Self::AssetTwitter => String::from("https://data-api.coindesk.com/asset/v1/historical/twitter/days"),
             // News
-            CCAPIEndpoint::NewsLatestArticles => String::from("https://data-api.ccdata.io/news/v1/article/list"),
-            CCAPIEndpoint::NewsSources => String::from("https://data-api.ccdata.io/news/v1/source/list"),
-            CCAPIEndpoint::NewsCategories => String::from("https://data-api.ccdata.io/news/v1/category/list"),
+            Self::NewsLatestArticles => String::from("https://data-api.coindesk.com/news/v1/article/list"),
+            Self::NewsSources => String::from("https://data-api.coindesk.com/news/v1/source/list"),
+            Self::NewsCategories => String::from("https://data-api.coindesk.com/news/v1/category/list"),
             // Overview
-            CCAPIEndpoint::OverviewMktCapOHLCV => String::from("https://data-api.ccdata.io/overview/v1/historical/marketcap/all/assets/days"),
+            Self::OverviewMktCapOHLCV => String::from("https://data-api.coindesk.com/overview/v1/historical/marketcap/all/assets/days"),
         }
     }
 
     fn add_unit_to_url(&self, url: &mut String, unit: &CCUnit) -> () {
         match self {
-            CCAPIEndpoint::IndicesOHLCV | CCAPIEndpoint::SpotOHLCV | CCAPIEndpoint::FuturesOHLCV |
-            CCAPIEndpoint::OptionsOHLCV | CCAPIEndpoint::DerIndicesOHLCV | CCAPIEndpoint::OCDEXOHLCV => {
+            Self::IndicesOHLCV | Self::SpotOHLCV | Self::FuturesOHLCV |
+            Self::OptionsOHLCV | Self::DerIndicesOHLCV | Self::OCDEXOHLCV => {
                 match unit {
                     CCUnit::Day | CCUnit::NA => url.push_str(&"/days"),
                     CCUnit::Hour => url.push_str(&"/hours"),
@@ -411,6 +431,6 @@ mod tests {
         use crate::{CCUnit, CCAPIEndpoint};
         let unit: CCUnit = CCUnit::Hour;
         let api_endpoint: CCAPIEndpoint = CCAPIEndpoint::IndicesOHLCV;
-        assert_eq!(api_endpoint.url(&unit), String::from("https://data-api.ccdata.io/index/cc/v1/historical/hours"));
+        assert_eq!(api_endpoint.url(&unit), String::from("https://data-api.coindesk.com/index/cc/v1/historical/hours"));
     }
 }

@@ -68,11 +68,11 @@ pub struct CCOCDEXOHLCV {
     /// Applicable only to instruments with a mapping.
     pub quote: String,
     #[serde(rename = "BASE_ID")]
-    /// Represents the internal CCData ID for the base asset or coin (e.g., 1 for BTC). This ID is unique and immutable, ensuring consistent identification.
+    /// Represents the internal CoinDesk ID for the base asset or coin (e.g., 1 for BTC). This ID is unique and immutable, ensuring consistent identification.
     /// Applicable only to instruments with a mapping.
     pub base_id: i32,
     #[serde(rename = "QUOTE_ID")]
-    /// Represents the internal CCData ID for the quote asset or counter coin (e.g., 5 for USD). This ID is unique and immutable, ensuring consistent identification.
+    /// Represents the internal CoinDesk ID for the quote asset or counter coin (e.g., 5 for USD). This ID is unique and immutable, ensuring consistent identification.
     /// Applicable only to instruments with a mapping.
     pub quote_id: i32,
     #[serde(rename = "TRANSFORM_FUNCTION")]

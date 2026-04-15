@@ -113,7 +113,7 @@ pub struct CCDerIndicesOHLCV {
     /// The mapped index currency. Only available on instruments that have mapping.
     pub currency: String,
     #[serde(rename = "CURRENCY_ID")]
-    /// Represents the internal CCData ID for the mapped index currency, e.g. 1. This ID is unique and immutable, ensuring consistent identification.
+    /// Represents the internal CoinDesk ID for the mapped index currency, e.g. 1. This ID is unique and immutable, ensuring consistent identification.
     // Applicable only to instruments with a mapping.
     pub currency_id: i32,
     #[serde(rename = "TRANSFORM_FUNCTION")]

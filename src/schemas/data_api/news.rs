@@ -359,7 +359,7 @@ pub struct CCNewsSource {
     pub name: String,
     #[serde(rename = "IMAGE_URL")]
     /// The image url for the article source.
-    pub image_url: String,
+    pub image_url: Option<String>,
     #[serde(rename = "URL")]
     /// The URL of the news source.
     pub url: String,
@@ -388,7 +388,7 @@ pub struct CCNewsSource {
     pub created_on: i64,
     #[serde(rename = "UPDATED_ON")]
     /// Article Source internal last updated unix ts in our system.
-    pub updated_on: i64,
+    pub updated_on: Option<i64>,
 }
 
 

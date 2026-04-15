@@ -91,19 +91,19 @@ pub struct CCFuturesOHLCV {
     /// QUANTO (SETTLEMENT_CURRENCY != INDEX_UNDERLYING or QUOTE_CURRENCY).
     pub denomination_type: String,
     #[serde(rename = "INDEX_UNDERLYING_ID")]
-    /// Represents the internal CCData ID for the index underlying asset (e.g., 1). This ID is unique and immutable,
+    /// Represents the internal CoinDesk ID for the index underlying asset (e.g., 1). This ID is unique and immutable,
     /// ensuring consistent identification. Applicable only to instruments with a mapping.
     pub index_underlying_id: i32,
     #[serde(rename = "QUOTE_CURRENCY_ID")]
-    /// Represents the internal CCData ID for the asset quote / counter symbol / coin (e.g. 5). This ID is unique and immutable,
+    /// Represents the internal CoinDesk ID for the asset quote / counter symbol / coin (e.g. 5). This ID is unique and immutable,
     /// ensuring consistent identification. Applicable only to instruments with a mapping.
     pub quote_currency_id: i32,
     #[serde(rename = "SETTLEMENT_CURRENCY_ID")]
-    /// Represents the internal CCData ID for the currency that the contract is settled in (e.g. 5). This ID is unique and immutable,
+    /// Represents the internal CoinDesk ID for the currency that the contract is settled in (e.g. 5). This ID is unique and immutable,
     /// ensuring consistent identification. Applicable only to instruments with a mapping.
     pub settlement_currency_id: i32,
     #[serde(rename = "CONTRACT_CURRENCY_ID")]
-    /// Represents the internal CCData ID for the currency that the contract size is denominated in (e.g. 5). This ID is unique and immutable,
+    /// Represents the internal CoinDesk ID for the currency that the contract size is denominated in (e.g. 5). This ID is unique and immutable,
     /// ensuring consistent identification. Applicable only to instruments with a mapping.
     pub contract_currency_id: i32,
     #[serde(rename = "TRANSFORM_FUNCTION")]

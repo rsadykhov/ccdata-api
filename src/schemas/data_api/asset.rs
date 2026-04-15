@@ -153,6 +153,26 @@ pub struct CCAssetMetadata {
     #[serde(rename = "LOCKED_ADDRESSES")]
     /// The list of addresses that are considered locked addresses for this asset.
     pub locked_addresses: Option<Vec<CCSpecialAddress>>,
+    #[serde(rename = "ASSET_STATUS")]
+    /// The current operational status of the asset and its underlying project
+    pub asset_status: Option<String>,
+    #[serde(rename = "ASSET_SYMBOL_GLYPH")]
+    /// The Asset Symbol Glyph represents the visual or typographic mark associated with an asset, such as "$" for USD or "₿" for Bitcoin.
+    /// It is distinct from the asset symbol (e.g., USD, BTC) and provides a recognizable representation used in financial contexts,
+    /// UIs, and documentation.
+    pub asset_symbol_glyph: Option<String>,
+    #[serde(rename = "IS_EXCLUDED_FROM_PRICE_TOPLIST")]
+    /// Indicates whether the asset should be excluded from the overall and asset type price toplist rankings.
+    /// But this will still be included in the industry ones.
+    pub is_excluded_from_price_toplist: Option<bool>,
+    #[serde(rename = "IS_EXCLUDED_FROM_VOLUME_TOPLIST")]
+    /// Indicates whether the asset should be excluded from the overall and asset type volume toplist rankings
+    /// But this will still be included in the industry ones.
+    pub is_excluded_from_volume_toplist: Option<bool>,
+    #[serde(rename = "IS_EXCLUDED_FROM_MKT_CAP_TOPLIST")]
+    /// Indicates whether the asset should be excluded from the overall and asset type market capitalization toplist rankings.
+    /// But this will still be included in the industry ones.
+    pub is_excluded_from_mkt_cap_totlist: Option<bool>,
     #[serde(rename = "ASSET_INDUSTRIES")]
     /// The asset industries that asset operates in.
     pub asset_industries: Option<Vec<CCAssetIndustry>>,
@@ -423,7 +443,7 @@ pub struct CCAssetReddit {
     pub total_subscribers: i32,
     #[serde(rename = "TOTAL_ACTIVE_USERS")]
     /// The number of currently active users in the subreddit.
-    pub total_active_users: i32,
+    pub total_active_users: Option<i32>,
     #[serde(rename = "TOTAL_AVERAGE_POSTS_PER_DAY")]
     /// The average number of posts per day in the subreddit.
     pub total_average_posts_per_day: f64,
