@@ -1,9 +1,9 @@
-use serde::Deserialize;
-use crate::schemas::data_api::{CCPreviousAssetSymbol, CCAssetAlternativeId, CCAssetIndustry, CCSpecialAddress};
+use serde::{Serialize, Deserialize};
+use crate::schemas::data_api::{PreviousAssetSymbol, AssetAlternativeId, AssetIndustry, SpecialAddress};
 
 
-#[derive(Deserialize, Debug)]
-pub struct CCOCCoreSupportedPlatforms {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct OCCoreSupportedPlatforms {
     #[serde(rename = "BLOCKCHAIN")]
     /// This is linked to the asset representing a specific chain.
     pub blockchain: Option<String>,
@@ -35,8 +35,8 @@ pub struct CCOCCoreSupportedPlatforms {
 // On-Chain Core: ETH Blocks
 
 
-#[derive(Deserialize, Debug)]
-pub struct CCOCCoreETHTrace {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct OCCoreETHTrace {
     #[serde(rename = "TYPE")]
     /// Type of the message.
     pub type_: String,
@@ -115,8 +115,8 @@ pub struct CCOCCoreETHTrace {
     pub status: Option<String>,
 }
 
-#[derive(Deserialize, Debug)]
-pub struct CCOCCoreETHMetadata {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct OCCoreETHMetadata {
     #[serde(rename = "TYPE")]
     /// Type of the message.
     pub type_: String,
@@ -209,9 +209,9 @@ pub struct CCOCCoreETHMetadata {
     pub withdrawals_root: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 /// This causes a transaction to warm (i.e. pre-cache) another addresses state and the specified storage keys, Available on EIP-2930 transactions.
-pub struct CCOCCoreETHTransactionAccessList {
+pub struct OCCoreETHTransactionAccessList {
     #[serde(rename = "TYPE")]
     /// Type of the message.
     pub type_: Option<String>,
@@ -225,9 +225,9 @@ pub struct CCOCCoreETHTransactionAccessList {
     pub storage_keys: Option<Vec<String>>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 /// The current transaction blobs, null when there are no blobs attached to the transaction.
-pub struct CCOCCoreETHTransactionBlob {
+pub struct OCCoreETHTransactionBlob {
     #[serde(rename = "TYPE")]
     pub type_: Option<String>,
     #[serde(rename = "INDEX")]
@@ -246,9 +246,9 @@ pub struct CCOCCoreETHTransactionBlob {
     pub data: Option<String>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 /// The chronological records of all activities such as transaction executions, contract interactions, errors, and changes that occur within a blockchain network.
-pub struct CCOCCoreETHTransactionLog {
+pub struct OCCoreETHTransactionLog {
     #[serde(rename = "TYPE")]
     /// Type of the message.
     pub type_: Option<String>,
@@ -276,8 +276,8 @@ pub struct CCOCCoreETHTransactionLog {
     pub removed: Option<bool>,
 }
 
-#[derive(Deserialize, Debug)]
-pub struct CCOCCoreETHTransaction {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct OCCoreETHTransaction {
     #[serde(rename = "TYPE")]
     /// Type of the message.
     pub type_: String,
@@ -363,10 +363,10 @@ pub struct CCOCCoreETHTransaction {
     pub receipt_effective_gas_price: Option<String>,
     #[serde(rename = "ACCESS_LIST")]
     /// This causes a transaction to warm (i.e. pre-cache) another addresses state and the specified storage keys, Available on EIP-2930 transactions.
-    pub access_list: Option<Vec<CCOCCoreETHTransactionAccessList>>,
+    pub access_list: Option<Vec<OCCoreETHTransactionAccessList>>,
     #[serde(rename = "BLOBS")]
     /// The current transaction blobs, null when there are no blobs attached to the transaction.
-    pub blobs: Option<Vec<CCOCCoreETHTransactionBlob>>,
+    pub blobs: Option<Vec<OCCoreETHTransactionBlob>>,
     #[serde(rename = "ECDSA_V")]
     /// This is part of ECDSA (Elliptic Curve Digital Signature Algorithm) signature.
     /// This value helps to recover which public key was used to sign the transaction. Calculated as (CHAIN_ID * 2 + 35) or (CHAIN_ID * 2 + 36).
@@ -382,11 +382,11 @@ pub struct CCOCCoreETHTransaction {
     pub y_parity: Option<String>,
     #[serde(rename = "TRACES")]
     /// The detailed records of the steps and interactions that occured during the execution of this transaction.
-    pub traces: Option<Vec<CCOCCoreETHTrace>>,
+    pub traces: Option<Vec<OCCoreETHTrace>>,
     #[serde(rename = "LOGS")]
     /// The chronological records of all activities such as transaction executions, contract interactions,
     /// errors, and changes that occur within a blockchain network.
-    pub logs: Option<Vec<CCOCCoreETHTransactionLog>>,
+    pub logs: Option<Vec<OCCoreETHTransactionLog>>,
     #[serde(rename = "HEX")]
     /// The raw hexadecimal representation of the entire transaction data.
     pub hex: Option<String>,
@@ -397,15 +397,15 @@ pub struct CCOCCoreETHTransaction {
     pub mint: Option<i32>,
 }
 
-#[derive(Deserialize, Debug)]
-pub struct CCOCCoreETHUncle {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct OCCoreETHUncle {
     #[serde(rename = "TYPE")]
     /// Type of the message.
     pub type_: String,
 }
 
-#[derive(Deserialize, Debug)]
-pub struct CCOCCoreETHWithdrawal {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct OCCoreETHWithdrawal {
     #[serde(rename = "TYPE")]
     /// Type of the message.
     pub type_: String,
@@ -433,8 +433,8 @@ pub struct CCOCCoreETHWithdrawal {
 }
 
 /// ON-Chain Core: ETH Blocks
-#[derive(Deserialize, Debug)]
-pub struct CCOCCoreETHBlock {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct OCCoreETHBlock {
     #[serde(rename = "TYPE")]
     /// Type of the message.
     pub type_: String,
@@ -464,27 +464,27 @@ pub struct CCOCCoreETHBlock {
     pub received_timestamp: i64,
     #[serde(rename = "METADATA")]
     /// The current block full metadata.
-    pub metadata: CCOCCoreETHMetadata,
+    pub metadata: OCCoreETHMetadata,
     #[serde(rename = "TRANSACTIONS")]
     /// The current block transactions.
-    pub transactions: Option<Vec<CCOCCoreETHTransaction>>,
+    pub transactions: Option<Vec<OCCoreETHTransaction>>,
     #[serde(rename = "ORPHAN_TRACES")]
     /// Block traces not linked to a transaction.
-    pub orphan_traces: Option<Vec<CCOCCoreETHTrace>>,
+    pub orphan_traces: Option<Vec<OCCoreETHTrace>>,
     #[serde(rename = "UNCLES")]
     /// The current block uncles.
-    pub uncles: Option<Vec<CCOCCoreETHUncle>>,
+    pub uncles: Option<Vec<OCCoreETHUncle>>,
     #[serde(rename = "WITHDRAWALS")]
     /// The current block withdrawal.
-    pub withdrawals: Option<Vec<CCOCCoreETHWithdrawal>>,
+    pub withdrawals: Option<Vec<OCCoreETHWithdrawal>>,
 }
 
 
 // On-Chain Core: Assets Summary By Chain
 
 
-#[derive(Deserialize, Debug)]
-pub struct CCChainAssetSummary {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct ChainAssetSummary {
     #[serde(rename = "TYPE")]
     /// Type of the message.
     pub type_: String,
@@ -509,8 +509,8 @@ pub struct CCChainAssetSummary {
     pub launch_date: Option<i64>,
 }
 
-#[derive(Deserialize, Debug)]
-pub struct CCSupportedAsset {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct SupportedAsset {
     #[serde(rename = "TYPE")]
     /// Type of the message.
     pub type_: String,
@@ -534,26 +534,26 @@ pub struct CCSupportedAsset {
     /// a blockchain, the launch date is reset to the creation of the first block when the blockchain is launched for the token.
     pub launch_date: Option<i64>,
     #[serde(rename = "FILTERED_SUPPORTED_PLATFORMS")]
-    pub filtered_supported_platforms: Option<Vec<CCOCCoreSupportedPlatforms>>,
+    pub filtered_supported_platforms: Option<Vec<OCCoreSupportedPlatforms>>,
 }
 
 /// On-Chain Core: Assets Summary By Chain
-#[derive(Deserialize, Debug)]
-pub struct CCOCCoreAssetByChain {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct OCCoreAssetByChain {
     #[serde(rename = "CHAIN_ASSET_SUMMARY")]
     /// The statistics of the current page.
-    pub chain_asset_summary: CCChainAssetSummary,
+    pub chain_asset_summary: ChainAssetSummary,
     #[serde(rename = "ASSETS_SUPPORTED")]
     /// The list of summary asset data.
-    pub assets_supported: Vec<CCSupportedAsset>,
+    pub assets_supported: Vec<SupportedAsset>,
 }
 
 
 // On-Chain Core: Asset by Address
 
 
-#[derive(Deserialize, Debug)]
-pub struct CCOCCoreSecurityMetric {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct OCCoreSecurityMetric {
     #[serde(rename = "NAME")]
     pub name: String,
     #[serde(rename = "OVERALL_SCORE")]
@@ -564,10 +564,10 @@ pub struct CCOCCoreSecurityMetric {
     pub updated_at: i64,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 /// A detailed breakdown of reserves backing a stablecoin asset, covering various categories such as cash, cryptocurrency, bonds, and
     /// other investments for transparency.
-pub struct CCOCCoreReservesBreakdown {
+pub struct OCCoreReservesBreakdown {
     #[serde(rename = "RESERVE_TYPE")]
     /// The type of asset used for reserve collateralization, such as cash, crypto, or bonds.
     pub reserve_type: String,
@@ -585,9 +585,9 @@ pub struct CCOCCoreReservesBreakdown {
     pub comments: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 /// Documents that might be relevant to the asset, they should all be .PDFs.
-pub struct CCOCCoreDocumentURLs {
+pub struct OCCoreDocumentURLs {
     #[serde(rename = "TYPE")]
     pub type_: String,
     #[serde(rename = "VERSION")]
@@ -598,9 +598,9 @@ pub struct CCOCCoreDocumentURLs {
     pub comment: Option<String>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 /// Denotes the convesion asset ID, SYMBOL and ASSET_TYPE.
-pub struct CCOCCorePriceConversionAsset {
+pub struct OCCorePriceConversionAsset {
     #[serde(rename = "ID")]
     /// The unique identifier for the asset entry.
     pub id: i32,
@@ -612,10 +612,10 @@ pub struct CCOCCorePriceConversionAsset {
     pub asset_type: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 /// Indicates the asset's position in our global asset ranking. There are multiple ranks, each is determined by at least one factor,
 /// such as asset launch date, market cap, trading volume, etc...
-pub struct CCOCCoreToplistRank {
+pub struct OCCoreToplistRank {
     #[serde(rename = "CREATED_ON")]
     /// Rank based on CREATED_ON sorted ASC from earliest created to most recent one.
     pub created_on: i64,
@@ -690,18 +690,18 @@ pub struct CCOCCoreToplistRank {
     pub spot_moving_30_day_change_percentage_usd: Option<f64>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 /// Individuals that contains founders, whitepaper authors, investors, resechers, and other important people related to a project.
-pub struct CCOCCoreProjectLeader {
+pub struct OCCoreProjectLeader {
     #[serde(rename = "LEADER_TYPE")]
     pub leader_type: String,
     #[serde(rename = "FULL_NAME")]
     pub fuill_name: String,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 /// Associated contact addresses for the team members, employees or affiliated contacts.
-pub struct CCOCCoreContactDetails {
+pub struct OCCoreContactDetails {
     #[serde(rename = "CONTACT_TYPE")]
     pub contact_type: String,
     #[serde(rename = "CONTACT_MEDIUM")]
@@ -716,8 +716,8 @@ pub struct CCOCCoreContactDetails {
 }
 
 /// On-Chain Core: Asset by Address
-#[derive(Deserialize, Debug)]
-pub struct CCOCCoreAssetByAddress {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct OCCoreAssetByAddress {
     #[serde(rename = "ID")]
     /// The unique identifier for the asset entry.
     pub id: i32,
@@ -796,10 +796,10 @@ pub struct CCOCCoreAssetByAddress {
     pub launch_date: i64,
     #[serde(rename = "PERIOUS_ASSET_SYMBOLS")]
     /// A list of symbols that were previously associated with this asset.
-    pub previous_asset_symbols: Option<Vec<CCPreviousAssetSymbol>>,
+    pub previous_asset_symbols: Option<Vec<PreviousAssetSymbol>>,
     #[serde(rename = "ASSET_ALTERNATIVE_IDS")]
     /// Alternative data platforms that also support this asset with their specific asset id.
-    pub asset_laternative_ids: Option<Vec<CCAssetAlternativeId>>,
+    pub asset_laternative_ids: Option<Vec<AssetAlternativeId>>,
     #[serde(rename = "ASSET_DESCRIPTION_SNIPPET")]
     /// The shortest form description text only for this asset. This is a lot more limited than the summary. Generally this is a one or maximum two sentences.
     pub asset_description_snippet: Option<String>,
@@ -808,9 +808,9 @@ pub struct CCOCCoreAssetByAddress {
     /// There are two types of assets that can be used on multiple blockchains: native tokens and bridged tokens.
     /// Native tokens are assets that are natively supported by a particular blockchain, while bridged tokens are assets that are "bridged" or "pegged"
     /// to another asset on a different blockchain.
-    pub supported_platforms: Option<Vec<CCOCCoreSupportedPlatforms>>,
+    pub supported_platforms: Option<Vec<OCCoreSupportedPlatforms>>,
     #[serde(rename = "ASSET_SECURITY_METRICS")]
-    pub asset_security_metrics: Option<Vec<CCOCCoreSecurityMetric>>,
+    pub asset_security_metrics: Option<Vec<OCCoreSecurityMetric>>,
     #[serde(rename = "SUPPLY_MAX")]
     /// The maximum number of asset parts (coins/tokens) that will ever be issued (supply_circulating + supply_burnt + supply_locked + all supply that
     /// has not been issued yet but is planned to be issued in the future). For assets (coins/tokens) that have infinite supply, we use -1.
@@ -842,14 +842,14 @@ pub struct CCOCCoreAssetByAddress {
     pub supply_staked: Option<f64>,
     #[serde(rename = "BURN_ADDRESSES")]
     /// The list of addresses that are considered burn addresses for this asset.
-    pub burn_addresses: Option<Vec<CCSpecialAddress>>,
+    pub burn_addresses: Option<Vec<SpecialAddress>>,
     #[serde(rename = "LOCKED_ADDRESSES")]
     /// The list of addresses that are considered locked addresses for this asset.
-    pub locked_addresses: Option<Vec<CCSpecialAddress>>,
+    pub locked_addresses: Option<Vec<SpecialAddress>>,
     #[serde(rename = "RESERVES_BREAKDOWN")]
     /// A detailed breakdown of reserves backing a stablecoin asset, covering various categories such as cash, cryptocurrency, bonds, and
     /// other investments for transparency.
-    pub reserves_breakdown: Option<Vec<CCOCCoreReservesBreakdown>>,
+    pub reserves_breakdown: Option<Vec<OCCoreReservesBreakdown>>,
     #[serde(rename = "WEBSITE_URL")]
     /// The link for the official project website.
     pub website_url: Option<String>,
@@ -862,10 +862,10 @@ pub struct CCOCCoreAssetByAddress {
     pub white_paper_url: Option<String>,
     #[serde(rename = "OTHER_DOCUMENT_URLS")]
     /// Other documents that might be relevant to the asset, they should all be .PDFs.
-    pub other_document_urls: Option<Vec<CCOCCoreDocumentURLs>>,
+    pub other_document_urls: Option<Vec<OCCoreDocumentURLs>>,
     #[serde(rename = "ASSET_INDUSTRIES")]
     /// The asset industries that asset operates in.
-    pub asset_industries: Option<Vec<CCAssetIndustry>>,
+    pub asset_industries: Option<Vec<AssetIndustry>>,
     #[serde(rename = "PRICE_USD")]
     /// Denotes the current value / price of the asset in USD. This value is used to populate toplists and is calculated based on real-time market data.
     pub price_usd: f64,
@@ -877,7 +877,7 @@ pub struct CCOCCoreAssetByAddress {
     pub price_usd_last_update_ts: i64,
     #[serde(rename = "PRICE_CONVERSION_ASSET")]
     /// Denotes the convesion asset ID, SYMBOL and ASSET_TYPE.
-    pub price_conversion_asset: Option<CCOCCorePriceConversionAsset>,
+    pub price_conversion_asset: Option<OCCorePriceConversionAsset>,
     #[serde(rename = "PRICE_CONVERSION_RATE")]
     /// Denotes the current value / price of USD in the requested quote asset.
     pub price_conversion_rate: Option<f64>,
@@ -1036,7 +1036,7 @@ pub struct CCOCCoreAssetByAddress {
     #[serde(rename = "TOPLIST_BASE_RANK")]
     /// Indicates the asset's position in our global asset ranking. There are multiple ranks, each is determined by at least one factor,
     /// such as asset launch date, market cap, trading volume, etc...
-    pub toplist_base_rank: Option<CCOCCoreToplistRank>,
+    pub toplist_base_rank: Option<OCCoreToplistRank>,
     #[serde(rename = "ASSET_DESCRIPTION")]
     /// The long form description in markdown for this asset.
     pub asset_description: String,
@@ -1045,10 +1045,10 @@ pub struct CCOCCoreAssetByAddress {
     pub asset_description_summary: String,
     #[serde(rename = "PROJECT_LEADERS")]
     /// An array of individuals that contains founders, whitepaper authors, investors, resechers, and other important people related to a project.
-    pub project_leaders: Option<Vec<CCOCCoreProjectLeader>>,
+    pub project_leaders: Option<Vec<OCCoreProjectLeader>>,
     #[serde(rename = "ASSOCIATED_CONTACT_DETAILS")]
     /// Associated contact addresses for the team members, employees or affiliated contacts.
-    pub associated_contact_details: Option<CCOCCoreContactDetails>,
+    pub associated_contact_details: Option<OCCoreContactDetails>,
     #[serde(rename = "SEO_TITLE")]
     /// The title that appears when you post this page on social media.
     pub seo_title: String,
@@ -1062,8 +1062,8 @@ pub struct CCOCCoreAssetByAddress {
 
 
 /// On-Chain Core: Historical Supply Day
-#[derive(Deserialize, Debug)]
-pub struct CCOCCoreSupply {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct OCCoreSupply {
     #[serde(rename = "UNIT")]
     /// The unit of the historical period update: HOUR for hour and DAY for day.
     pub unit: String,

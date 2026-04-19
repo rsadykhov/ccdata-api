@@ -1,19 +1,19 @@
-use serde::Deserialize;
-use crate::schemas::data_api::{CCPreviousAssetSymbol, CCAssetAlternativeId, CCAssetIndustry, CCSpecialAddress};
+use serde::{Serialize, Deserialize};
+use crate::schemas::data_api::{PreviousAssetSymbol, AssetAlternativeId, AssetIndustry, SpecialAddress};
 
 
 // Asset: Full Asset Metadata
 
 
-#[derive(Deserialize, Debug)]
-pub struct CCConsensusMechanism {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct ConsensusMechanism {
     #[serde(rename = "NAME")]
     /// The type of consensus this blockhain / networks uses.
     pub name: Option<String>,
 }
 
-#[derive(Deserialize, Debug)]
-pub struct CCConsensusAlgorithmType {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct ConsensusAlgorithmType {
     #[serde(rename = "NAME")]
     /// The name of the algorithm this blockchain uses for the consensus mechanism.
     pub name: Option<String>,
@@ -22,16 +22,16 @@ pub struct CCConsensusAlgorithmType {
     pub description: Option<String>,
 }
 
-#[derive(Deserialize, Debug)]
-pub struct CCHashingAlgorithmType {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct HashingAlgorithmType {
     #[serde(rename = "NAME")]
     /// The types of algorithms this blockchain uses for hashing blocks, transactions etc.
     pub name: Option<String>,
 }
 
 /// Asset: Full Asset Metadata
-#[derive(Deserialize, Debug)]
-pub struct CCAssetMetadata {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct AssetMetadata {
     #[serde(rename = "ID")]
     /// The unique identifier for the asset entry.
     pub id: i32,
@@ -100,10 +100,10 @@ pub struct CCAssetMetadata {
     pub launch_date: i64,
     #[serde(rename = "PREVIOUS_ASSET_SYMBOLS")]
     /// A list of symbols that were previously associated with this asset.
-    pub previous_asset_symbols: Option<Vec<CCPreviousAssetSymbol>>,
+    pub previous_asset_symbols: Option<Vec<PreviousAssetSymbol>>,
     #[serde(rename = "ASSET_ALTERNATIVE_IDS")]
     /// Alternative data platforms that also support this asset with their specific asset id.
-    pub asset_alternative_ids: Option<Vec<CCAssetAlternativeId>>,
+    pub asset_alternative_ids: Option<Vec<AssetAlternativeId>>,
     #[serde(rename = "ASSET_DESCRIPTION_SNIPPET")]
     /// The shortest form description text only for this asset. This is a lot more limited than the summary. Generally this is a one or maximum two sentences.
     pub asset_description_snippet: Option<String>,
@@ -149,10 +149,10 @@ pub struct CCAssetMetadata {
     pub last_block_burn: Option<f64>,
     #[serde(rename = "BURN_ADDRESSES")]
     /// The list of addresses that are considered burn addresses for this asset.
-    pub burn_addresses: Option<Vec<CCSpecialAddress>>,
+    pub burn_addresses: Option<Vec<SpecialAddress>>,
     #[serde(rename = "LOCKED_ADDRESSES")]
     /// The list of addresses that are considered locked addresses for this asset.
-    pub locked_addresses: Option<Vec<CCSpecialAddress>>,
+    pub locked_addresses: Option<Vec<SpecialAddress>>,
     #[serde(rename = "ASSET_STATUS")]
     /// The current operational status of the asset and its underlying project
     pub asset_status: Option<String>,
@@ -175,19 +175,19 @@ pub struct CCAssetMetadata {
     pub is_excluded_from_mkt_cap_totlist: Option<bool>,
     #[serde(rename = "ASSET_INDUSTRIES")]
     /// The asset industries that asset operates in.
-    pub asset_industries: Option<Vec<CCAssetIndustry>>,
+    pub asset_industries: Option<Vec<AssetIndustry>>,
     #[serde(rename = "CONSENSUS_MECHANISMS")]
     /// The types of consensus mechanisms this network / blockchain / token uses. This is a list of the fault-tolerant mechanism families that
     /// are used to achieve the necessary agreement on a single data value or a single state of the network among distributed processes or multi-agent systems.
-    pub consensus_mechanisms: Option<Vec<CCConsensusMechanism>>,
+    pub consensus_mechanisms: Option<Vec<ConsensusMechanism>>,
     #[serde(rename = "CONSENSUS_ALGORITHM_TYPES")]
     /// The types of consensus algorithms this blockchain uses. This is dependent on the consensus mechanisms used by the network / blockchain / token.
     /// For blockchains that are proof of work this would in most cases have the mining algorithm. For hybrid assets,
     /// this would be a list of mining and proof of stake and other algorithm used for reaching consensus.
-    pub consensus_algorithm_types: Option<Vec<CCConsensusAlgorithmType>>,
+    pub consensus_algorithm_types: Option<Vec<ConsensusAlgorithmType>>,
     #[serde(rename = "HASHING_ALGORITHM_TYPES")]
     /// The types of algorithms this blockchain uses for hashing blocks, transactions etc.
-    pub hashing_algorithm_types: Option<Vec<CCHashingAlgorithmType>>,
+    pub hashing_algorithm_types: Option<Vec<HashingAlgorithmType>>,
 }
 
 
@@ -195,8 +195,8 @@ pub struct CCAssetMetadata {
 
 
 /// Asset: Events
-#[derive(Deserialize, Debug)]
-pub struct CCAssetEvent {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct AssetEvent {
     #[serde(rename = "TYPE")]
     /// Type of the message.
     pub type_: String,
@@ -237,8 +237,8 @@ pub struct CCAssetEvent {
 // Asset: Historical: Code Repository Metrics Day
 
 
-#[derive(Deserialize, Debug)]
-pub struct CCAssetCodeRepository {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct AssetCodeRepository {
     #[serde(rename = "URL")]
     /// The URL of the code repository used to retrieve social metrics.
     pub url: String,
@@ -269,8 +269,8 @@ pub struct CCAssetCodeRepository {
 }
 
 /// Asset: Historical: Code Repository Metrics Day
-#[derive(Deserialize, Debug)]
-pub struct CCAssetCodeRepoMetrics {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct AssetCodeRepoMetrics {
     #[serde(rename = "UNIT")]
     /// The unit of the historical period update: HOUR for hour and DAY for day.
     pub unit: String,
@@ -330,15 +330,15 @@ pub struct CCAssetCodeRepoMetrics {
     pub total_closed_pull_requests: i32,
     #[serde(rename = "CODE_REPOSITORIES")]
     /// An array with all the data for each code repository used to calculate the total stats.
-    pub code_repositories: Vec<CCAssetCodeRepository>,
+    pub code_repositories: Vec<AssetCodeRepository>,
 }
 
 
 // Asset: Historical Discord
 
 
-#[derive(Deserialize, Debug)]
-pub struct CCAssetDiscordServer {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct AssetDiscordServer {
     #[serde(rename = "URL")]
     /// The URL of the Discord server used to retrieve social metrics.
     pub url: Option<String>,
@@ -357,8 +357,8 @@ pub struct CCAssetDiscordServer {
 }
 
 /// Asset: Historical Discord
-#[derive(Deserialize, Debug)]
-pub struct CCAssetDiscord {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct AssetDiscord {
     #[serde(rename = "UNIT")]
     /// The unit of the historical period update: HOUR for hour and DAY for day.
     pub unit: String,
@@ -385,15 +385,15 @@ pub struct CCAssetDiscord {
     pub total_premium_subscribers: Option<i32>,
     #[serde(rename = "DISCORD_SERVERS")]
     /// An array with all the data for each Discord server used to calculate the total stats.
-    pub discord_servers: Vec<Option<CCAssetDiscordServer>>,
+    pub discord_servers: Vec<Option<AssetDiscordServer>>,
 }
 
 
 // Asset: Historical Reddit
 
 
-#[derive(Deserialize, Debug)]
-pub struct CCAssetSubreddit {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct AssetSubreddit {
     #[serde(rename = "URL")]
     /// The URL of the Subreddit used to retrieve social metrics.
     pub url: Option<String>,
@@ -421,8 +421,8 @@ pub struct CCAssetSubreddit {
 }
 
 /// Asset: Historical Reddit
-#[derive(Deserialize, Debug)]
-pub struct CCAssetReddit {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct AssetReddit {
     #[serde(rename = "UNIT")]
     /// The unit of the historical period update: HOUR for hour and DAY for day.
     pub unit: String,
@@ -458,15 +458,15 @@ pub struct CCAssetReddit {
     pub total_average_comments_per_hour: f64,
     #[serde(rename = "SUBREDDITS")]
     /// An array with all the data for each Subreddit used to calculate the total stats.
-    pub subreddits: Option<Vec<CCAssetSubreddit>>,
+    pub subreddits: Option<Vec<AssetSubreddit>>,
 }
 
 
 // Asset: Historical Telegram
 
 
-#[derive(Deserialize, Debug)]
-pub struct CCAssetTelegramGroup {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct AssetTelegramGroup {
     #[serde(rename = "URL")]
     /// The URL of the Telegram group used to retrieve social metrics.
     pub url: String,
@@ -482,8 +482,8 @@ pub struct CCAssetTelegramGroup {
 }
 
 /// Asset: Historical Telegram
-#[derive(Deserialize, Debug)]
-pub struct CCAssetTelegram {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct AssetTelegram {
     #[serde(rename = "UNIT")]
     /// The unit of the historical period update: HOUR for hour and DAY for day.
     pub unit: String,
@@ -504,15 +504,15 @@ pub struct CCAssetTelegram {
     pub total_members: i32,
     #[serde(rename = "TELEGRAM_GROUPS")]
     /// An array with all the data for each Telegram group used to calculate the total stats.
-    pub telegram_groups: Vec<CCAssetTelegramGroup>,
+    pub telegram_groups: Vec<AssetTelegramGroup>,
 }
 
 
 // Asset: Historical X (Twitter)
 
 
-#[derive(Deserialize, Debug)]
-pub struct CCAssetTwitterAccount {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct AssetTwitterAccount {
     #[serde(rename = "URL")]
     /// The URL of the X account used to retrieve social metrics.
     pub url: Option<String>,
@@ -547,8 +547,8 @@ pub struct CCAssetTwitterAccount {
 
 
 /// Asset: Historical X (Twitter)
-#[derive(Deserialize, Debug)]
-pub struct CCAssetTwitter {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct AssetTwitter {
     #[serde(rename = "UNIT")]
     /// The unit of the historical period update: HOUR for hour and DAY for day.
     pub unit: String,
@@ -581,5 +581,5 @@ pub struct CCAssetTwitter {
     pub total_statuses: i32,
     #[serde(rename = "TWITTER_ACCOUNTS")]
     /// An array with all the data for each X account used to calculate the total stats.
-    pub twitter_accounts: Option<Vec<CCAssetTwitterAccount>>,
+    pub twitter_accounts: Option<Vec<AssetTwitterAccount>>,
 }

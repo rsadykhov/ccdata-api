@@ -1,35 +1,42 @@
-use serde::Deserialize;
-use crate::utils::Market;
-use crate::schemas::data_api::CCInstrumentStatus;
+use std::fmt::Display;
+use serde::{Serialize, Deserialize};
+use crate::schemas::data_api::InstrumentStatus;
 
 
+#[derive(Clone, Copy, Debug, Default, Serialize, Deserialize)]
 /// The exchange to obtain data from.
-pub enum CCOCDEXMarket {
+pub enum OCDEXMarket {
+    AERODROMESLIPSTREAM,
+    AERODROMEV1,
     BALANCERV2,
     CURVE,
     PANCAKESWAPV2,
     PANCAKESWAPV3,
+    RAYDIUM,
     SUSHISWAPV2,
     SUSHISWAPV3,
     UNISWAPV1,
+    #[default]
     UNISWAPV2,
     UNISWAPV3,
 }
 
-impl Market for CCOCDEXMarket {
-    /// Converts enum value to `String`.
-    fn to_string(&self) -> String {
-        match self {
-            CCOCDEXMarket::BALANCERV2 => String::from("balancerv2"),
-            CCOCDEXMarket::CURVE => String::from("curve"),
-            CCOCDEXMarket::PANCAKESWAPV2 => String::from("pancakeswapv2"),
-            CCOCDEXMarket::PANCAKESWAPV3 => String::from("pancakeswapv3"),
-            CCOCDEXMarket::SUSHISWAPV2 => String::from("sushiswapv2"),
-            CCOCDEXMarket::SUSHISWAPV3 => String::from("sushiswapv3"),
-            CCOCDEXMarket::UNISWAPV1 => String::from("uniswapv1"),
-            CCOCDEXMarket::UNISWAPV2 => String::from("uniswapv2"),
-            CCOCDEXMarket::UNISWAPV3 => String::from("uniswapv3"),
-        }
+impl Display for OCDEXMarket {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    match self {
+            Self::AERODROMESLIPSTREAM => write!(f, "aerodromeslipstream"),
+            Self::AERODROMEV1 => write!(f, "aerodromev1"),
+            Self::BALANCERV2 => write!(f, "balancerv2"),
+            Self::CURVE => write!(f, "curve"),
+            Self::PANCAKESWAPV2 => write!(f, "pancakeswapv2"),
+            Self::PANCAKESWAPV3 => write!(f, "pancakeswapv3"),
+            Self::RAYDIUM => write!(f, "raydium"),
+            Self::SUSHISWAPV2 => write!(f, "sushiswapv2"),
+            Self::SUSHISWAPV3 => write!(f, "sushiswapv3"),
+            Self::UNISWAPV1 => write!(f, "uniswapv1"),
+            Self::UNISWAPV2 => write!(f, "uniswapv2"),
+            Self::UNISWAPV3 => write!(f, "uniswapv3"),
+        }        
     }
 }
 
@@ -38,8 +45,8 @@ impl Market for CCOCDEXMarket {
 
 
 /// On-Chain DEX: Historical OHLCV+
-#[derive(Deserialize, Debug)]
-pub struct CCOCDEXOHLCV {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct OCDEXOHLCV {
     #[serde(rename = "UNIT")]
     /// The unit of the historical period update: MINUTE for minute, HOUR for hour and DAY for day.
     pub unit: String,
@@ -171,8 +178,8 @@ pub struct CCOCDEXOHLCV {
 
 
 /// On-Chain DEX: Market
-#[derive(Deserialize, Debug)]
-pub struct CCOCDEXMarkets {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct OCDEXMarkets {
     #[serde(rename = "TYPE")]
     /// Type of the message.
     pub type_: String,
@@ -189,7 +196,7 @@ pub struct CCOCDEXMarkets {
     pub unmapped_instruments_total: i64,
     #[serde(rename = "INSTRUMENT_STATUS")]
     /// An object with the total number of instrument for each of the available instrument statuses.
-    pub instrument_status: CCInstrumentStatus,
+    pub instrument_status: InstrumentStatus,
     #[serde(rename = "TOTAL_AMM_SWAPS_ONCHAIN")]
     /// The total number of defi swap trades this exchange has processed.
     pub total_amm_swaps_onchain: i64,

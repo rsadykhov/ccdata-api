@@ -1,30 +1,30 @@
 use std::{env::var, collections::HashMap};
 use dotenv::dotenv;
 use crate::error::Error;
-use crate::{CCUnit, CCAPIEndpoint};
-use crate::schemas::{self as sh, CCDataResponse};
+use crate::{Unit, APIEndpoint};
+use crate::schemas::{self as sh, CoinDeskResponse};
 use crate::schemas::min_api;
-use crate::schemas::data_api::indices_and_reference_rates::{CCIndicesMarket, CCIndicesOHLCV};
-use crate::schemas::data_api::spot::{CCSpotMarket, CCSpotInstrumentStatus, CCSpotOHLCV, CCSpotInstrumentMetdata, CCSpotMarkets,
-                                     CCSpotMarketsInstruments};
-use crate::schemas::data_api::futures::{CCFuturesMarket, CCFuturesOHLCV, CCFuturesMarkets};
-use crate::schemas::data_api::options::{CCOptionsMarket, CCOptionsOHLCV, CCOptionsMarkets};
-use crate::schemas::data_api::derivatives_indices::{CCDerIndicesMarket, CCDerIndicesOHLCV, CCDerIndicesMarkets};
-use crate::schemas::data_api::on_chain_dex::{CCOCDEXMarket, CCOCDEXOHLCV, CCOCDEXMarkets};
-use crate::schemas::data_api::on_chain_core::{CCOCCoreETHBlock, CCOCCoreAssetByChain, CCOCCoreAssetByAddress, CCOCCoreSupply};
-use crate::schemas::data_api::asset::{CCAssetMetadata, CCAssetEvent, CCAssetCodeRepoMetrics, CCAssetDiscord, CCAssetReddit, CCAssetTelegram, CCAssetTwitter};
-use crate::schemas::data_api::news::{CCNewsStatus, CCNewsLang, CCNewsSourceID, CCNewsLatestArticle, CCNewsSourceType, CCNewsSource, CCNewsCategory};
-use crate::schemas::data_api::overview::CCOverviewMktCapOHLCV;
-use crate::utils::{Market, Param, call_api_endpoint};
+use crate::schemas::data_api::indices_and_reference_rates::{IndicesMarket, IndicesOHLCV};
+use crate::schemas::data_api::spot::{SpotMarket, SpotInstrumentStatus, SpotOHLCV, SpotInstrumentMetdata, SpotMarkets,
+                                     SpotMarketsInstruments};
+use crate::schemas::data_api::futures::{FuturesMarket, FuturesOHLCV, FuturesInstrumentMetadata, FuturesMarkets};
+use crate::schemas::data_api::options::{OptionsMarket, OptionsOHLCV, OptionsInstrumentMetadata, OptionsMarkets};
+use crate::schemas::data_api::derivatives_indices::{DerIndicesMarket, DerIndicesOHLCV, DerIndicesMarkets};
+use crate::schemas::data_api::on_chain_dex::{OCDEXMarket, OCDEXOHLCV, OCDEXMarkets};
+use crate::schemas::data_api::on_chain_core::{OCCoreETHBlock, OCCoreAssetByChain, OCCoreAssetByAddress, OCCoreSupply};
+use crate::schemas::data_api::asset::{AssetMetadata, AssetEvent, AssetCodeRepoMetrics, AssetDiscord, AssetReddit, AssetTelegram, AssetTwitter};
+use crate::schemas::data_api::news::{NewsStatus, NewsLang, NewsSourceID, NewsLatestArticle, NewsSourceType, NewsSource, NewsCategory};
+use crate::schemas::data_api::overview::OverviewMktCapOHLCV;
+use crate::utils::{Param, call_api_endpoint};
 
 
 /// API data collection backend.
-pub struct CCData {
+pub struct CoinDesk {
     /// CoinDesk API key
     api_key: Option<String>,
 }
 
-impl CCData {
+impl CoinDesk {
     /// Creates a new backend for data collection.
     pub fn new() -> Self {
         Self { api_key: None }
@@ -35,9 +35,9 @@ impl CCData {
     /// # Examples
     ///
     /// ```rust
-    /// use ccdata_api::CCData;
+    /// use ccdata_api::CoinDesk;
     ///
-    /// let mut backend: CCData = CCData::new();
+    /// let mut backend: CoinDesk = CoinDesk::new();
     /// // Provide API key as the environment variable called API_KEY
     /// backend.build(&"API_KEY").unwrap();
     ///
@@ -58,9 +58,9 @@ impl CCData {
     /// # Examples
     ///
     /// ```rust
-    /// use ccdata_api::CCData;
+    /// use ccdata_api::CoinDesk;
     ///
-    /// let mut backend: CCData = CCData::new();
+    /// let mut backend: CoinDesk = CoinDesk::new();
     ///
     /// let new_api_key: String = String::from("xxxxxxx");
     /// backend.update_api_key(new_api_key);
@@ -79,9 +79,9 @@ impl CCData {
     /// # Examples
     ///
     /// ```rust
-    /// use ccdata_api::CCData;
+    /// use ccdata_api::CoinDesk;
     ///
-    /// let mut backend: CCData = CCData::new();
+    /// let mut backend: CoinDesk = CoinDesk::new();
     /// // Provide API key as the environment variable called API_KEY
     /// backend.build(&"API_KEY").unwrap();
     ///
@@ -90,84 +90,6 @@ impl CCData {
     pub fn build(&mut self, api_key_env_var: &str) -> Result<(), Error> {
         dotenv()?;
         Ok(self.update_api_key(var(api_key_env_var)?))
-    }
-
-    #[deprecated(since="1.0.6", note="Deprecated by CoinDesk")]
-    /// # Available Coin List (Blockchain Data)
-    /// Returns a list of all coins that CoinDesk have data for.
-    ///
-    /// # Description (CoinDesk Documentation)
-    /// Powered by IntoTheBlock, an intelligence company that leverages machine learning and advanced statistics to extract intelligent signals for crypto-assets.
-    ///
-    /// You can only use this endpoint with a valid api_key. Returns a list of all coins for which we currently get blockchain data from IntoTheBlock.
-    ///
-    /// # Examples
-    ///
-    /// ```rust
-    ///
-    /// use ccdata_api::CCData;
-    ///
-    /// #[tokio::main]
-    /// async fn main() -> () {
-    ///
-    ///     let mut backend: CCData = CCData::new();
-    ///     // Provide API key as the environment variable called API_KEY
-    ///     backend.build(&"API_KEY").unwrap();
-    ///
-    ///     let available_coin_list = backend.get_available_coin_list().await.unwrap();
-    ///     assert!(0 < available_coin_list.data.unwrap().len());
-    ///
-    /// }
-    /// ```
-    pub async fn get_available_coin_list(&self) -> Result<sh::CCMinResponse<HashMap<String, min_api::CCAvailableCoinList>>, Error> {
-        call_api_endpoint::<sh::CCMinResponse<HashMap<String, min_api::CCAvailableCoinList>>>(
-            self.api_key()?,
-            CCAPIEndpoint::AvailableCoinList, CCUnit::NA,
-            vec![], None
-        ).await
-    }
-
-    #[deprecated(since="1.0.6", note="Deprecated by CoinDesk")]
-    /// # Historical Daily (Blockchain Data)
-    /// Returns the historical data for a given symbol.
-    ///
-    /// # Description (CoinDesk Documentation)
-    /// Powered by IntoTheBlock, an intelligence company that leverages machine learning and advanced statistics to extract intelligent signals for crypto-assets.
-    /// Full description of the return fields available here.
-    ///
-    /// You can only use this endpoint with a valid api_key. Retrieve the daily aggregated blockchain data for the requested coin,
-    /// back through time for the number of points as specifed by the limit. Timestamp values are based on 00:00 GMT time.
-    ///
-    /// # Input
-    /// - `symbol`: Asset symbol
-    /// - `to_timestamp`: Final timestamp up to which the data will be extracted
-    /// - `limit`: Maximum number of datapoints per API endpoint call
-    ///
-    /// # Examples
-    ///
-    /// ```rust
-    ///
-    /// use ccdata_api::CCData;
-    ///
-    /// #[tokio::main]
-    /// async fn main() -> () {
-    ///
-    ///     let mut backend: CCData = CCData::new();
-    ///     // Provide API key as the environment variable called API_KEY
-    ///     backend.build(&"API_KEY").unwrap();
-    ///
-    ///     let limit: usize = 2000;
-    ///     let historical_daily = backend.get_historical_daily("ETH", None, Some(limit)).await.unwrap();
-    ///     assert!(historical_daily.data.unwrap().data.unwrap().len() <= limit);
-    ///
-    /// }
-    /// ```
-    pub async fn get_historical_daily(&self, symbol: &str, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<sh::CCMinResponse<sh::CCMinWrapper<Vec<min_api::CCHistoricalDaily>>>, Error> {
-        call_api_endpoint::<sh::CCMinResponse<sh::CCMinWrapper<Vec<min_api::CCHistoricalDaily>>>>(
-            self.api_key()?,
-            CCAPIEndpoint::HistoricalDaily, CCUnit::NA,
-            vec![Param::Symbol{v: symbol}, Param::Limit{v: limit}, Param::ToTs{v: to_timestamp}], None
-        ).await
     }
 
     #[deprecated(since="1.0.6", note="Deprecated by CoinDesk")]
@@ -191,12 +113,12 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::CCData;
+    /// use ccdata_api::CoinDesk;
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     ///
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     ///
@@ -206,11 +128,12 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_balance_distribution(&self, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<sh::CCMinResponse<sh::CCMinWrapper<Vec<min_api::CCBalanceDistribution>>>, Error> {
-        call_api_endpoint::<sh::CCMinResponse<sh::CCMinWrapper<Vec<min_api::CCBalanceDistribution>>>>(
+    pub async fn get_balance_distribution(&self, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<sh::CCMinResponse<sh::CCMinWrapper<Vec<min_api::BalanceDistribution>>>, Error> {
+        call_api_endpoint::<sh::CCMinResponse<sh::CCMinWrapper<Vec<min_api::BalanceDistribution>>>>(
             self.api_key()?,
-            CCAPIEndpoint::BalanceDistribution, CCUnit::NA,
-            vec![Param::Symbol{v: "BTC"}, Param::Limit{v: limit}, Param::ToTs{v: to_timestamp}], None
+            APIEndpoint::BalanceDistribution, Unit::NA,
+            vec![Param::Symbol { v: "BTC", }, Param::Limit { v: limit, }, Param::ToTs { v: to_timestamp, }],
+            None
         ).await
     }
 
@@ -234,27 +157,28 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, CCUnit, CCIndicesMarket};
+    /// use ccdata_api::{CoinDesk, Unit, IndicesMarket};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     ///
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     ///
-    ///     let market: CCIndicesMarket = CCIndicesMarket::CADLI;
+    ///     let market: IndicesMarket = IndicesMarket::CADLI;
     ///     let limit: usize = 2000;
-    ///     let ohlcv = backend.get_indices_ohlcv("BTC-USD", None, Some(limit), market, CCUnit::Day).await.unwrap();
+    ///     let ohlcv = backend.get_indices_ohlcv("BTC-USD", None, Some(limit), market, Unit::Day).await.unwrap();
     ///     assert_eq!(ohlcv.data.unwrap().len(), limit);
     ///
     /// }
     /// ```
-    pub async fn get_indices_ohlcv(&self, instrument: &str, to_timestamp: Option<i64>, limit: Option<usize>, market: CCIndicesMarket, unit: CCUnit) -> Result<CCDataResponse<Vec<CCIndicesOHLCV>>, Error> {
-        call_api_endpoint::<CCDataResponse<Vec<CCIndicesOHLCV>>>(
+    pub async fn get_indices_ohlcv(&self, instrument: &str, to_timestamp: Option<i64>, limit: Option<usize>, market: IndicesMarket, unit: Unit) -> Result<CoinDeskResponse<Vec<IndicesOHLCV>>, Error> {
+        call_api_endpoint::<CoinDeskResponse<Vec<IndicesOHLCV>>>(
             self.api_key()?,
-            CCAPIEndpoint::IndicesOHLCV, unit,
-            vec![Param::Instrument{v: instrument}, Param::Limit{v: limit}, Param::ToTimestamp{v: to_timestamp}, Param::Market{v: market.to_string()}], None
+            APIEndpoint::IndicesOHLCV, unit,
+            vec![Param::Instrument { v: instrument, }, Param::Limit { v: limit, }, Param::ToTimestamp { v: to_timestamp, }, Param::Market { v: market.to_string(), }],
+            None
         ).await
     }
 
@@ -277,27 +201,28 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, CCUnit, CCSpotMarket};
+    /// use ccdata_api::{CoinDesk, Unit, SpotMarket};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     ///
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     ///
-    ///     let market: CCSpotMarket = CCSpotMarket::KRAKEN;
+    ///     let market: SpotMarket = SpotMarket::KRAKEN;
     ///     let limit: usize = 2000;
-    ///     let ohlcv = backend.get_spot_ohlcv("BTC-USD", None, Some(limit), market, CCUnit::Day).await.unwrap();
+    ///     let ohlcv = backend.get_spot_ohlcv("BTC-USD", None, Some(limit), market, Unit::Day).await.unwrap();
     ///     assert_eq!(ohlcv.data.unwrap().len(), limit);
     ///
     /// }
     /// ```
-    pub async fn get_spot_ohlcv(&self, instrument: &str, to_timestamp: Option<i64>, limit: Option<usize>, market: CCSpotMarket, unit: CCUnit) -> Result<CCDataResponse<Vec<CCSpotOHLCV>>, Error> {
-        call_api_endpoint::<CCDataResponse<Vec<CCSpotOHLCV>>>(
+    pub async fn get_spot_ohlcv(&self, instrument: &str, to_timestamp: Option<i64>, limit: Option<usize>, market: SpotMarket, unit: Unit) -> Result<CoinDeskResponse<Vec<SpotOHLCV>>, Error> {
+        call_api_endpoint::<CoinDeskResponse<Vec<SpotOHLCV>>>(
             self.api_key()?,
-            CCAPIEndpoint::SpotOHLCV, unit,
-            vec![Param::Instrument{v: instrument}, Param::Limit{v: limit}, Param::ToTimestamp{v: to_timestamp}, Param::Market{v: market.to_string()}], None
+            APIEndpoint::SpotOHLCV, unit,
+            vec![Param::Instrument { v: instrument, }, Param::Limit { v: limit, }, Param::ToTimestamp { v: to_timestamp, }, Param::Market { v: market.to_string(), }],
+            None
         ).await
     }
 
@@ -317,67 +242,69 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, CCSpotMarket};
+    /// use ccdata_api::{CoinDesk, SpotMarket};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     ///
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     ///
     ///     let instruments: Vec<String> = vec![String::from("BTC-USD"), String::from("ETH-USD")];
-    ///     let market: CCSpotMarket = CCSpotMarket::KRAKEN;
+    ///     let market: SpotMarket = SpotMarket::KRAKEN;
     ///     let instrument_metadata = backend.get_spot_instrument_metadata(&instruments, market).await.unwrap();
     ///     assert_eq!(instrument_metadata.data.unwrap().len(), 2);
     ///
     /// }
     /// ```
-    pub async fn get_spot_instrument_metadata(&self, instruments: &Vec<String>, market: CCSpotMarket) -> Result<CCDataResponse<HashMap<String, CCSpotInstrumentMetdata>>, Error> {
-        call_api_endpoint::<CCDataResponse<HashMap<String, CCSpotInstrumentMetdata>>>(
+    pub async fn get_spot_instrument_metadata(&self, instruments: &Vec<String>, market: SpotMarket) -> Result<CoinDeskResponse<HashMap<String, SpotInstrumentMetdata>>, Error> {
+        call_api_endpoint::<CoinDeskResponse<HashMap<String, SpotInstrumentMetdata>>>(
             self.api_key()?,
-            CCAPIEndpoint::SpotInstrumentMetadata, CCUnit::NA,
-            vec![Param::Instruments{v: instruments}, Param::Market{v: market.to_string()}], None
+            APIEndpoint::SpotInstrumentMetadata, Unit::NA,
+            vec![Param::Instruments { v: instruments, }, Param::Market { v: market.to_string(), }],
+            None
         ).await
     }
 
-    /// # Markets (Spot)
+    /// # Markets (Spot) - V2
     /// Returns metadata about a given market.
-    ///
-    /// # Description (CoinDesk Documentation)
-    /// This endpoint provides comprehensive information about various cryptocurrency spot markets. By specifying a market through the "market" parameter,
-    /// users can retrieve details about a specific market, such as its trading pairs, volume, operational status, and other relevant metadata.
-    /// If no specific market is indicated, the endpoint delivers data on all available markets. This functionality is essential for users looking to explore
-    /// and compare the characteristics and trading conditions of different cryptocurrency exchanges or market segments, assisting in market analysis,
-    /// strategic planning, and decision-making.
-    ///
+    /// 
+    /// Description (CoinDesk Documentation)
+    /// This endpoint provides comprehensive information about various cryptocurrency spot markets,
+    /// featuring extensive exchange metadata and operational details. By specifying a markets list through the "markets" parameter,
+    /// users can retrieve details about specific markets, such as its trading pairs, volume, operational status,
+    /// and comprehensive static metadata including exchange status, launch dates, supported trading types, orderbook/trade integration status,
+    /// benchmark scores, and resource links. If no specific markets are indicated, the endpoint delivers data on all available markets.
+    /// 
     /// # Input
-    /// - `market`: Market name
-    ///
+    /// - `markets`: Markets' names
+    /// 
     /// # Examples
-    ///
+    /// 
     /// ```rust
-    ///
-    /// use ccdata_api::{CCData, CCSpotMarket};
+    /// use ccdata_api::{CoinDesk, SpotMarket};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     ///
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     ///
-    ///     let market: CCSpotMarket = CCSpotMarket::KRAKEN;
-    ///     let markets = backend.get_spot_markets(market).await.unwrap();
+    ///     let markets: Vec<SpotMarket> = vec![SpotMarket::KRAKEN];
+    ///     let markets = backend.get_spot_markets_v2(markets).await.unwrap();
     ///     assert_eq!(markets.data.unwrap().get("kraken").unwrap().exchange_status, String::from("ACTIVE"));
     ///
     /// }
     /// ```
-    pub async fn get_spot_markets(&self, market: CCSpotMarket) -> Result<CCDataResponse<HashMap<String, CCSpotMarkets>>, Error> {
-        call_api_endpoint::<CCDataResponse<HashMap<String, CCSpotMarkets>>>(
+    pub async fn get_spot_markets_v2(&self, markets: Vec<SpotMarket>) -> Result<CoinDeskResponse<HashMap<String, SpotMarkets>>, Error> {
+        let v: Vec<String> = markets.iter().map(|v| v.to_string() ).collect();
+        call_api_endpoint::<CoinDeskResponse<HashMap<String, SpotMarkets>>>(
             self.api_key()?,
-            CCAPIEndpoint::SpotMarkets, CCUnit::NA,
-            vec![Param::Market{v: market.to_string()}], None
+            APIEndpoint::SpotMarketsV2, Unit::NA,
+            vec![Param::Markets { v, }],
+            None
         ).await
     }
 
@@ -400,28 +327,29 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, CCSpotMarket, CCSpotInstrumentStatus};
+    /// use ccdata_api::{CoinDesk, SpotMarket, SpotInstrumentStatus};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     ///
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     ///
     ///     let instruments: Vec<String> = vec![String::from("BTC-USD"), String::from("ETH-USD")];
-    ///     let market: CCSpotMarket = CCSpotMarket::KRAKEN;
-    ///     let instrument_status: CCSpotInstrumentStatus = CCSpotInstrumentStatus::ACTIVE;
+    ///     let market: SpotMarket = SpotMarket::KRAKEN;
+    ///     let instrument_status: SpotInstrumentStatus = SpotInstrumentStatus::ACTIVE;
     ///     let markets_instruments = backend.get_spot_markets_instruments(&instruments, market, instrument_status).await.unwrap();
     ///     assert_eq!(markets_instruments.data.unwrap().get("kraken").unwrap().instruments.len(), 2);
     ///
     /// }
     /// ```
-    pub async fn get_spot_markets_instruments(&self, instruments: &Vec<String>, market: CCSpotMarket, instrument_status: CCSpotInstrumentStatus) -> Result<CCDataResponse<HashMap<String, CCSpotMarketsInstruments>>, Error> {
-        call_api_endpoint::<CCDataResponse<HashMap<String, CCSpotMarketsInstruments>>>(
+    pub async fn get_spot_markets_instruments(&self, instruments: &Vec<String>, market: SpotMarket, instrument_status: SpotInstrumentStatus) -> Result<CoinDeskResponse<HashMap<String, SpotMarketsInstruments>>, Error> {
+        call_api_endpoint::<CoinDeskResponse<HashMap<String, SpotMarketsInstruments>>>(
             self.api_key()?,
-            CCAPIEndpoint::SpotMarketsInstruments, CCUnit::NA,
-            vec![Param::Instruments{v: instruments}, Param::Market{v: market.to_string()}, Param::InstrumentStatus {v: instrument_status}], None
+            APIEndpoint::SpotMarketsInstruments, Unit::NA,
+            vec![Param::Instruments { v: instruments, }, Param::Market { v: market.to_string(), }, Param::InstrumentStatus { v: instrument_status, }],
+            None
         ).await
     }
 
@@ -446,28 +374,72 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, CCUnit, CCFuturesMarket};
+    /// use ccdata_api::{CoinDesk, Unit, FuturesMarket};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     ///
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     ///
-    ///     let market: CCFuturesMarket = CCFuturesMarket::BINANCE;
+    ///     let market: FuturesMarket = FuturesMarket::BINANCE;
     ///     let limit: usize = 2000;
-    ///     let ohlcv = backend.get_futures_ohlcv("BTC-USDT-VANILLA-PERPETUAL", None, Some(limit), market, CCUnit::Day).await.unwrap();
+    ///     let ohlcv = backend.get_futures_ohlcv("BTC-USDT-VANILLA-PERPETUAL", None, Some(limit), market, Unit::Day).await.unwrap();
     ///     assert!(ohlcv.data.unwrap().len() <= limit)
     ///
     /// }
     /// ```
-    pub async fn get_futures_ohlcv(&self, instrument: &str, to_timestamp: Option<i64>, limit: Option<usize>, market: CCFuturesMarket, unit: CCUnit) -> Result<CCDataResponse<Vec<CCFuturesOHLCV>>, Error> {
-        call_api_endpoint::<CCDataResponse<Vec<CCFuturesOHLCV>>>(
+    pub async fn get_futures_ohlcv(&self, instrument: &str, to_timestamp: Option<i64>, limit: Option<usize>, market: FuturesMarket, unit: Unit) -> Result<CoinDeskResponse<Vec<FuturesOHLCV>>, Error> {
+        call_api_endpoint::<CoinDeskResponse<Vec<FuturesOHLCV>>>(
             self.api_key()?,
-            CCAPIEndpoint::FuturesOHLCV, unit,
-            vec![Param::Instrument{v: instrument}, Param::Limit{v: limit}, Param::ToTimestamp{v: to_timestamp}, Param::Market{v: market.to_string()}],
-            Some(String::from("&groups=ID,MAPPING,OHLC,TRADE,VOLUME,MAPPING_ADVANCED,OHLC_TRADE"))
+            APIEndpoint::FuturesOHLCV, unit,
+            vec![Param::Instrument { v: instrument, }, Param::Limit { v: limit, }, Param::ToTimestamp { v: to_timestamp, }, Param::Market { v: market.to_string(), }],
+            None
+        ).await
+    }
+
+    /// # Instrument Metadata (Futures)
+    /// Returns metadata for a given instrument.
+    /// 
+    /// # Description (CoinDesk Documentation)
+    /// This endpoint is specifically tailored for the Futures segment of the API, providing essential metadata about futures instruments
+    /// traded on various exchanges. It delivers critical non-price related information, including mappings, operational statuses,
+    /// and historical data points such as the first and last seen timestamps for each instrument. Unlike the Markets + Instruments endpoint,
+    /// which offers a streamlined subset of data, the Futures Instrument Metadata endpoint is designed for comprehensive internal analysis
+    /// and integration, ensuring that organizations have detailed insights necessary for effective management and evaluation of futures
+    /// trading instruments.
+    /// 
+    /// # Input
+    /// - `instruments`: List of instrument symbols
+    /// - `market`: Market name
+    /// 
+    /// # Examples
+    /// 
+    /// ```rust
+    /// 
+    /// use ccdata_api::{CoinDesk, FuturesMarket};
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> () {
+    ///
+    ///     let mut backend: CoinDesk = CoinDesk::new();
+    ///     // Provide API key as the environment variable called API_KEY
+    ///     backend.build(&"API_KEY").unwrap();
+    ///
+    ///     let instruments: Vec<String> = vec![String::from("BTCUSD_PERP"), String::from("ETH-USDT-VANILLA-PERPETUAL")];
+    ///     let market: FuturesMarket = FuturesMarket::BINANCE;
+    ///     let futures_metadata = backend.get_futures_instrument_metadata(&instruments, market).await.unwrap();
+    ///     assert_eq!(futures_metadata.data.unwrap().len(), 2);
+    ///
+    /// }
+    /// ```
+    pub async fn get_futures_instrument_metadata(&self, instruments: &Vec<String>, market: FuturesMarket) -> Result<CoinDeskResponse<HashMap<String, FuturesInstrumentMetadata>>, Error> {
+        call_api_endpoint::<CoinDeskResponse<HashMap<String, FuturesInstrumentMetadata>>>(
+            self.api_key()?,
+            APIEndpoint::FuturesInstrumentMetadata, Unit::NA,
+            vec![Param::Instruments { v: instruments, }, Param::Market { v: market.to_string(), }],
+            None
         ).await
     }
 
@@ -475,39 +447,42 @@ impl CCData {
     /// Returns metadata about a given market.
     ///
     /// # Description (CoinDesk Documentation)
-    /// This endpoint provides comprehensive information about various cryptocurrency futures markets. By utilizing the "market" parameter,
-    /// users can access detailed data about specific futures markets, including trading pairs, volume, operational status, and additional relevant metadata.
-    /// If no specific market is specified, the endpoint returns information on all available futures markets. This capability is crucial for users who wish
-    /// to explore and analyze the characteristics and trading conditions of different cryptocurrency futures exchanges or market segments,
-    /// aiding in market analysis, strategic planning, and decision-making.
+    /// This endpoint provides comprehensive information about various cryptocurrency futures markets,
+    /// featuring extensive exchange metadata and derivatives-specific operational details.
+    /// By specifying a markets through the "markets" parameter, users can retrieve details about specific futures markets,
+    /// such as their available contracts, leverage options, margin requirements, settlement mechanisms, operational status,
+    /// and comprehensive static metadata including exchange status, launch dates, supported contract types, orderbook/trade integration status,
+    /// benchmark scores, and resource links. If no specific markets are indicated, the endpoint delivers data on all available futures markets.
     ///
     /// # Input
-    /// - `market`: Market name
+    /// - `markets`: Markets' names
     ///
     /// # Examples
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, CCFuturesMarket};
+    /// use ccdata_api::{CoinDesk, FuturesMarket};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     ///
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     ///
-    ///     let market: CCFuturesMarket = CCFuturesMarket::BINANCE;
-    ///     let markets = backend.get_futures_markets(market).await.unwrap();
+    ///     let markets: Vec<FuturesMarket> = vec![FuturesMarket::BINANCE];
+    ///     let markets = backend.get_futures_markets_v2(markets).await.unwrap();
     ///     assert_eq!(markets.data.unwrap().get("binance").unwrap().exchange_status, String::from("ACTIVE"));
     ///
     /// }
     /// ```
-    pub async fn get_futures_markets(&self, market: CCFuturesMarket) -> Result<CCDataResponse<HashMap<String, CCFuturesMarkets>>, Error> {
-        call_api_endpoint::<CCDataResponse<HashMap<String, CCFuturesMarkets>>>(
+    pub async fn get_futures_markets_v2(&self, markets: Vec<FuturesMarket>) -> Result<CoinDeskResponse<HashMap<String, FuturesMarkets>>, Error> {
+        let v: Vec<String> = markets.iter().map(|v| v.to_string() ).collect();
+        call_api_endpoint::<CoinDeskResponse<HashMap<String, FuturesMarkets>>>(
             self.api_key()?,
-            CCAPIEndpoint::FuturesMarkets, CCUnit::NA,
-            vec![Param::Market{v: market.to_string()}], None
+            APIEndpoint::FuturesMarketsV2, Unit::NA,
+            vec![Param::Markets { v, }],
+            None
         ).await
     }  
 
@@ -531,28 +506,70 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, CCUnit, CCOptionsMarket};
+    /// use ccdata_api::{CoinDesk, Unit, OptionsMarket};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     ///
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     ///
-    ///     let market: CCOptionsMarket = CCOptionsMarket::OKEX;
+    ///     let market: OptionsMarket = OptionsMarket::OKEX;
     ///     let limit: usize = 2000;
-    ///     let ohlcv = backend.get_options_ohlcv("BTC-USD-20241227-15000-P", None, Some(limit), market, CCUnit::Day).await.unwrap();
+    ///     let ohlcv = backend.get_options_ohlcv("BTC-USD-20241227-15000-P", None, Some(limit), market, Unit::Day).await.unwrap();
     ///     assert!(ohlcv.data.unwrap().len() <= limit);
     ///
     /// }
     /// ```
-    pub async fn get_options_ohlcv(&self, instrument: &str, to_timestamp: Option<i64>, limit: Option<usize>, market: CCOptionsMarket, unit: CCUnit) -> Result<CCDataResponse<Vec<CCOptionsOHLCV>>, Error> {
-        call_api_endpoint::<CCDataResponse<Vec<CCOptionsOHLCV>>>(
+    pub async fn get_options_ohlcv(&self, instrument: &str, to_timestamp: Option<i64>, limit: Option<usize>, market: OptionsMarket, unit: Unit) -> Result<CoinDeskResponse<Vec<OptionsOHLCV>>, Error> {
+        call_api_endpoint::<CoinDeskResponse<Vec<OptionsOHLCV>>>(
             self.api_key()?,
-            CCAPIEndpoint::OptionsOHLCV, unit,
-            vec![Param::Instrument{v: instrument}, Param::Limit{v: limit}, Param::ToTimestamp{v: to_timestamp}, Param::Market{v: market.to_string()}],
-            Some(String::from("&groups=ID,MAPPING,OHLC,TRADE,VOLUME,MAPPING_ADVANCED,OHLC_TRADE"))
+            APIEndpoint::OptionsOHLCV, unit,
+            vec![Param::Instrument { v: instrument, }, Param::Limit { v: limit, }, Param::ToTimestamp { v: to_timestamp, }, Param::Market { v: market.to_string(), }],
+            None
+        ).await
+    }
+
+    /// # Instrument Metadata (Options)
+    /// Returns metadata for a given instrument.
+    /// 
+    /// # Description
+    /// The Options Instrument Metadata endpoint provides detailed metadata about options instruments across various exchanges.
+    /// This API endpoint delivers extensive information, including mappings, operational statuses, underlying assets, expiration dates,
+    /// strike prices, and other relevant data. Essential for users who need comprehensive and standardized details on options instruments,
+    /// it supports accurate tracking, analysis, and integration of options data within financial systems.
+    /// 
+    /// # Input
+    /// - `instruments`: List of instrument symbols
+    /// - `market`: Market name
+    /// 
+    /// # Examples
+    /// 
+    /// ```rust
+    /// 
+    /// use ccdata_api::{CoinDesk, OptionsMarket};
+    ///
+    /// #[tokio::main]
+    /// async fn main() -> () {
+    ///
+    ///     let mut backend: CoinDesk = CoinDesk::new();
+    ///     // Provide API key as the environment variable called API_KEY
+    ///     backend.build(&"API_KEY").unwrap();
+    ///
+    ///     let instruments: Vec<String> = vec![String::from("BTC-29NOV24-25000-P"), String::from("ETH-31JAN25-2500-P")];
+    ///     let market: OptionsMarket = OptionsMarket::DERIBIT;
+    ///     let options_metadata = backend.get_options_instrument_metadata(&instruments, market).await.unwrap();
+    ///     assert_eq!(options_metadata.data.unwrap().len(), 2);
+    ///
+    /// }
+    /// ```
+    pub async fn get_options_instrument_metadata(&self, instruments: &Vec<String>, market: OptionsMarket) -> Result<CoinDeskResponse<HashMap<String, OptionsInstrumentMetadata>>, Error> {
+        call_api_endpoint::<CoinDeskResponse<HashMap<String, OptionsInstrumentMetadata>>>(
+            self.api_key()?,
+            APIEndpoint::OptionsInstrumentMetadata, Unit::NA,
+            vec![Param::Instruments { v: instruments, }, Param::Market { v: market.to_string(), }],
+            None
         ).await
     }
 
@@ -560,39 +577,43 @@ impl CCData {
     /// Returns metadata about a given market.
     ///
     /// # Description (CoinDesk Documentation)
-    /// This endpoint provides comprehensive information about the various options markets integrated by our platform. By utilizing the "market" parameter,
-    /// users can access detailed data about specific options markets, including available instruments, trading volume, operational status, and additional
-    /// relevant metadata. If no specific market is specified, the endpoint returns information on all integrated options markets.
-    /// This capability is crucial for users who wish to explore and analyze the characteristics and trading conditions of different options exchanges
-    /// or market segments, aiding in market analysis, strategic planning, and decision-making.
+    /// This endpoint provides comprehensive information about various cryptocurrency options markets,
+    /// featuring extensive exchange metadata and derivatives-specific operational details.
+    /// By specifying markets through the "markets" parameter, users can retrieve details about specific options markets,
+    /// such as their available option chains, strike price intervals, expiration schedules, settlement mechanisms,
+    /// implied volatility calculations, operational status, and comprehensive static metadata including exchange status, launch dates,
+    /// supported option types, orderbook/trade integration status, benchmark scores, and resource links. If no specific markets are indicated,
+    /// the endpoint delivers data on all available options markets.
     ///
     /// # Input
-    /// - `market`: Market name
+    /// - `markets`: Markets' names
     ///
     /// # Examples
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, CCOptionsMarket};
+    /// use ccdata_api::{CoinDesk, OptionsMarket};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     ///
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     ///
-    ///     let market: CCOptionsMarket = CCOptionsMarket::DERIBIT;
-    ///     let markets = backend.get_options_markets(market).await.unwrap();
+    ///     let markets: Vec<OptionsMarket> = vec![OptionsMarket::DERIBIT];
+    ///     let markets = backend.get_options_markets_v2(markets).await.unwrap();
     ///     assert_eq!(markets.data.unwrap().get("deribit").unwrap().exchange_status, String::from("ACTIVE"));
     ///
     /// }
     /// ```
-    pub async fn get_options_markets(&self, market: CCOptionsMarket) -> Result<CCDataResponse<HashMap<String, CCOptionsMarkets>>, Error> {
-        call_api_endpoint::<CCDataResponse<HashMap<String, CCOptionsMarkets>>>(
+    pub async fn get_options_markets_v2(&self, markets: Vec<OptionsMarket>) -> Result<CoinDeskResponse<HashMap<String, OptionsMarkets>>, Error> {
+        let v: Vec<String> = markets.iter().map(|v| v.to_string() ).collect();
+        call_api_endpoint::<CoinDeskResponse<HashMap<String, OptionsMarkets>>>(
             self.api_key()?,
-            CCAPIEndpoint::OptionsMarkets, CCUnit::NA,
-            vec![Param::Market{v: market.to_string()}], None
+            APIEndpoint::OptionsMarketsV2, Unit::NA,
+            vec![Param::Markets { v, }],
+            None
         ).await
     }
 
@@ -616,28 +637,28 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, CCUnit, CCDerIndicesMarket};
+    /// use ccdata_api::{CoinDesk, Unit, DerIndicesMarket};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     ///
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     ///
-    ///     let market: CCDerIndicesMarket = CCDerIndicesMarket::BINANCE;
+    ///     let market: DerIndicesMarket = DerIndicesMarket::BINANCE;
     ///     let limit: usize = 2000;
-    ///     let ohlcv = backend.get_der_indices_ohlcv("BTCUSDT", None, Some(limit), market, CCUnit::Day).await.unwrap();
+    ///     let ohlcv = backend.get_der_indices_ohlcv("BTCUSDT", None, Some(limit), market, Unit::Day).await.unwrap();
     ///     assert!(ohlcv.data.unwrap().len() <= limit);
     ///
     /// }
     /// ```
-    pub async fn get_der_indices_ohlcv(&self, instrument: &str, to_timestamp: Option<i64>, limit: Option<usize>, market: CCDerIndicesMarket, unit: CCUnit) -> Result<CCDataResponse<Vec<CCDerIndicesOHLCV>>, Error> {
-        call_api_endpoint::<CCDataResponse<Vec<CCDerIndicesOHLCV>>>(
+    pub async fn get_der_indices_ohlcv(&self, instrument: &str, to_timestamp: Option<i64>, limit: Option<usize>, market: DerIndicesMarket, unit: Unit) -> Result<CoinDeskResponse<Vec<DerIndicesOHLCV>>, Error> {
+        call_api_endpoint::<CoinDeskResponse<Vec<DerIndicesOHLCV>>>(
             self.api_key()?,
-            CCAPIEndpoint::DerIndicesOHLCV, unit,
-            vec![Param::Instrument{v: instrument}, Param::Limit{v: limit}, Param::ToTimestamp{v: to_timestamp}, Param::Market{v: market.to_string()}],
-            Some(String::from("&groups=ID,OHLC,OHLC_MESSAGE,MESSAGE,MAPPING,MAPPING_ADVANCED"))
+            APIEndpoint::DerIndicesOHLCV, unit,
+            vec![Param::Instrument { v: instrument, }, Param::Limit { v: limit, }, Param::ToTimestamp { v: to_timestamp, }, Param::Market { v: market.to_string(), }],
+            None
         ).await
     }
 
@@ -645,39 +666,42 @@ impl CCData {
     /// Returns metadata about a given market.
     ///
     /// # Description (CoinDesk Documentation)
-    /// This endpoint provides comprehensive information about various derivatives index markets. By specifying a market through the "market" parameter,
-    /// users can retrieve details about a specific derivatives market, such as its index instruments, volume, operational status, and other relevant metadata.
-    /// If no specific market is indicated, the endpoint delivers data on all available markets. This functionality is essential for users looking to explore
-    /// and compare the characteristics and trading conditions of different derivatives exchanges or market segments, assisting in market analysis,
-    /// strategic planning, and decision-making.
+    /// This endpoint provides comprehensive information about various derivatives index markets,
+    /// featuring extensive exchange metadata and index-specific operational details. By specifying a markets through the "markets" parameter,
+    /// users can retrieve details about specific derivatives index markets, such as its available index instruments, volume metrics,
+    /// operational status, benchmark scores, integration configurations, and comprehensive static metadata including exchange status,
+    /// launch dates, supported index types, data polling/streaming capabilities, and resource links. If no specific markets are indicated,
+    /// the endpoint delivers data on all available derivatives index markets.
     ///
     /// # Input
-    /// - `market`: Market name
+    /// - `markets`: Markets' names
     ///
     /// # Examples
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, CCDerIndicesMarket};
+    /// use ccdata_api::{CoinDesk, DerIndicesMarket};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     ///
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     ///
-    ///     let market: CCDerIndicesMarket = CCDerIndicesMarket::KRAKEN;
-    ///     let markets = backend.get_der_indices_markets(market).await.unwrap();
+    ///     let markets: Vec<DerIndicesMarket> = vec![DerIndicesMarket::KRAKEN];
+    ///     let markets = backend.get_der_indices_markets_v2(markets).await.unwrap();
     ///     assert_eq!(markets.data.unwrap().get("kraken").unwrap().exchange_status, String::from("ACTIVE"));
     ///
     /// }
     /// ```
-    pub async fn get_der_indices_markets(&self, market: CCDerIndicesMarket) -> Result<CCDataResponse<HashMap<String, CCDerIndicesMarkets>>, Error> {
-        call_api_endpoint::<CCDataResponse<HashMap<String, CCDerIndicesMarkets>>>(
+    pub async fn get_der_indices_markets_v2(&self, markets: Vec<DerIndicesMarket>) -> Result<CoinDeskResponse<HashMap<String, DerIndicesMarkets>>, Error> {
+        let v: Vec<String> = markets.iter().map(|v| v.to_string() ).collect();
+        call_api_endpoint::<CoinDeskResponse<HashMap<String, DerIndicesMarkets>>>(
             self.api_key()?,
-            CCAPIEndpoint::DerIndicesMarkets, CCUnit::NA,
-            vec![Param::Market{v: market.to_string()}], None
+            APIEndpoint::DerIndicesMarketsV2, Unit::NA,
+            vec![Param::Markets { v, }],
+            None
         ).await
     }
 
@@ -701,28 +725,28 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, CCUnit, CCOCDEXMarket};
+    /// use ccdata_api::{CoinDesk, Unit, OCDEXMarket};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     ///
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     ///
-    ///     let market: CCOCDEXMarket = CCOCDEXMarket::UNISWAPV2;
+    ///     let market: OCDEXMarket = OCDEXMarket::UNISWAPV2;
     ///     let limit: usize = 2000;
-    ///     let ohlcv = backend.get_ocdex_ohlcv("0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852_2", None, Some(limit), market, CCUnit::Day).await.unwrap();
+    ///     let ohlcv = backend.get_ocdex_ohlcv("0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852_2", None, Some(limit), market, Unit::Day).await.unwrap();
     ///     assert!(ohlcv.data.unwrap().len() <= limit);
     ///
     /// }
     /// ```
-    pub async fn get_ocdex_ohlcv(&self, instrument: &str, to_timestamp: Option<i64>, limit: Option<usize>, market: CCOCDEXMarket, unit: CCUnit) -> Result<CCDataResponse<Vec<CCOCDEXOHLCV>>, Error> {
-        call_api_endpoint::<CCDataResponse<Vec<CCOCDEXOHLCV>>>(
+    pub async fn get_ocdex_ohlcv(&self, instrument: &str, to_timestamp: Option<i64>, limit: Option<usize>, market: OCDEXMarket, unit: Unit) -> Result<CoinDeskResponse<Vec<OCDEXOHLCV>>, Error> {
+        call_api_endpoint::<CoinDeskResponse<Vec<OCDEXOHLCV>>>(
             self.api_key()?,
-            CCAPIEndpoint::OCDEXOHLCV, unit,
-            vec![Param::Instrument{v: instrument}, Param::Limit{v: limit}, Param::ToTimestamp{v: to_timestamp}, Param::Market{v: market.to_string()}],
-            Some(String::from("&groups=ID,MAPPING,MAPPING_ADVANCED,OHLC,OHLC_SWAP,SWAP,VOLUME"))
+            APIEndpoint::OCDEXOHLCV, unit,
+            vec![Param::Instrument { v: instrument, }, Param::Limit { v: limit, }, Param::ToTimestamp { v: to_timestamp, }, Param::Market { v: market.to_string(), }],
+            None
         ).await
     }
 
@@ -730,39 +754,42 @@ impl CCData {
     /// Returns metadata about a given market.
     ///
     /// # Description (CoinDesk Documentation)
-    /// The On-Chain Markets endpoint offers comprehensive information about various decentralized exchange (DEX) markets within the blockchain ecosystem.
-    /// By specifying a market through the "market" parameter, users can retrieve detailed information about a specific on-chain market, such as its trading pairs,
-    /// liquidity, operational status, and other relevant metadata. If no specific market is indicated, the endpoint delivers data on all available on-chain markets.
-    /// This functionality is essential for users looking to explore and compare the characteristics and trading conditions of different decentralized exchanges
-    /// or market segments, aiding in market analysis, strategic planning, and decision-making.
+    /// This endpoint provides comprehensive information about various on-chain decentralized exchange markets, 
+    ///featuring extensive exchange metadata and DEX-specific operational details. By specifying a market through the "markets" parameter,
+    /// users can retrieve details about specific on-chain markets, such as its supported blockchain networks, smart contract addresses,
+    /// protocol type (AMM, order book, hybrid), governance structure, launch dates, audit information, operational status,
+    /// and comprehensive static metadata including exchange status, supported token standards, integration configurations, benchmark scores,
+    /// and resource links. If no specific markets are indicated, the endpoint delivers data on all available on-chain markets.
     ///
     /// # Input
-    /// - `market`: Market name
+    /// - `markets`: Markets' names
     ///
     /// # Examples
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, CCOCDEXMarket};
+    /// use ccdata_api::{CoinDesk, OCDEXMarket};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     ///
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     ///
-    ///     let market: CCOCDEXMarket = CCOCDEXMarket::UNISWAPV2;
-    ///     let markets = backend.get_ocdex_markets(market).await.unwrap();
+    ///     let markets: Vec<OCDEXMarket> = vec![OCDEXMarket::UNISWAPV2];
+    ///     let markets = backend.get_ocdex_markets_v2(markets).await.unwrap();
     ///     assert_eq!(markets.data.unwrap().get("uniswapv2").unwrap().exchange_status, String::from("ACTIVE"));
     ///
     /// }
     /// ```
-    pub async fn get_ocdex_markets(&self, market: CCOCDEXMarket) -> Result<CCDataResponse<HashMap<String, CCOCDEXMarkets>>, Error> {
-        call_api_endpoint::<CCDataResponse<HashMap<String, CCOCDEXMarkets>>>(
+    pub async fn get_ocdex_markets_v2(&self, markets: Vec<OCDEXMarket>) -> Result<CoinDeskResponse<HashMap<String, OCDEXMarkets>>, Error> {
+        let v: Vec<String> = markets.iter().map(|v| v.to_string() ).collect();
+        call_api_endpoint::<CoinDeskResponse<HashMap<String, OCDEXMarkets>>>(
             self.api_key()?,
-            CCAPIEndpoint::OCDEXMarkets, CCUnit::NA,
-            vec![Param::Market{v: market.to_string()}], None
+            APIEndpoint::OCDEXMarketsV2, Unit::NA,
+            vec![Param::Markets { v, }],
+            None
         ).await
     }
 
@@ -786,12 +813,12 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::CCData;
+    /// use ccdata_api::CoinDesk;
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     ///
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     ///
@@ -800,12 +827,12 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_occore_eth_block(&self, block_number: i64) -> Result<CCDataResponse<CCOCCoreETHBlock>, Error> {
-        call_api_endpoint::<CCDataResponse<CCOCCoreETHBlock>>(
+    pub async fn get_occore_eth_block(&self, block_number: i64) -> Result<CoinDeskResponse<OCCoreETHBlock>, Error> {
+        call_api_endpoint::<CoinDeskResponse<OCCoreETHBlock>>(
             self.api_key()?,
-            CCAPIEndpoint::OCCoreETHBlocks, CCUnit::NA,
-            vec![Param::OCCoreBlockNumber{v: block_number}],
-            Some(String::from("&groups=ID,METADATA,TRANSACTIONS,ORPHAN_TRACES,UNCLES,WITHDRAWALS"))
+            APIEndpoint::OCCoreETHBlocks, Unit::NA,
+            vec![Param::OCCoreBlockNumber { v: block_number, }],
+            None
         ).await
     }
 
@@ -825,12 +852,12 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::CCData;
+    /// use ccdata_api::CoinDesk;
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     ///
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     ///
@@ -839,12 +866,12 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_occore_assets_by_chain(&self, chain_asset: &str) -> Result<CCDataResponse<CCOCCoreAssetByChain>, Error> {
-        call_api_endpoint::<CCDataResponse<CCOCCoreAssetByChain>>(
+    pub async fn get_occore_assets_by_chain(&self, chain_asset: &str) -> Result<CoinDeskResponse<OCCoreAssetByChain>, Error> {
+        call_api_endpoint::<CoinDeskResponse<OCCoreAssetByChain>>(
             self.api_key()?,
-            CCAPIEndpoint::OCCoreAssetsByChain, CCUnit::NA,
-            vec![Param::ChainAsset{v: chain_asset}],
-            Some(String::from("&asset_lookup_priority=SYMBOL"))
+            APIEndpoint::OCCoreAssetsByChain, Unit::NA,
+            vec![Param::ChainAsset { v: chain_asset, }],
+            None
         ).await
     }
 
@@ -867,12 +894,12 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::CCData;
+    /// use ccdata_api::CoinDesk;
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     ///
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     ///
@@ -883,12 +910,12 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_occore_asset_by_address(&self, chain_asset: &str, address: &str, quote_asset: &str) -> Result<CCDataResponse<CCOCCoreAssetByAddress>, Error> {
-        call_api_endpoint::<CCDataResponse<CCOCCoreAssetByAddress>>(
+    pub async fn get_occore_asset_by_address(&self, chain_asset: &str, address: &str, quote_asset: &str) -> Result<CoinDeskResponse<OCCoreAssetByAddress>, Error> {
+        call_api_endpoint::<CoinDeskResponse<OCCoreAssetByAddress>>(
             self.api_key()?,
-            CCAPIEndpoint::OCCoreAssetByAddress, CCUnit::NA,
-            vec![Param::ChainAsset{v: chain_asset}, Param::OCCoreAddress{v: address}, Param::OCCoreQuoteAsset{v: quote_asset}],
-            Some(String::from("&asset_lookup_priority=SYMBOL&groups=ID,BASIC,SUPPORTED_PLATFORMS,SECURITY_METRICS,SUPPLY,SUPPLY_ADDRESSES,ASSET_TYPE_SPECIFIC_METRICS,RESOURCE_LINKS,CLASSIFICATION,PRICE,MKT_CAP,VOLUME,CHANGE,TOPLIST_RANK,DESCRIPTION,DESCRIPTION_SUMMARY,CONTACT,SEO"))
+            APIEndpoint::OCCoreAssetByAddress, Unit::NA,
+            vec![Param::ChainAsset { v: chain_asset, }, Param::OCCoreAddress { v: address, }, Param::OCCoreQuoteAsset { v: quote_asset, }],
+            None
         ).await
     }
 
@@ -909,12 +936,12 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::CCData;
+    /// use ccdata_api::CoinDesk;
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     ///
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     ///
@@ -924,50 +951,12 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_occore_supply(&self, asset: &str, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CCDataResponse<Vec<CCOCCoreSupply>>, Error> {
-        call_api_endpoint::<CCDataResponse<Vec<CCOCCoreSupply>>>(
+    pub async fn get_occore_supply(&self, asset: &str, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CoinDeskResponse<Vec<OCCoreSupply>>, Error> {
+        call_api_endpoint::<CoinDeskResponse<Vec<OCCoreSupply>>>(
             self.api_key()?,
-            CCAPIEndpoint::OCCoreSupply, CCUnit::NA,
-            vec![Param::Asset{v: asset}, Param::ToTimestamp{v: to_timestamp}, Param::Limit{v: limit}], None
-        ).await
-    }
-
-    #[deprecated(since="1.0.6", note="Deprecated by CoinDesk")]
-    /// # Full Asset Metadata (Asset)
-    /// Returns a summary of metadata for a given asset.
-    ///
-    /// # Description (CoinDesk Documentation)
-    /// The Full Asset Metadata endpoint provides detailed and comprehensive information about any cryptocurrency asset identified by its CCData asset ID,
-    /// unique asset symbol, or asset URI. This includes extensive data on asset description, classification, blockchain properties, social metrics,
-    /// token sale information, and equity sale details—all consolidated into a single response to facilitate in-depth analysis, development, and research.
-    ///
-    /// # Input
-    /// - `asset`: Asset symbol
-    ///
-    /// # Examples
-    ///
-    /// ```rust
-    ///
-    /// use ccdata_api::CCData;
-    ///
-    /// #[tokio::main]
-    /// async fn main() -> () {
-    ///
-    ///     let mut backend: CCData = CCData::new();
-    ///     // Provide API key as the environment variable called API_KEY
-    ///     backend.build(&"API_KEY").unwrap();
-    ///
-    ///     let metadata = backend.get_asset_metadata("ETH").await.unwrap();
-    ///     assert_eq!(metadata.data.unwrap().name, String::from("Ethereum"));
-    ///
-    /// }
-    /// ```
-    pub async fn get_asset_metadata(&self, asset: &str) -> Result<CCDataResponse<CCAssetMetadata>, Error> {
-        call_api_endpoint::<CCDataResponse<CCAssetMetadata>>(
-            self.api_key()?,
-            CCAPIEndpoint::AssetMetadata, CCUnit::NA,
-            vec![Param::Asset{v: asset}],
-            Some(String::from("&asset_lookup_priority=SYMBOL&quote_asset=USD&groups=ID,BASIC,SUPPLY,SUPPLY_ADDRESSES,CLASSIFICATION"))
+            APIEndpoint::OCCoreSupply, Unit::NA,
+            vec![Param::Asset { v: asset, }, Param::ToTimestamp { v: to_timestamp, }, Param::Limit { v: limit, }],
+            None
         ).await
     }
 
@@ -987,12 +976,12 @@ impl CCData {
     /// 
     /// ```rust
     /// 
-    /// use ccdata_api::CCData;
+    /// use ccdata_api::CoinDesk;
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     /// 
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     /// 
@@ -1003,12 +992,12 @@ impl CCData {
     /// 
     /// }
     /// ```
-    pub async fn get_asset_metadata_v2(&self, assets: Vec<String>) -> Result<CCDataResponse<HashMap<String, CCAssetMetadata>>, Error> {
-        call_api_endpoint::<CCDataResponse<HashMap<String, CCAssetMetadata>>>(
+    pub async fn get_asset_metadata_v2(&self, assets: Vec<String>) -> Result<CoinDeskResponse<HashMap<String, AssetMetadata>>, Error> {
+        call_api_endpoint::<CoinDeskResponse<HashMap<String, AssetMetadata>>>(
             self.api_key()?,
-            CCAPIEndpoint::AssetMetadataV2, CCUnit::NA,
-            vec![Param::Assets {v: assets}],
-            Some(String::from("&asset_lookup_priority=SYMBOL&quote_asset=USD&groups=ID,BASIC,SUPPLY,SUPPLY_ADDRESSES,CLASSIFICATION"))
+            APIEndpoint::AssetMetadataV2, Unit::NA,
+            vec![Param::Assets { v: assets, }],
+            None
         ).await
     }
 
@@ -1028,12 +1017,12 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::CCData;
+    /// use ccdata_api::CoinDesk;
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     ///
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     ///
@@ -1043,11 +1032,12 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_asset_events(&self, asset: &str, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CCDataResponse<Vec<CCAssetEvent>>, Error> {
-        call_api_endpoint::<CCDataResponse<Vec<CCAssetEvent>>>(
+    pub async fn get_asset_events(&self, asset: &str, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CoinDeskResponse<Vec<AssetEvent>>, Error> {
+        call_api_endpoint::<CoinDeskResponse<Vec<AssetEvent>>>(
             self.api_key()?,
-            CCAPIEndpoint::AssetEvents, CCUnit::NA,
-            vec![Param::Asset{v: asset}, Param::ToTimestamp{v: to_timestamp}, Param::Limit{v: limit}], None
+            APIEndpoint::AssetEvents, Unit::NA,
+            vec![Param::Asset { v: asset, }, Param::ToTimestamp { v: to_timestamp, }, Param::Limit { v: limit, }],
+            None
         ).await
     }
 
@@ -1067,12 +1057,12 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::CCData;
+    /// use ccdata_api::CoinDesk;
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     ///
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     ///
@@ -1082,12 +1072,12 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_asset_code_repo(&self, asset: &str, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CCDataResponse<Vec<CCAssetCodeRepoMetrics>>, Error> {
-        call_api_endpoint::<CCDataResponse<Vec<CCAssetCodeRepoMetrics>>>(
+    pub async fn get_asset_code_repo(&self, asset: &str, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CoinDeskResponse<Vec<AssetCodeRepoMetrics>>, Error> {
+        call_api_endpoint::<CoinDeskResponse<Vec<AssetCodeRepoMetrics>>>(
             self.api_key()?,
-            CCAPIEndpoint::AssetCodeRepo, CCUnit::NA,
-            vec![Param::Asset{v: asset}, Param::ToTimestamp{v: to_timestamp}, Param::Limit{v: limit}],
-            Some(String::from("&groups=ID,GENERAL,ACTIVITY,SOURCE"))
+            APIEndpoint::AssetCodeRepo, Unit::NA,
+            vec![Param::Asset { v: asset, }, Param::ToTimestamp{ v: to_timestamp, }, Param::Limit { v: limit, }],
+            None
         ).await
     }
 
@@ -1107,12 +1097,12 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::CCData;
+    /// use ccdata_api::CoinDesk;
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     ///
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     ///
@@ -1122,12 +1112,12 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_asset_discord(&self, asset: &str, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CCDataResponse<Vec<CCAssetDiscord>>, Error> {
-        call_api_endpoint::<CCDataResponse<Vec<CCAssetDiscord>>>(
+    pub async fn get_asset_discord(&self, asset: &str, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CoinDeskResponse<Vec<AssetDiscord>>, Error> {
+        call_api_endpoint::<CoinDeskResponse<Vec<AssetDiscord>>>(
             self.api_key()?,
-            CCAPIEndpoint::AssetDiscord, CCUnit::NA,
-            vec![Param::Asset{v: asset}, Param::ToTimestamp{v: to_timestamp}, Param::Limit{v: limit}],
-            Some(String::from("&groups=ID,GENERAL,ACTIVITY,SOURCE"))
+            APIEndpoint::AssetDiscord, Unit::NA,
+            vec![Param::Asset { v: asset, }, Param::ToTimestamp { v: to_timestamp, }, Param::Limit { v: limit, }],
+            None
         ).await
     }
 
@@ -1148,12 +1138,12 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::CCData;
+    /// use ccdata_api::CoinDesk;
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     ///
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     ///
@@ -1163,12 +1153,12 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_asset_reddit(&self, asset: &str, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CCDataResponse<Vec<CCAssetReddit>>, Error> {
-        call_api_endpoint::<CCDataResponse<Vec<CCAssetReddit>>>(
+    pub async fn get_asset_reddit(&self, asset: &str, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CoinDeskResponse<Vec<AssetReddit>>, Error> {
+        call_api_endpoint::<CoinDeskResponse<Vec<AssetReddit>>>(
             self.api_key()?,
-            CCAPIEndpoint::AssetReddit, CCUnit::NA,
-            vec![Param::Asset{v: asset}, Param::ToTimestamp{v: to_timestamp}, Param::Limit{v: limit}],
-            Some(String::from("&groups=ID,GENERAL,ACTIVITY,SOURCE"))
+            APIEndpoint::AssetReddit, Unit::NA,
+            vec![Param::Asset { v: asset, }, Param::ToTimestamp { v: to_timestamp, }, Param::Limit { v: limit, }],
+            None
         ).await
     }
 
@@ -1188,12 +1178,12 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::CCData;
+    /// use ccdata_api::CoinDesk;
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     ///
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     ///
@@ -1203,12 +1193,12 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_asset_telegram(&self, asset: &str, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CCDataResponse<Vec<CCAssetTelegram>>, Error> {
-        call_api_endpoint::<CCDataResponse<Vec<CCAssetTelegram>>>(
+    pub async fn get_asset_telegram(&self, asset: &str, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CoinDeskResponse<Vec<AssetTelegram>>, Error> {
+        call_api_endpoint::<CoinDeskResponse<Vec<AssetTelegram>>>(
             self.api_key()?,
-            CCAPIEndpoint::AssetTelegram, CCUnit::NA,
-            vec![Param::Asset{v: asset}, Param::ToTimestamp{v: to_timestamp}, Param::Limit{v: limit}],
-            Some(String::from("&groups=ID,GENERAL,SOURCE"))
+            APIEndpoint::AssetTelegram, Unit::NA,
+            vec![Param::Asset { v: asset, }, Param::ToTimestamp { v: to_timestamp, }, Param::Limit { v: limit, }],
+            None
         ).await
     }
 
@@ -1228,12 +1218,12 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::CCData;
+    /// use ccdata_api::CoinDesk;
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     ///
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     ///
@@ -1243,12 +1233,12 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_asset_twitter(&self, asset: &str, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CCDataResponse<Vec<CCAssetTwitter>>, Error> {
-        call_api_endpoint::<CCDataResponse<Vec<CCAssetTwitter>>>(
+    pub async fn get_asset_twitter(&self, asset: &str, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CoinDeskResponse<Vec<AssetTwitter>>, Error> {
+        call_api_endpoint::<CoinDeskResponse<Vec<AssetTwitter>>>(
             self.api_key()?,
-            CCAPIEndpoint::AssetTwitter, CCUnit::NA,
-            vec![Param::Asset{v: asset}, Param::ToTimestamp{v: to_timestamp}, Param::Limit{v: limit}],
-            Some(String::from("&groups=ID,GENERAL,ACTIVITY,SOURCE"))
+            APIEndpoint::AssetTwitter, Unit::NA,
+            vec![Param::Asset { v: asset, }, Param::ToTimestamp { v: to_timestamp, }, Param::Limit { v: limit, }],
+            None
         ).await
     }
 
@@ -1273,31 +1263,31 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, CCNewsLang, CCNewsSourceID};
+    /// use ccdata_api::{CoinDesk, NewsLang, NewsSourceID};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     ///
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     ///
-    ///     let language: CCNewsLang = CCNewsLang::EN;
-    ///     let source_id: CCNewsSourceID = CCNewsSourceID::ForbesDigitalAssets;
+    ///     let language: NewsLang = NewsLang::EN;
+    ///     let source_id: NewsSourceID = NewsSourceID::ForbesDigitalAssets;
     ///     let limit: usize = 100;
     ///     let articles = backend.get_news_latest_articles(language, source_id, None, None, None, Some(limit)).await.unwrap();
     ///     assert_eq!(articles.data.unwrap().len(), limit);
     ///
     /// }
     /// ```
-    pub async fn get_news_latest_articles(&self, language: CCNewsLang, source_id: CCNewsSourceID, categories: Option<Vec<String>>,
-                                          exclude_categories: Option<Vec<String>>, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CCDataResponse<Vec<CCNewsLatestArticle>>, Error> {
-        call_api_endpoint::<CCDataResponse<Vec<CCNewsLatestArticle>>>(
+    pub async fn get_news_latest_articles(&self, language: NewsLang, source_id: NewsSourceID, categories: Option<Vec<String>>,
+                                          exclude_categories: Option<Vec<String>>, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CoinDeskResponse<Vec<NewsLatestArticle>>, Error> {
+        call_api_endpoint::<CoinDeskResponse<Vec<NewsLatestArticle>>>(
             self.api_key()?,
-            CCAPIEndpoint::NewsLatestArticles, CCUnit::NA,
+            APIEndpoint::NewsLatestArticles, Unit::NA,
             vec![
-                Param::NewsLanguage{v: language}, Param::NewsSourceID{v: source_id}, Param::NewsCategories{v: categories},
-                Param::NewsExcludeCategories{v: exclude_categories}, Param::ToTimestamp{v: to_timestamp}, Param::Limit{v: limit},
+                Param::NewsLanguage { v: language, }, Param::NewsSourceID { v: source_id, }, Param::NewsCategories { v: categories, },
+                Param::NewsExcludeCategories { v: exclude_categories, }, Param::ToTimestamp { v: to_timestamp, }, Param::Limit { v: limit, },
             ],
             None
         ).await
@@ -1320,28 +1310,28 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, CCNewsLang, CCNewsSourceType, CCNewsStatus};
+    /// use ccdata_api::{CoinDesk, NewsLang, NewsSourceType, NewsStatus};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     ///
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     ///
-    ///     let language: CCNewsLang = CCNewsLang::EN;
-    ///     let source_type: CCNewsSourceType = CCNewsSourceType::RSS;
-    ///     let status: CCNewsStatus = CCNewsStatus::ACTIVE;
+    ///     let language: NewsLang = NewsLang::EN;
+    ///     let source_type: NewsSourceType = NewsSourceType::RSS;
+    ///     let status: NewsStatus = NewsStatus::ACTIVE;
     ///     let sources = backend.get_news_sources(language, source_type, status).await.unwrap();
     ///     assert_eq!(sources.data.unwrap()[0].source_type, String::from("RSS"));
     ///
     /// }
     /// ```
-    pub async fn get_news_sources(&self, language: CCNewsLang, source_type: CCNewsSourceType, status: CCNewsStatus) -> Result<CCDataResponse<Vec<CCNewsSource>>, Error> {
-        call_api_endpoint::<CCDataResponse<Vec<CCNewsSource>>>(
+    pub async fn get_news_sources(&self, language: NewsLang, source_type: NewsSourceType, status: NewsStatus) -> Result<CoinDeskResponse<Vec<NewsSource>>, Error> {
+        call_api_endpoint::<CoinDeskResponse<Vec<NewsSource>>>(
             self.api_key()?,
-            CCAPIEndpoint::NewsSources, CCUnit::NA,
-            vec![Param::NewsLanguage{v: language}, Param::NewsSourceType{v: source_type}, Param::NewsStatus{v: status}],
+            APIEndpoint::NewsSources, Unit::NA,
+            vec![Param::NewsLanguage { v: language, }, Param::NewsSourceType { v: source_type, }, Param::NewsStatus { v: status, }],
             None
         ).await
     }
@@ -1362,26 +1352,26 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::{CCData, CCNewsStatus};
+    /// use ccdata_api::{CoinDesk, NewsStatus};
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     ///
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     ///
-    ///     let status: CCNewsStatus = CCNewsStatus::ACTIVE;
+    ///     let status: NewsStatus = NewsStatus::ACTIVE;
     ///     let categories = backend.get_news_categories(status).await.unwrap();
     ///     assert_eq!(categories.data.unwrap()[0].status, String::from("ACTIVE"));
     ///
     /// }
     /// ```
-    pub async fn get_news_categories(&self, status: CCNewsStatus) -> Result<CCDataResponse<Vec<CCNewsCategory>>, Error> {
-        call_api_endpoint::<CCDataResponse<Vec<CCNewsCategory>>>(
+    pub async fn get_news_categories(&self, status: NewsStatus) -> Result<CoinDeskResponse<Vec<NewsCategory>>, Error> {
+        call_api_endpoint::<CoinDeskResponse<Vec<NewsCategory>>>(
             self.api_key()?,
-            CCAPIEndpoint::NewsCategories, CCUnit::NA,
-            vec![Param::NewsStatus{v: status}],
+            APIEndpoint::NewsCategories, Unit::NA,
+            vec![Param::NewsStatus { v: status, }],
             None
         ).await
     }
@@ -1403,12 +1393,12 @@ impl CCData {
     ///
     /// ```rust
     ///
-    /// use ccdata_api::CCData;
+    /// use ccdata_api::CoinDesk;
     ///
     /// #[tokio::main]
     /// async fn main() -> () {
     ///
-    ///     let mut backend: CCData = CCData::new();
+    ///     let mut backend: CoinDesk = CoinDesk::new();
     ///     // Provide API key as the environment variable called API_KEY
     ///     backend.build(&"API_KEY").unwrap();
     ///
@@ -1418,12 +1408,12 @@ impl CCData {
     ///
     /// }
     /// ```
-    pub async fn get_overview_mktcap_ohlcv(&self, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CCDataResponse<Vec<CCOverviewMktCapOHLCV>>, Error> {
-        call_api_endpoint::<CCDataResponse<Vec<CCOverviewMktCapOHLCV>>>(
+    pub async fn get_overview_mktcap_ohlcv(&self, to_timestamp: Option<i64>, limit: Option<usize>) -> Result<CoinDeskResponse<Vec<OverviewMktCapOHLCV>>, Error> {
+        call_api_endpoint::<CoinDeskResponse<Vec<OverviewMktCapOHLCV>>>(
             self.api_key()?,
-            CCAPIEndpoint::OverviewMktCapOHLCV, CCUnit::NA,
-            vec![Param::ToTimestamp{v: to_timestamp}, Param::Limit{v: limit}],
-            Some(String::from("&groups=ID,OHLC,VOLUME"))
+            APIEndpoint::OverviewMktCapOHLCV, Unit::NA,
+            vec![Param::ToTimestamp { v: to_timestamp, }, Param::Limit { v: limit, }],
+            None
         ).await
     }
 }
@@ -1432,11 +1422,11 @@ impl CCData {
 
 #[cfg(test)]
 mod tests {
-    use crate::backend::CCData;
+    use crate::backend::CoinDesk;
 
     #[tokio::test]
     async fn unit_test_backend() -> () {
-        let mut backend: CCData = CCData::new();
+        let mut backend: CoinDesk = CoinDesk::new();
         backend.build(&"API_KEY").unwrap();
         assert!(backend.api_key != None);
     }

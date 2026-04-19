@@ -10,11 +10,11 @@ pub mod news;
 pub mod overview;
 
 
-use serde::Deserialize;
+use serde::{Serialize, Deserialize};
 
 
-#[derive(Deserialize, Debug)]
-pub struct CCPreviousAssetSymbol {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct PreviousAssetSymbol {
     #[serde(rename = "SYMBOL")]
     /// A symbol this asset was previously associated with.
     pub symbol: Option<String>,
@@ -30,8 +30,8 @@ pub struct CCPreviousAssetSymbol {
 }
 
 
-#[derive(Deserialize, Debug)]
-pub struct CCAssetAlternativeId {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct AssetAlternativeId {
     #[serde(rename = "NAME")]
     pub name: Option<String>,
     #[serde(skip_deserializing)]
@@ -40,8 +40,8 @@ pub struct CCAssetAlternativeId {
 }
 
 
-#[derive(Deserialize, Debug)]
-pub struct CCAssetIndustry {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct AssetIndustry {
     #[serde(rename = "ASSET_INDUSTRY")]
     pub asset_industry: Option<String>,
     #[serde(rename = "JUSTIFICATION")]
@@ -50,8 +50,8 @@ pub struct CCAssetIndustry {
 }
 
 
-#[derive(Deserialize, Debug)]
-pub struct CCSpecialAddress {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct SpecialAddress {
     #[serde(rename = "NAME")]
     /// The name of the address. Contract name or just the common name for this address.
     pub name: Option<String>,
@@ -67,8 +67,8 @@ pub struct CCSpecialAddress {
 }
 
 
-#[derive(Deserialize, Debug)]
-pub struct CCInstrumentStatus {
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
+pub struct InstrumentStatus {
     #[serde(rename = "ACTIVE")]
     /// The total number of instruments currently available on the market, which are considered active. An active instrument is defined as an instrument
     /// from which we retrieve data and have either already mapped or are planning to map.

@@ -1,28 +1,32 @@
-use serde::Deserialize;
+use std::fmt::Display;
+use serde::{Serialize, Deserialize};
 
 
+#[derive(Clone, Copy, Debug, Default, Serialize, Deserialize)]
 /// List of statuses used to filter articles based on their source integration state.
 /// Current allowed values are: ACTIVE, INACTIVE. An ACTIVE status indicates that the source's integration, such as an RSS feed,
 /// is currently operational and actively providing data. An INACTIVE status is assigned to sources that have either blocked access,
 /// disabled their integration mechanisms, or ceased operations. More statuses may be added in the future as source integration scenarios evolve.
-pub enum CCNewsStatus {
+pub enum NewsStatus {
+    #[default]
     ACTIVE,
     INACTIVE,
 }
 
-impl CCNewsStatus {
-    /// Converts enum value to `String`
-    pub fn to_string(&self) -> String {
-        match self {
-            CCNewsStatus::ACTIVE => String::from("ACTIVE"),
-            CCNewsStatus::INACTIVE => String::from("INACTIVE")
-        }
+impl Display for NewsStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+       match self {
+            Self::ACTIVE => write!(f, "ACTIVE"),
+            Self::INACTIVE => write!(f, "INACTIVE")
+        } 
     }
 }
 
 
+#[derive(Clone, Copy, Debug, Default, Serialize, Deserialize)]
 /// The preferred language for the sources or articles - English (EN), Espanol (ES), Turkish (TR), French (FR), Japanese (JP), Portuguese (PT).
-pub enum CCNewsLang {
+pub enum NewsLang {
+    #[default]
     EN,
     ES,
     TR,
@@ -31,16 +35,15 @@ pub enum CCNewsLang {
     PT,
 }
 
-impl CCNewsLang {
-    /// Converts enum value to `String`.
-    pub fn to_string(&self) -> String {
+impl Display for NewsLang {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            CCNewsLang::EN => String::from("EN"),
-            CCNewsLang::ES => String::from("ES"),
-            CCNewsLang::TR => String::from("TR"),
-            CCNewsLang::FR => String::from("FR"),
-            CCNewsLang::JP => String::from("JP"),
-            CCNewsLang::PT => String::from("PT"),
+            Self::EN => write!(f, "EN"),
+            Self::ES => write!(f, "ES"),
+            Self::TR => write!(f, "TR"),
+            Self::FR => write!(f, "FR"),
+            Self::JP => write!(f, "JP"),
+            Self::PT => write!(f, "PT"),
         }
     }
 }
@@ -49,9 +52,10 @@ impl CCNewsLang {
 // News: Latest Articles
 
 
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 /// Get articles from specific sources based on their keys. If left empty it will just return news from ACTIVE sources for the selected language,
 /// if you want to get inactive sources as well, please pass them in alongside the active ones in this array.
-pub enum CCNewsSourceID {
+pub enum NewsSourceID {
     CoinDesk,
     CoinTelegraph,
     BitcoinMagazine,
@@ -137,99 +141,98 @@ pub enum CCNewsSourceID {
     TheDefiant,
 }
 
-impl CCNewsSourceID {
-    /// Converts enum value to `String`.
-    pub fn to_string(&self) -> String {
+impl Display for NewsSourceID {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            CCNewsSourceID::CoinDesk => String::from("coindesk"),
-            CCNewsSourceID::CoinTelegraph => String::from("cointelegraph"),
-            CCNewsSourceID::BitcoinMagazine => String::from("bitcoinmagazine"),
-            CCNewsSourceID::CryptoGlobe => String::from("cryptoglobe"),
-            CCNewsSourceID::CoinGape => String::from("coingape"),
-            CCNewsSourceID::Blockworks => String::from("blockworks"),
-            CCNewsSourceID::TheDailyHodl => String::from("dailyhodl"),
-            CCNewsSourceID::CryptoSlate => String::from("cryptoslate"),
-            CCNewsSourceID::CryptoPotato => String::from("cryptopotato"),
-            CCNewsSourceID::Decrypt => String::from("decrypt"),
-            CCNewsSourceID::CryptoBriefing => String::from("cryptobriefing"),
-            CCNewsSourceID::TheBlock => String::from("theblock"),
-            CCNewsSourceID::BitcoinDotCom => String::from("bitcoin.com"),
-            CCNewsSourceID::NewsBTC => String::from("newsbtc"),
-            CCNewsSourceID::UToday => String::from("utoday"),
-            CCNewsSourceID::Bitcoinist => String::from("bitcoinist"),
-            CCNewsSourceID::Coinpedia => String::from("coinpedia"),
-            CCNewsSourceID::Cryptonomist => String::from("cryptonomist"),
-            CCNewsSourceID::CryptoNewsReview => String::from("cryptonewsreview"),
-            CCNewsSourceID::CCData => String::from("ccdata"),
-            CCNewsSourceID::Cryptoknowmics => String::from("cryptokowmics"),
-            CCNewsSourceID::CCN => String::from("ccn"),
-            CCNewsSourceID::FinanceMagnates => String::from("financemagnates"),
-            CCNewsSourceID::ETHNewsDotCom => String::from("ethnews.com"),
-            CCNewsSourceID::CryptoVest => String::from("cryptovest"),
-            CCNewsSourceID::CryptoInsider => String::from("cryptoinsider"),
-            CCNewsSourceID::HuobiBlog => String::from("huobi"),
-            CCNewsSourceID::CoinSpeaker => String::from("coinspeaker"),
-            CCNewsSourceID::CoinJoker => String::from("coinjoker"),
-            CCNewsSourceID::NintyNineBitcoins => String::from("99bitcoins"),
-            CCNewsSourceID::Cointelligence => String::from("cointelligence"),
-            CCNewsSourceID::OKXInsights => String::from("okexinsights"),
-            CCNewsSourceID::CryptoCoreMedia => String::from("cryptocoremedia"),            
-            CCNewsSourceID::Bitcoinerx => String::from("bitcoinerx"),
-            CCNewsSourceID::AMBCrypto => String::from("ambcrypto"),
-            CCNewsSourceID::Coinpaprika => String::from("coinpaprika"),
-            CCNewsSourceID::LiveBitcoinNews => String::from("livebitcoinnews"),
-            CCNewsSourceID::CryptoCompare => String::from("cryptocompare"),
-            CCNewsSourceID::BitDegree => String::from("bitdegree"),
-            CCNewsSourceID::TheCoinRepublic => String::from("coinrepublic"),
-            CCNewsSourceID::Chaindd => String::from("chaindd"),
-            CCNewsSourceID::Chaintimes => String::from("chaintimes"),
-            CCNewsSourceID::TheCoinRise => String::from("thecoinrise"),
-            CCNewsSourceID::CryptoNewsZ => String::from("cryptonewsz"),
-            CCNewsSourceID::YahooFinanceBitcoin => String::from("yahoofinance"),
-            CCNewsSourceID::VauldInsights => String::from("vauld_insights"),
-            CCNewsSourceID::ZyCrypto => String::from("zycrypto"),
-            CCNewsSourceID::KrakenBlog => String::from("krakenblog"),
-            CCNewsSourceID::Coincu => String::from("coincu"),
-            CCNewsSourceID::DailyCoin => String::from("dailycoin"),
-            CCNewsSourceID::TrustNodes => String::from("trustnodes"),
-            CCNewsSourceID::Coinnounce => String::from("coinnounce"),
-            CCNewsSourceID::CoinEdition => String::from("coinquora"),
-            CCNewsSourceID::BitcoinSistemi => String::from("bitcoinsistemi"),
-            CCNewsSourceID::TheNewsCrypto => String::from("thenewscrypto"),
-            CCNewsSourceID::ForbesDigitalAssets => String::from("forbes"),
-            CCNewsSourceID::Cryptonews => String::from("cryptonews"),
-            CCNewsSourceID::TimesNext => String::from("timesnext"),
-            CCNewsSourceID::EthereumWorldNews => String::from("ethereumworldnews"),
-            CCNewsSourceID::CryptoCoinDotNews => String::from("cryptocoinnews"),
-            CCNewsSourceID::BTCPulse => String::from("btcpulse"),
-            CCNewsSourceID::BloombergCrypto => String::from("bloomberg_crypto_"),
-            CCNewsSourceID::CoinOtag => String::from("coinotag"),
-            CCNewsSourceID::CryptoDotNews => String::from("crypto_news"),
-            CCNewsSourceID::Chainwire => String::from("chainwire"),
-            CCNewsSourceID::CryptoIntelligence => String::from("cryptointelligence"),
-            CCNewsSourceID::Coinpaper => String::from("coinpaper"),
-            CCNewsSourceID::BitfinexBlog => String::from("bitfinexblog"),
-            CCNewsSourceID::TheCryptoBasic => String::from("thecryptobasic"),
-            CCNewsSourceID::NFTDotNews => String::from("nft_news"),
-            CCNewsSourceID::Blokt => String::from("blokt"),
-            CCNewsSourceID::BitcoinWorld => String::from("bitcoinworld"),
-            CCNewsSourceID::CryptoDaily => String::from("cryptodaily"),
-            CCNewsSourceID::TimesTabloid => String::from("timestabloid"),
-            CCNewsSourceID::CoinTurkNews => String::from("cointurken"),
-            CCNewsSourceID::Invezz => String::from("invezz"),
-            CCNewsSourceID::SeekingAlpha => String::from("seekingalpha"),
-            CCNewsSourceID::Finbold => String::from("finbold"),
-            CCNewsSourceID::FinancialTimesCrypto => String::from("financial_times_"),
-            CCNewsSourceID::Cryptopolitan => String::from("cryptopolitan"),
-            CCNewsSourceID::NullTx => String::from("themerkle"),
-            CCNewsSourceID::TipRanks => String::from("tipranks"),
-            CCNewsSourceID::TheDefiant => String::from("thedefiant"),
+            Self::CoinDesk => write!(f, "coindesk"),
+            Self::CoinTelegraph => write!(f, "cointelegraph"),
+            Self::BitcoinMagazine => write!(f, "bitcoinmagazine"),
+            Self::CryptoGlobe => write!(f, "cryptoglobe"),
+            Self::CoinGape => write!(f, "coingape"),
+            Self::Blockworks => write!(f, "blockworks"),
+            Self::TheDailyHodl => write!(f, "dailyhodl"),
+            Self::CryptoSlate => write!(f, "cryptoslate"),
+            Self::CryptoPotato => write!(f, "cryptopotato"),
+            Self::Decrypt => write!(f, "decrypt"),
+            Self::CryptoBriefing => write!(f, "cryptobriefing"),
+            Self::TheBlock => write!(f, "theblock"),
+            Self::BitcoinDotCom => write!(f, "bitcoin.com"),
+            Self::NewsBTC => write!(f, "newsbtc"),
+            Self::UToday => write!(f, "utoday"),
+            Self::Bitcoinist => write!(f, "bitcoinist"),
+            Self::Coinpedia => write!(f, "coinpedia"),
+            Self::Cryptonomist => write!(f, "cryptonomist"),
+            Self::CryptoNewsReview => write!(f, "cryptonewsreview"),
+            Self::CCData => write!(f, "ccdata"),
+            Self::Cryptoknowmics => write!(f, "cryptokowmics"),
+            Self::CCN => write!(f, "ccn"),
+            Self::FinanceMagnates => write!(f, "financemagnates"),
+            Self::ETHNewsDotCom => write!(f, "ethnews.com"),
+            Self::CryptoVest => write!(f, "cryptovest"),
+            Self::CryptoInsider => write!(f, "cryptoinsider"),
+            Self::HuobiBlog => write!(f, "huobi"),
+            Self::CoinSpeaker => write!(f, "coinspeaker"),
+            Self::CoinJoker => write!(f, "coinjoker"),
+            Self::NintyNineBitcoins => write!(f, "99bitcoins"),
+            Self::Cointelligence => write!(f, "cointelligence"),
+            Self::OKXInsights => write!(f, "okexinsights"),
+            Self::CryptoCoreMedia => write!(f, "cryptocoremedia"),            
+            Self::Bitcoinerx => write!(f, "bitcoinerx"),
+            Self::AMBCrypto => write!(f, "ambcrypto"),
+            Self::Coinpaprika => write!(f, "coinpaprika"),
+            Self::LiveBitcoinNews => write!(f, "livebitcoinnews"),
+            Self::CryptoCompare => write!(f, "cryptocompare"),
+            Self::BitDegree => write!(f, "bitdegree"),
+            Self::TheCoinRepublic => write!(f, "coinrepublic"),
+            Self::Chaindd => write!(f, "chaindd"),
+            Self::Chaintimes => write!(f, "chaintimes"),
+            Self::TheCoinRise => write!(f, "thecoinrise"),
+            Self::CryptoNewsZ => write!(f, "cryptonewsz"),
+            Self::YahooFinanceBitcoin => write!(f, "yahoofinance"),
+            Self::VauldInsights => write!(f, "vauld_insights"),
+            Self::ZyCrypto => write!(f, "zycrypto"),
+            Self::KrakenBlog => write!(f, "krakenblog"),
+            Self::Coincu => write!(f, "coincu"),
+            Self::DailyCoin => write!(f, "dailycoin"),
+            Self::TrustNodes => write!(f, "trustnodes"),
+            Self::Coinnounce => write!(f, "coinnounce"),
+            Self::CoinEdition => write!(f, "coinquora"),
+            Self::BitcoinSistemi => write!(f, "bitcoinsistemi"),
+            Self::TheNewsCrypto => write!(f, "thenewscrypto"),
+            Self::ForbesDigitalAssets => write!(f, "forbes"),
+            Self::Cryptonews => write!(f, "cryptonews"),
+            Self::TimesNext => write!(f, "timesnext"),
+            Self::EthereumWorldNews => write!(f, "ethereumworldnews"),
+            Self::CryptoCoinDotNews => write!(f, "cryptocoinnews"),
+            Self::BTCPulse => write!(f, "btcpulse"),
+            Self::BloombergCrypto => write!(f, "bloomberg_crypto_"),
+            Self::CoinOtag => write!(f, "coinotag"),
+            Self::CryptoDotNews => write!(f, "crypto_news"),
+            Self::Chainwire => write!(f, "chainwire"),
+            Self::CryptoIntelligence => write!(f, "cryptointelligence"),
+            Self::Coinpaper => write!(f, "coinpaper"),
+            Self::BitfinexBlog => write!(f, "bitfinexblog"),
+            Self::TheCryptoBasic => write!(f, "thecryptobasic"),
+            Self::NFTDotNews => write!(f, "nft_news"),
+            Self::Blokt => write!(f, "blokt"),
+            Self::BitcoinWorld => write!(f, "bitcoinworld"),
+            Self::CryptoDaily => write!(f, "cryptodaily"),
+            Self::TimesTabloid => write!(f, "timestabloid"),
+            Self::CoinTurkNews => write!(f, "cointurken"),
+            Self::Invezz => write!(f, "invezz"),
+            Self::SeekingAlpha => write!(f, "seekingalpha"),
+            Self::Finbold => write!(f, "finbold"),
+            Self::FinancialTimesCrypto => write!(f, "financial_times_"),
+            Self::Cryptopolitan => write!(f, "cryptopolitan"),
+            Self::NullTx => write!(f, "themerkle"),
+            Self::TipRanks => write!(f, "tipranks"),
+            Self::TheDefiant => write!(f, "thedefiant"),
         }
     }
 }
 
-#[derive(Deserialize, Debug)]
-pub struct CCCategoryData {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct CategoryData {
     #[serde(rename = "TYPE")]
     /// Type of the message.
     pub type_: String,
@@ -244,8 +247,8 @@ pub struct CCCategoryData {
 }
 
 /// News: Latest Articles
-#[derive(Deserialize, Debug)]
-pub struct CCNewsLatestArticle {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct NewsLatestArticle {
     #[serde(rename = "TYPE")]
     /// Type of the message.
     pub type_: String,
@@ -309,42 +312,43 @@ pub struct CCNewsLatestArticle {
     pub updated_on: Option<i64>,
     #[serde(rename = "SOURCE_DATA")]
     /// The news source data of this article.
-    pub source_data: CCNewsSource,
+    pub source_data: NewsSource,
     #[serde(rename = "CATEGORY_DATA")]
     /// An array of categories this article belongs to.
-    pub category_date: Vec<CCCategoryData>,
+    pub category_date: Vec<CategoryData>,
 }
 
 
 
 // News: Sources
 
+
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 /// Specifies the type of integration used by the news source. Current allowed values are RSS, API, and TWITTER.
 /// 'RSS' indicates a source that distributes content via RSS feeds.
 /// 'API' refers to sources that provide data through a standardized programming interface.
 /// 'TWITTER' represents sources that disseminate information directly through Twitter.
 /// This parameter helps in selecting the method through which news content is retrieved.
-pub enum CCNewsSourceType {
+pub enum NewsSourceType {
     RSS,
     API,
     TWITTER,
 }
 
-impl CCNewsSourceType {
-    /// Converts enum value to `String`.
-    pub fn to_string(&self) -> String {
+impl Display for NewsSourceType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            CCNewsSourceType::RSS => String::from("RSS"),
-            CCNewsSourceType::API => String::from("API"),
-            CCNewsSourceType::TWITTER => String::from("TWITTER"),
+            Self::RSS => write!(f, "RSS"),
+            Self::API => write!(f, "API"),
+            Self::TWITTER => write!(f, "TWITTER"),
         }
     }
 }
 
 
 /// News: Sources
-#[derive(Deserialize, Debug)]
-pub struct CCNewsSource {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct NewsSource {
     #[serde(rename = "TYPE")]
     /// Type of the message.
     pub type_: String,
@@ -396,8 +400,8 @@ pub struct CCNewsSource {
 
 
 /// The filters for the news category.
-#[derive(Deserialize, Debug)]
-pub struct CCCategoryFilter {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct CategoryFilter {
     #[serde(rename = "INCLUDED_WORDS")]
     /// Words related or included in news category.
     pub included_words: Option<Vec<String>>,
@@ -411,8 +415,8 @@ pub struct CCCategoryFilter {
 
 
 /// News: Categories
-#[derive(Deserialize, Debug)]
-pub struct CCNewsCategory {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct NewsCategory {
     #[serde(rename = "TYPE")]
     /// Type of the message.
     pub type_: String,
@@ -424,7 +428,7 @@ pub struct CCNewsCategory {
     pub name: String,
     #[serde(rename = "FILTER")]
     /// The filters for the news category.
-    pub filter: Option<CCCategoryFilter>,
+    pub filter: Option<CategoryFilter>,
     #[serde(rename = "STATUS")]
     /// The status for the News category entry. Allowed values: ACTIVE, INACTIVE.
     pub status: String,

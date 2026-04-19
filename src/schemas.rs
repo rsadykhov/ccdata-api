@@ -2,10 +2,10 @@ pub mod min_api;
 pub mod data_api;
 
 
-use serde::{Deserialize, Deserializer};
+use serde::{Serialize, Deserialize, Deserializer};
 
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Serialize)]
 /// Custom response type that may use different types for the same value.
 pub enum StringOrInt {
     String(String),
@@ -36,7 +36,7 @@ impl<'de> Deserialize<'de> for StringOrInt {
                 Ok(StringOrInt::UInt64(v))
             }
         }
-
+        
         deserializer.deserialize_any(Visitor)
     }
 }
@@ -45,7 +45,7 @@ impl<'de> Deserialize<'de> for StringOrInt {
 // Min-API Wrappers
 
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct CCCallsMade {
     pub second: i32,
     pub minute: i32,
@@ -55,7 +55,7 @@ pub struct CCCallsMade {
     pub total_calls: i32,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct CCMaxCalls {
     pub second: i32,
     pub minute: i32,
@@ -64,13 +64,13 @@ pub struct CCMaxCalls {
     pub month: i32,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
 pub struct CCRateLimit {
     pub calls_made: Option<CCCallsMade>,
     pub max_calls: Option<CCMaxCalls>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CCMinWrapper<T> {
     #[serde(rename = "Aggregated")]
     pub aggregated: Option<bool>,
@@ -82,7 +82,7 @@ pub struct CCMinWrapper<T> {
     pub data: Option<T>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CCMinResponse<T> {
     #[serde(rename = "Response")]
     pub response: String,
@@ -102,7 +102,7 @@ pub struct CCMinResponse<T> {
 // Data-API Wrappers
 
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CCErrorOtherInfo {
     /// The parameter that is responsible for the error.
     pub param: Option<String>,
@@ -119,7 +119,7 @@ pub struct CCErrorOtherInfo {
     pub first_bucket: Option<i64>,
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 /// This object provides detailed information about an error encountered while processing the request. It includes an error code, a message explaining the error,
 /// and additional context about the parameters or values that caused the issue. This helps clients identify and resolve issues with their requests.
 pub struct CCError {
@@ -131,8 +131,8 @@ pub struct CCError {
     pub other_info: Option<CCErrorOtherInfo>,
 }
 
-#[derive(Deserialize, Debug)]
-pub struct CCDataResponse<T> {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct CoinDeskResponse<T> {
     #[serde(rename = "Data")]
     pub data: Option<T>,
     #[serde(rename = "Err")]
@@ -151,7 +151,7 @@ mod tests {
         use serde_json;
         use crate::schemas;
         let d: String = String::from("{\"Data\":{}, \"Err\":{\"type\": 23, \"message\": \"hello\", \"other_info\":null}}");
-        let response: schemas::CCDataResponse<String> = serde_json::from_str(&d.to_string().replace("{}", "null")).unwrap();
+        let response: schemas::CoinDeskResponse<String> = serde_json::from_str(&d.to_string().replace("{}", "null")).unwrap();
         assert_eq!(response.data, None);
     }
 }

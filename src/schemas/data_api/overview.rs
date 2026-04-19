@@ -1,12 +1,12 @@
-use serde::Deserialize;
+use serde::{Serialize, Deserialize};
 
 
 // Overview: MktCap Historical OHLCV
 
 
 /// Overview: MktCap Historical OHLCV
-#[derive(Deserialize, Debug)]
-pub struct CCOverviewMktCapOHLCV {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct OverviewMktCapOHLCV {
     #[serde(rename = "UNIT")]
     /// The unit of the message.
     pub unit: String,

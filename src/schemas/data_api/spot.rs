@@ -1,11 +1,11 @@
-use std::collections::HashMap;
-use serde::Deserialize;
-use crate::utils::Market;
-use crate::schemas::data_api::CCInstrumentStatus;
+use std::{fmt::Display, collections::HashMap};
+use serde::{Serialize, Deserialize};
+use crate::schemas::data_api::InstrumentStatus;
 
 
+#[derive(Clone, Copy, Debug, Default, Serialize, Deserialize)]
 /// The exchange to obtain data from.
-pub enum CCSpotMarket {
+pub enum SpotMarket {
     AAX,
     ABCC,
     ACX,
@@ -125,6 +125,7 @@ pub enum CCSpotMarket {
     INX,
     ITBIT,
     KORBIT,
+    #[default]
     KRAKEN,
     KUCOIN,
     KUNA,
@@ -183,192 +184,193 @@ pub enum CCSpotMarket {
     ZONDA,
 }
 
-impl Market for CCSpotMarket {
-    /// Converts enum value to `String`.
-    fn to_string(&self) -> String {
+impl Display for SpotMarket {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            CCSpotMarket::AAX => String::from("aax"),
-            CCSpotMarket::ABCC => String::from("abcc"),
-            CCSpotMarket::ACX => String::from("acx"),
-            CCSpotMarket::AIDOSMARKET => String::from("aidosmarket"),
-            CCSpotMarket::ALPHAEX => String::from("alphaex"),
-            CCSpotMarket::ARCHAX => String::from("archax"),
-            CCSpotMarket::ASCENDEX => String::from("ascendex"),
-            CCSpotMarket::ATAIX => String::from("ataix"),
-            CCSpotMarket::BACKPACK => String::from("backpack"),
-            CCSpotMarket::BEQUANT => String::from("bequant"),
-            CCSpotMarket::BGOGO => String::from("bgogo"),
-            CCSpotMarket::BIBOX365 => String::from("bibox365"),
-            CCSpotMarket::BIGONE => String::from("bigone"),
-            CCSpotMarket::BILAXY => String::from("bilaxy"),
-            CCSpotMarket::BINANCE => String::from("binance"),
-            CCSpotMarket::BINANCEAGGREGATE => String::from("binanceaggreagate"),
-            CCSpotMarket::BINANCETR => String::from("binancetr"),
-            CCSpotMarket::BINANCEUSA => String::from("binanceusa"),
-            CCSpotMarket::BINGX => String::from("bingx"),
-            CCSpotMarket::BISQ => String::from("bisq"),
-            CCSpotMarket::BIT => String::from("bit"),
-            CCSpotMarket::BIT2C => String::from("bit2c"),
-            CCSpotMarket::BITBANK => String::from("bitbank"),
-            CCSpotMarket::BITBAY => String::from("bitbay"),
-            CCSpotMarket::BITBNS => String::from("bitbns"),
-            CCSpotMarket::BITBUY => String::from("bitbuy"),
-            CCSpotMarket::BITCI => String::from("bitci"),
-            CCSpotMarket::BITEXBOOK => String::from("bitexbook"),
-            CCSpotMarket::BITFEX => String::from("bitfex"),
-            CCSpotMarket::BITFINEX => String::from("bitfinex"),
-            CCSpotMarket::BITFLYER => String::from("bitflyer"),
-            CCSpotMarket::BITFLYEREU => String::from("bitflyereu"),
-            CCSpotMarket::BITFLYERFX => String::from("bitflyerfx"),
-            CCSpotMarket::BITFLYERUS => String::from("bitflyerus"),
-            CCSpotMarket::BITFOREX => String::from("bitforex"),
-            CCSpotMarket::BITGET => String::from("bitget"),
-            CCSpotMarket::BITHUMBGLOBAL => String::from("bithumbglobal"),
-            CCSpotMarket::BITHUMBKOREA => String::from("bithumbkorea"),
-            CCSpotMarket::BITINKA => String::from("bitinka"),
-            CCSpotMarket::BITKUB => String::from("bitkub"),
-            CCSpotMarket::BITMART => String::from("bitmart"),
-            CCSpotMarket::BITMEX => String::from("bitmex"),
-            CCSpotMarket::BITPANDA => String::from("bitpanda"),
-            CCSpotMarket::BITRUE => String::from("bitrue"),
-            CCSpotMarket::BITSO => String::from("bitso"),
-            CCSpotMarket::BITSTAMP => String::from("bitstamp"),
-            CCSpotMarket::BITTREX => String::from("bittrex"),
-            CCSpotMarket::BITVAVO => String::from("bitvavo"),
-            CCSpotMarket::BKEX => String::from("bkex"),
-            CCSpotMarket::BLACKTURTLE => String::from("blackturtle"),
-            CCSpotMarket::BLEUTRADE => String::from("bleutrade"),
-            CCSpotMarket::BLOCKCHAINCOM => String::from("blockchaindotcom"),
-            CCSpotMarket::BTCALPHA => String::from("btcalpha"),
-            CCSpotMarket::BTCBOX => String::from("btcbox"),
-            CCSpotMarket::BTCEX => String::from("btcex"),
-            CCSpotMarket::BTCMARKETS => String::from("btcmarkets"),
-            CCSpotMarket::BTCTURK => String::from("btcturk"),
-            CCSpotMarket::BTSE => String::from("btse"),
-            CCSpotMarket::BUDA => String::from("buda"),
-            CCSpotMarket::BULLISH => String::from("bullish"),
-            CCSpotMarket::BUYUCOIN => String::from("buyucoin"),
-            CCSpotMarket::BWEXCHANGE => String::from("bwexchange"),
-            CCSpotMarket::BYBIT => String::from("bybit"),
-            CCSpotMarket::BYDFI => String::from("bydfi"),
-            CCSpotMarket::CATEX => String::from("catex"),
-            CCSpotMarket::CEXIO => String::from("cexio"),
-            CCSpotMarket::COINBASE => String::from("coinbase"),
-            CCSpotMarket::COINBASEINTERNATIONAL => String::from("coinbaseinternational"),
-            CCSpotMarket::COINCHECK => String::from("coincheck"),
-            CCSpotMarket::COINCORNER => String::from("coincorner"),
-            CCSpotMarket::COINDCX => String::from("coindcx"),
-            CCSpotMarket::COINDEAL => String::from("coindeal"),
-            CCSpotMarket::COINEX => String::from("coinex"),
-            CCSpotMarket::COINFALCON => String::from("coinfalcon"),
-            CCSpotMarket::COINFIELD => String::from("coinfield"),
-            CCSpotMarket::COINJAR => String::from("coinjar"),
-            CCSpotMarket::COINMATE => String::from("coinmate"),
-            CCSpotMarket::COINONE => String::from("coinone"),
-            CCSpotMarket::COINSBIT => String::from("coinsbit"),
-            CCSpotMarket::COINSPRO => String::from("coinspro"),
-            CCSpotMarket::COINTIGER => String::from("cointiger"),
-            CCSpotMarket::COINW => String::from("coinw"),
-            CCSpotMarket::COSS => String::from("coss"),
-            CCSpotMarket::CREX24 => String::from("crex24"),
-            CCSpotMarket::CROSSTOWER => String::from("crosstower"),
-            CCSpotMarket::CRYPTOCARBON => String::from("cryptocarbon"),
-            CCSpotMarket::CRYPTODOTCOM => String::from("cryptodotcom"),
-            CCSpotMarket::CRYPTOPIA => String::from("cryptopia"),
-            CCSpotMarket::CRYPTSY => String::from("cryptsy"),
-            CCSpotMarket::CUBE => String::from("cube"),
-            CCSpotMarket::CURRENCY => String::from("currency"),
-            CCSpotMarket::DCOIN => String::from("dcoin"),
-            CCSpotMarket::DDEX => String::from("ddex"),
-            CCSpotMarket::DECOIN => String::from("decoin"),
-            CCSpotMarket::DERIBIT => String::from("deribit"),
-            CCSpotMarket::DIGIFINEX => String::from("digifinex"),
-            CCSpotMarket::ERISX => String::from("erisx"),
-            CCSpotMarket::ETORO => String::from("etoro"),
-            CCSpotMarket::EXMO => String::from("exmo"),
-            CCSpotMarket::FCOIN => String::from("fcoin"),
-            CCSpotMarket::FOXBIT => String::from("foxbit"),
-            CCSpotMarket::FTX => String::from("ftx"),
-            CCSpotMarket::FTXUS => String::from("ftxus"),
-            CCSpotMarket::GARANTEX => String::from("garantex"),
-            CCSpotMarket::GATEIO => String::from("gateio"),
-            CCSpotMarket::GEMINI => String::from("gemini"),
-            CCSpotMarket::GLOBITEX => String::from("globitex"),
-            CCSpotMarket::GOPAX => String::from("gopax"),
-            CCSpotMarket::GRAVIEX => String::from("graviex"),
-            CCSpotMarket::HASHKEY => String::from("hashkey"),
-            CCSpotMarket::HITBTC => String::from("hitbtc"),
-            CCSpotMarket::HUOBIJAPAN => String::from("huobijapan"),
-            CCSpotMarket::HUOBIPRO => String::from("huobipro"),
-            CCSpotMarket::INDEPENDENTRESERVE => String::from("independentreserve"),
-            CCSpotMarket::INDODAX => String::from("indodax"),
-            CCSpotMarket::INDOEX => String::from("indoex"),
-            CCSpotMarket::INX => String::from("inx"),
-            CCSpotMarket::ITBIT => String::from("itbit"),
-            CCSpotMarket::KORBIT => String::from("korbit"),
-            CCSpotMarket::KRAKEN => String::from("kraken"),
-            CCSpotMarket::KUCOIN => String::from("kucoin"),
-            CCSpotMarket::KUNA => String::from("kuna"),
-            CCSpotMarket::LATOKEN => String::from("latoken"),
-            CCSpotMarket::LBANK => String::from("lbank"),
-            CCSpotMarket::LIQNET => String::from("liqnet"),
-            CCSpotMarket::LIQUID => String::from("liquid"),
-            CCSpotMarket::LITEBIT => String::from("litebit"),
-            CCSpotMarket::LMAX => String::from("lmax"),
-            CCSpotMarket::LUNO => String::from("luno"),
-            CCSpotMarket::LYKKE => String::from("lykke"),
-            CCSpotMarket::MERCADOBTC => String::from("mercadobtc"),
-            CCSpotMarket::MERCATOX => String::from("mercatox"),
-            CCSpotMarket::MEXC => String::from("mexc"),
-            CCSpotMarket::MOCK => String::from("mock"),
-            CCSpotMarket::MTGOX => String::from("mtgox"),
-            CCSpotMarket::NDAX => String::from("ndax"),
-            CCSpotMarket::NOMINEX => String::from("nominex"),
-            CCSpotMarket::OKCOIN => String::from("okcoin"),
-            CCSpotMarket::OKEX => String::from("okex"),
-            CCSpotMarket::ONETRADING => String::from("onetrading"),
-            CCSpotMarket::OSL => String::from("osl"),
-            CCSpotMarket::OSLHONGKONG => String::from("oslhongkong"),
-            CCSpotMarket::P2PB2B => String::from("p2pb2b"),
-            CCSpotMarket::PANCAKESWAP => String::from("pancakeswap"),
-            CCSpotMarket::PARAMOUNTDAX => String::from("paramountdax"),
-            CCSpotMarket::PARIBU => String::from("paribu"),
-            CCSpotMarket::PHEMEX => String::from("phemex"),
-            CCSpotMarket::POLONIEX => String::from("poloniex"),
-            CCSpotMarket::PROBIT => String::from("probit"),
-            CCSpotMarket::SAFETRADE => String::from("safetrade"),
-            CCSpotMarket::SIGENPRO => String::from("sigenpro"),
-            CCSpotMarket::SIMEX => String::from("simex"),
-            CCSpotMarket::SWITCHEO => String::from("switcheo"),
-            CCSpotMarket::THEROCKTRADING => String::from("therocktrading"),
-            CCSpotMarket::TIDEFI => String::from("tidefi"),
-            CCSpotMarket::TIMEX => String::from("timex"),
-            CCSpotMarket::TOKENOMY => String::from("tokenomy"),
-            CCSpotMarket::TRADEOGRE => String::from("tradeogre"),
-            CCSpotMarket::UNISWAP => String::from("uniswap"),
-            CCSpotMarket::UNOCOIN => String::from("unocoin"),
-            CCSpotMarket::UPBIT => String::from("upbit"),
-            CCSpotMarket::VALR => String::from("valr"),
-            CCSpotMarket::VITEX => String::from("vitex"),
-            CCSpotMarket::WAZIRX => String::from("waxirx"),
-            CCSpotMarket::WHITEBIT => String::from("whitebit"),
-            CCSpotMarket::WOO => String::from("woo"),
-            CCSpotMarket::XCOEX => String::from("xcoex"),
-            CCSpotMarket::XTPUB => String::from("xtpub"),
-            CCSpotMarket::YELLOW => String::from("yellow"),
-            CCSpotMarket::YOBIT => String::from("yobit"),
-            CCSpotMarket::ZAIF => String::from("zaif"),
-            CCSpotMarket::ZBDOTCOM => String::from("zbdotcom"),
-            CCSpotMarket::ZBG => String::from("zbg"),
-            CCSpotMarket::ZEBITEX => String::from("zebitex"),
-            CCSpotMarket::ZONDA => String::from("zonda"),
-        }
+            Self::AAX => write!(f, "aax"),
+            Self::ABCC => write!(f, "abcc"),
+            Self::ACX => write!(f, "acx"),
+            Self::AIDOSMARKET => write!(f, "aidosmarket"),
+            Self::ALPHAEX => write!(f, "alphaex"),
+            Self::ARCHAX => write!(f, "archax"),
+            Self::ASCENDEX => write!(f, "ascendex"),
+            Self::ATAIX => write!(f, "ataix"),
+            Self::BACKPACK => write!(f, "backpack"),
+            Self::BEQUANT => write!(f, "bequant"),
+            Self::BGOGO => write!(f, "bgogo"),
+            Self::BIBOX365 => write!(f, "bibox365"),
+            Self::BIGONE => write!(f, "bigone"),
+            Self::BILAXY => write!(f, "bilaxy"),
+            Self::BINANCE => write!(f, "binance"),
+            Self::BINANCEAGGREGATE => write!(f, "binanceaggreagate"),
+            Self::BINANCETR => write!(f, "binancetr"),
+            Self::BINANCEUSA => write!(f, "binanceusa"),
+            Self::BINGX => write!(f, "bingx"),
+            Self::BISQ => write!(f, "bisq"),
+            Self::BIT => write!(f, "bit"),
+            Self::BIT2C => write!(f, "bit2c"),
+            Self::BITBANK => write!(f, "bitbank"),
+            Self::BITBAY => write!(f, "bitbay"),
+            Self::BITBNS => write!(f, "bitbns"),
+            Self::BITBUY => write!(f, "bitbuy"),
+            Self::BITCI => write!(f, "bitci"),
+            Self::BITEXBOOK => write!(f, "bitexbook"),
+            Self::BITFEX => write!(f, "bitfex"),
+            Self::BITFINEX => write!(f, "bitfinex"),
+            Self::BITFLYER => write!(f, "bitflyer"),
+            Self::BITFLYEREU => write!(f, "bitflyereu"),
+            Self::BITFLYERFX => write!(f, "bitflyerfx"),
+            Self::BITFLYERUS => write!(f, "bitflyerus"),
+            Self::BITFOREX => write!(f, "bitforex"),
+            Self::BITGET => write!(f, "bitget"),
+            Self::BITHUMBGLOBAL => write!(f, "bithumbglobal"),
+            Self::BITHUMBKOREA => write!(f, "bithumbkorea"),
+            Self::BITINKA => write!(f, "bitinka"),
+            Self::BITKUB => write!(f, "bitkub"),
+            Self::BITMART => write!(f, "bitmart"),
+            Self::BITMEX => write!(f, "bitmex"),
+            Self::BITPANDA => write!(f, "bitpanda"),
+            Self::BITRUE => write!(f, "bitrue"),
+            Self::BITSO => write!(f, "bitso"),
+            Self::BITSTAMP => write!(f, "bitstamp"),
+            Self::BITTREX => write!(f, "bittrex"),
+            Self::BITVAVO => write!(f, "bitvavo"),
+            Self::BKEX => write!(f, "bkex"),
+            Self::BLACKTURTLE => write!(f, "blackturtle"),
+            Self::BLEUTRADE => write!(f, "bleutrade"),
+            Self::BLOCKCHAINCOM => write!(f, "blockchaindotcom"),
+            Self::BTCALPHA => write!(f, "btcalpha"),
+            Self::BTCBOX => write!(f, "btcbox"),
+            Self::BTCEX => write!(f, "btcex"),
+            Self::BTCMARKETS => write!(f, "btcmarkets"),
+            Self::BTCTURK => write!(f, "btcturk"),
+            Self::BTSE => write!(f, "btse"),
+            Self::BUDA => write!(f, "buda"),
+            Self::BULLISH => write!(f, "bullish"),
+            Self::BUYUCOIN => write!(f, "buyucoin"),
+            Self::BWEXCHANGE => write!(f, "bwexchange"),
+            Self::BYBIT => write!(f, "bybit"),
+            Self::BYDFI => write!(f, "bydfi"),
+            Self::CATEX => write!(f, "catex"),
+            Self::CEXIO => write!(f, "cexio"),
+            Self::COINBASE => write!(f, "coinbase"),
+            Self::COINBASEINTERNATIONAL => write!(f, "coinbaseinternational"),
+            Self::COINCHECK => write!(f, "coincheck"),
+            Self::COINCORNER => write!(f, "coincorner"),
+            Self::COINDCX => write!(f, "coindcx"),
+            Self::COINDEAL => write!(f, "coindeal"),
+            Self::COINEX => write!(f, "coinex"),
+            Self::COINFALCON => write!(f, "coinfalcon"),
+            Self::COINFIELD => write!(f, "coinfield"),
+            Self::COINJAR => write!(f, "coinjar"),
+            Self::COINMATE => write!(f, "coinmate"),
+            Self::COINONE => write!(f, "coinone"),
+            Self::COINSBIT => write!(f, "coinsbit"),
+            Self::COINSPRO => write!(f, "coinspro"),
+            Self::COINTIGER => write!(f, "cointiger"),
+            Self::COINW => write!(f, "coinw"),
+            Self::COSS => write!(f, "coss"),
+            Self::CREX24 => write!(f, "crex24"),
+            Self::CROSSTOWER => write!(f, "crosstower"),
+            Self::CRYPTOCARBON => write!(f, "cryptocarbon"),
+            Self::CRYPTODOTCOM => write!(f, "cryptodotcom"),
+            Self::CRYPTOPIA => write!(f, "cryptopia"),
+            Self::CRYPTSY => write!(f, "cryptsy"),
+            Self::CUBE => write!(f, "cube"),
+            Self::CURRENCY => write!(f, "currency"),
+            Self::DCOIN => write!(f, "dcoin"),
+            Self::DDEX => write!(f, "ddex"),
+            Self::DECOIN => write!(f, "decoin"),
+            Self::DERIBIT => write!(f, "deribit"),
+            Self::DIGIFINEX => write!(f, "digifinex"),
+            Self::ERISX => write!(f, "erisx"),
+            Self::ETORO => write!(f, "etoro"),
+            Self::EXMO => write!(f, "exmo"),
+            Self::FCOIN => write!(f, "fcoin"),
+            Self::FOXBIT => write!(f, "foxbit"),
+            Self::FTX => write!(f, "ftx"),
+            Self::FTXUS => write!(f, "ftxus"),
+            Self::GARANTEX => write!(f, "garantex"),
+            Self::GATEIO => write!(f, "gateio"),
+            Self::GEMINI => write!(f, "gemini"),
+            Self::GLOBITEX => write!(f, "globitex"),
+            Self::GOPAX => write!(f, "gopax"),
+            Self::GRAVIEX => write!(f, "graviex"),
+            Self::HASHKEY => write!(f, "hashkey"),
+            Self::HITBTC => write!(f, "hitbtc"),
+            Self::HUOBIJAPAN => write!(f, "huobijapan"),
+            Self::HUOBIPRO => write!(f, "huobipro"),
+            Self::INDEPENDENTRESERVE => write!(f, "independentreserve"),
+            Self::INDODAX => write!(f, "indodax"),
+            Self::INDOEX => write!(f, "indoex"),
+            Self::INX => write!(f, "inx"),
+            Self::ITBIT => write!(f, "itbit"),
+            Self::KORBIT => write!(f, "korbit"),
+            Self::KRAKEN => write!(f, "kraken"),
+            Self::KUCOIN => write!(f, "kucoin"),
+            Self::KUNA => write!(f, "kuna"),
+            Self::LATOKEN => write!(f, "latoken"),
+            Self::LBANK => write!(f, "lbank"),
+            Self::LIQNET => write!(f, "liqnet"),
+            Self::LIQUID => write!(f, "liquid"),
+            Self::LITEBIT => write!(f, "litebit"),
+            Self::LMAX => write!(f, "lmax"),
+            Self::LUNO => write!(f, "luno"),
+            Self::LYKKE => write!(f, "lykke"),
+            Self::MERCADOBTC => write!(f, "mercadobtc"),
+            Self::MERCATOX => write!(f, "mercatox"),
+            Self::MEXC => write!(f, "mexc"),
+            Self::MOCK => write!(f, "mock"),
+            Self::MTGOX => write!(f, "mtgox"),
+            Self::NDAX => write!(f, "ndax"),
+            Self::NOMINEX => write!(f, "nominex"),
+            Self::OKCOIN => write!(f, "okcoin"),
+            Self::OKEX => write!(f, "okex"),
+            Self::ONETRADING => write!(f, "onetrading"),
+            Self::OSL => write!(f, "osl"),
+            Self::OSLHONGKONG => write!(f, "oslhongkong"),
+            Self::P2PB2B => write!(f, "p2pb2b"),
+            Self::PANCAKESWAP => write!(f, "pancakeswap"),
+            Self::PARAMOUNTDAX => write!(f, "paramountdax"),
+            Self::PARIBU => write!(f, "paribu"),
+            Self::PHEMEX => write!(f, "phemex"),
+            Self::POLONIEX => write!(f, "poloniex"),
+            Self::PROBIT => write!(f, "probit"),
+            Self::SAFETRADE => write!(f, "safetrade"),
+            Self::SIGENPRO => write!(f, "sigenpro"),
+            Self::SIMEX => write!(f, "simex"),
+            Self::SWITCHEO => write!(f, "switcheo"),
+            Self::THEROCKTRADING => write!(f, "therocktrading"),
+            Self::TIDEFI => write!(f, "tidefi"),
+            Self::TIMEX => write!(f, "timex"),
+            Self::TOKENOMY => write!(f, "tokenomy"),
+            Self::TRADEOGRE => write!(f, "tradeogre"),
+            Self::UNISWAP => write!(f, "uniswap"),
+            Self::UNOCOIN => write!(f, "unocoin"),
+            Self::UPBIT => write!(f, "upbit"),
+            Self::VALR => write!(f, "valr"),
+            Self::VITEX => write!(f, "vitex"),
+            Self::WAZIRX => write!(f, "waxirx"),
+            Self::WHITEBIT => write!(f, "whitebit"),
+            Self::WOO => write!(f, "woo"),
+            Self::XCOEX => write!(f, "xcoex"),
+            Self::XTPUB => write!(f, "xtpub"),
+            Self::YELLOW => write!(f, "yellow"),
+            Self::YOBIT => write!(f, "yobit"),
+            Self::ZAIF => write!(f, "zaif"),
+            Self::ZBDOTCOM => write!(f, "zbdotcom"),
+            Self::ZBG => write!(f, "zbg"),
+            Self::ZEBITEX => write!(f, "zebitex"),
+            Self::ZONDA => write!(f, "zonda"),
+        }        
     }
 }
 
 
+#[derive(Clone, Copy, Debug, Default, Serialize, Deserialize)]
 /// The status of the instrument, can be one of the following: ACTIVE, IGNORED, RETIRED, EXPIRED.
-pub enum CCSpotInstrumentStatus {
+pub enum SpotInstrumentStatus {
+    #[default]
     ACTIVE,
     IGNORED,
     RETIRED,
@@ -376,22 +378,21 @@ pub enum CCSpotInstrumentStatus {
     READYFORDECOMMISSIONING,
 }
 
-impl CCSpotInstrumentStatus {
-    /// Converts enum value to `String`.
-    pub fn to_string(&self) -> String {
+impl Display for SpotInstrumentStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            CCSpotInstrumentStatus::ACTIVE => String::from("ACTIVE"),
-            CCSpotInstrumentStatus::IGNORED => String::from("IGNORED"),
-            CCSpotInstrumentStatus::RETIRED => String::from("RETIRED"),
-            CCSpotInstrumentStatus::EXPIRED => String::from("EXPIRED"),
-            CCSpotInstrumentStatus::READYFORDECOMMISSIONING => String::from("READY_FOR_DECOMMISSIONING"),
+            Self::ACTIVE => write!(f, "ACTIVE"),
+            Self::IGNORED => write!(f, "IGNORED"),
+            Self::RETIRED => write!(f, "RETIRED"),
+            Self::EXPIRED => write!(f, "EXPIRED"),
+            Self::READYFORDECOMMISSIONING => write!(f, "READY_FOR_DECOMMISSIONING"),
         }
     }
 }
 
 
-#[derive(Deserialize, Debug)]
-pub struct CCInstrumentMapping {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct SpotInstrumentMapping {
     #[serde(rename = "MAPPED_INSTRUMENT")]
     /// The current mapping dsv for this instrument.
     pub mapped_instrument: String,
@@ -422,8 +423,8 @@ pub struct CCInstrumentMapping {
 
 
 /// Spot: Historical OHLCV+
-#[derive(Deserialize, Debug)]
-pub struct CCSpotOHLCV {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct SpotOHLCV {
     #[serde(rename = "UNIT")]
     /// The unit of the historical period update: MINUTE for minute, HOUR for hour and DAY for day.
     pub unit: String,
@@ -544,8 +545,8 @@ pub struct CCSpotOHLCV {
 
 
 /// Spot: Instrument Metadata
-#[derive(Deserialize, Debug)]
-pub struct CCSpotInstrumentMetdata {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct SpotInstrumentMetdata {
     #[serde(rename = "METADATA_VERSION")]
     /// The version of metadata, used for version conversions/migrates.
     pub metadata_version: usize,
@@ -564,7 +565,7 @@ pub struct CCSpotInstrumentMetdata {
     pub instrument: String,
     #[serde(rename = "INSTRUMENT_MAPPING")]
     /// The current mapping information for this instrument.
-    pub instrument_mapping: CCInstrumentMapping,
+    pub instrument_mapping: SpotInstrumentMapping,
     #[serde(rename = "INSTRUMENT_EXTERNAL_DATA")]
     /// The full data we get from the polling endpoint for this specific instrument. This is a JSON stringified object with different properties per exchange.
     pub instrument_external_data: String,
@@ -578,8 +579,8 @@ pub struct CCSpotInstrumentMetdata {
 
 
 /// Spot: Markets
-#[derive(Deserialize, Debug)]
-pub struct CCSpotMarkets {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct SpotMarkets {
     #[serde(rename = "TYPE")]
     /// Type of the message.
     pub type_: String,
@@ -596,7 +597,7 @@ pub struct CCSpotMarkets {
     pub unmapped_instruments_total: i64,
     #[serde(rename = "INSTRUMENT_STATUS")]
     /// An object with the total number of instrument for each of the available instrument statuses.
-    pub instrument_status: CCInstrumentStatus,
+    pub instrument_status: InstrumentStatus,
     #[serde(rename = "TOTAL_TRADES_SPOT")]
     /// The total number of spot trades that this exchange has processed.
     pub total_trades_spot: i64,
@@ -609,8 +610,8 @@ pub struct CCSpotMarkets {
 // Spot: Markets + Instruments
 
 
-#[derive(Deserialize, Debug)]
-pub struct CCInstrument {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Instrument {
     #[serde(rename = "TYPE")]
     /// Type of the message.
     pub type_: String,
@@ -629,7 +630,7 @@ pub struct CCInstrument {
     pub mapped_instrument: String,
     #[serde(rename = "INSTRUMENT_MAPPING")]
     /// The current mapping information for this instrument.
-    pub instrument_mapping: CCInstrumentMapping,
+    pub instrument_mapping: SpotInstrumentMapping,
     #[serde(rename = "HAS_TRADES_SPOT")]
     /// A boolean field indicating whether the instrument has spot trades or not.
     pub has_trades_spot: bool,
@@ -646,8 +647,8 @@ pub struct CCInstrument {
 
 
 /// Spot: Markets + Instruments
-#[derive(Deserialize, Debug)]
-pub struct CCSpotMarketsInstruments {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct SpotMarketsInstruments {
     #[serde(rename = "TYPE")]
     /// Type of the message.
     pub type_: String,
@@ -664,7 +665,7 @@ pub struct CCSpotMarketsInstruments {
     pub unmapped_instruments_total: i64,
     #[serde(rename = "INSTRUMENT_STATUS")]
     /// An object with the total number of instrument for each of the available instrument statuses.
-    pub instrument_status: CCInstrumentStatus,
+    pub instrument_status: InstrumentStatus,
     #[serde(rename = "TOTAL_TRADES_SPOT")]
     /// The total number of spot trades that this exchange has processed.
     pub total_trades_spot: i64,
@@ -673,5 +674,5 @@ pub struct CCSpotMarketsInstruments {
     pub has_orderbook_l2_minute_snapshots_enabled: bool,
     #[serde(rename = "instruments")]
     /// The list of instruments requested. It could be a selected few or all for each market.
-    pub instruments: HashMap<String, CCInstrument>,
+    pub instruments: HashMap<String, Instrument>,
 }

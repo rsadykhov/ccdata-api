@@ -1,6 +1,6 @@
 [package]
 name = "ccdata-api"
-version = "0.1.6"
+version = "1.0.0"
 edition = "2021"
 description = "Wrapper for CoinDesk REST API endpoints (Fomerly CCData REST API)."
 license = "MIT OR Apache-2.0"

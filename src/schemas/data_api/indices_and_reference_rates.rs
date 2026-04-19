@@ -1,23 +1,24 @@
-use serde::Deserialize;
-use crate::utils::Market;
+use std::fmt::Display;
+use serde::{Serialize, Deserialize};
 
 
+#[derive(Clone, Copy, Debug, Default, Serialize, Deserialize)]
 /// The index family to obtain data from.
-pub enum CCIndicesMarket {
+pub enum IndicesMarket {
+    #[default]
     CADLI,
     CCIX,
     CCXRP,
     CCXRPPERP,
 }
 
-impl Market for CCIndicesMarket {
-    /// Converts enum value to `String`.
-    fn to_string(&self) -> String {
+impl Display for IndicesMarket {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            CCIndicesMarket::CADLI => String::from("cadli"),
-            CCIndicesMarket::CCIX => String::from("ccix"),
-            CCIndicesMarket::CCXRP => String::from("CCXRP"),
-            CCIndicesMarket::CCXRPPERP => String::from("CCXRPPERP"),
+            Self::CADLI => write!(f, "cadli"),
+            Self::CCIX => write!(f, "ccix"),
+            Self::CCXRP => write!(f, "CCXRP"),
+            Self::CCXRPPERP => write!(f, "CCXRPPERP"),
         }
     }
 }
@@ -27,8 +28,8 @@ impl Market for CCIndicesMarket {
 
 
 /// Indices & Reference Rates: Historical OHLCV+
-#[derive(Deserialize, Debug)]
-pub struct CCIndicesOHLCV {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct IndicesOHLCV {
     #[serde(rename = "UNIT")]
     /// The unit of the historical period update: MINUTE for minute, HOUR for hour and DAY for day.
     pub unit: String,

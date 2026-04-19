@@ -1,7 +1,7 @@
 # CoinDesk API Wrapper
 
 `ccdata-api` is a wrapper for CoinDesk REST API endpoints (Formerly CCData). This crate supports non-exhausitve list of CoinDesk endpoints,
-you can check what endpoints are supported by checking the variants of the enum `CCAPIEndpoint` - it contains all
+you can check what endpoints are supported by checking the variants of the enum `APIEndpoint` - it contains all
 supported endpoint URLs.
 
 For documentation on CoinDesk REST API endpoints visit CoinDesk online documentation:
@@ -31,9 +31,9 @@ method).
 ## Build Backend Explicitly Stating API Key (May expose API key)
 
 ```rust
-use ccdata_api::CCData;
+use ccdata_api::CoinDesk;
 
-let mut backend: CCData = CCData::new();
+let mut backend: CoinDesk = CoinDesk::new();
 
 let api_key: String = String::from("xxxxxxx");
 backend.update_api_key(api_key);
@@ -44,9 +44,9 @@ assert_eq!(backend.api_key().unwrap(), "xxxxxxx");
 ## Build Backend Using .env File (Preferred method)
 
 ```rust
-use ccdata_api::CCData;
+use ccdata_api::CoinDesk;
 
-let mut backend: CCData = CCData::new();
+let mut backend: CoinDesk = CoinDesk::new();
 // Provide API key as the environment variable called API_KEY
 backend.build(&"API_KEY").unwrap();
 
@@ -60,22 +60,22 @@ get a daily spot OHLCV data for Bitcoin you can do the following (note that the 
 
 ```rust
 
-use ccdata_api::{CCData, CCUnit, CCSpotMarket};
+use ccdata_api::{CoinDesk, Unit, SpotMarket};
 
 #[tokio::main]
 async fn main() -> () {
 
-    let mut backend: CCData = CCData::new();
+    let mut backend: CoinDesk = CoinDesk::new();
     // Provide API key as the environment variable called API_KEY
     backend.build(&"API_KEY").unwrap();
 
     // Define the API parameters
-    let market: CCSpotMarket = CCSpotMarket::KRAKEN;
+    let market: SpotMarket = SpotMarket::KRAKEN;
     let limit: usize = 2000;
     let to_timestamp: Option<i64> = Some(1728860400);
 
     // Make the API call
-    let ohlcv = backend.get_spot_ohlcv("BTC-USD", to_timestamp, Some(limit), market, CCUnit::Day).await.unwrap();
+    let ohlcv = backend.get_spot_ohlcv("BTC-USD", to_timestamp, Some(limit), market, Unit::Day).await.unwrap();
     assert_eq!(ohlcv.data.unwrap().len(), limit);
 
 }

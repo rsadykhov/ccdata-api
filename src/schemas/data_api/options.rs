@@ -1,22 +1,62 @@
-use serde::Deserialize;
-use crate::utils::Market;
-use crate::schemas::data_api::CCInstrumentStatus;
+use std::fmt::Display;
+use serde::{Serialize, Deserialize};
+use crate::schemas::data_api::InstrumentStatus;
 
 
+#[derive(Clone, Copy, Debug, Default, Serialize, Deserialize)]
 /// The exchange to obtain data from.
-pub enum CCOptionsMarket {
+pub enum OptionsMarket {
+    BINANCE,
+    BULLISH,
+    BYBIT,
+    #[default]
     DERIBIT,
     OKEX,
 }
 
-impl Market for CCOptionsMarket {
-    /// Converts enum values to `String`.
-    fn to_string(&self) -> String {
+impl Display for OptionsMarket {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            CCOptionsMarket::DERIBIT => String::from("deribit"),
-            CCOptionsMarket::OKEX => String::from("okex"),
-        }
+            Self::BINANCE => write!(f, "binance"),
+            Self::BULLISH => write!(f, "bullish"),
+            Self::BYBIT => write!(f, "bybit"),
+            Self::DERIBIT => write!(f, "deribit"),
+            Self::OKEX => write!(f, "okex"),
+        }        
     }
+}
+
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct OptionsInstrumentMapping {
+    #[serde(rename = "MAPPED_INSTRUMENT")]
+    pub mapped_instrument: String,
+    #[serde(rename = "INDEX_UNDERLYING")]
+    pub index_underlying: String,
+    #[serde(rename = "INDEX_UNDERLYING_ID")]
+    pub index_underlying_id: i32,
+    #[serde(rename = "QUOTE_CURRENCY")]
+    pub quote_currency: String,
+    #[serde(rename = "QUOTE_CURRENCY_ID")]
+    pub quote_currency_id: i32,
+    #[serde(rename = "SETTLEMENT_CURRENCY")]
+    pub settlement_currency: String,
+    #[serde(rename = "SETTLEMENT_CURRENCY_ID")]
+    pub settlement_currency_id: i32,
+    #[serde(rename = "CONTRACT_CURRENCY")]
+    pub contract_currency: String,
+    #[serde(rename = "CONTRACT_CURRENCY_ID")]
+    pub contract_currency_id: i32,
+    #[serde(rename = "STRIKE_CURRENCY")]
+    pub strike_currency: String,
+    #[serde(rename = "STRIKE_CURRENCY_ID")]
+    pub strike_currency_id: i32,
+    #[serde(rename = "OPTION_STYLE")]
+    pub option_style: String,
+    #[serde(rename = "TRANSFORM_FUNCTION")]
+    pub tranform_function: String,
+    #[serde(rename = "CREATED_ON")]
+    pub created_on: i64,
 }
 
 
@@ -24,8 +64,8 @@ impl Market for CCOptionsMarket {
 
 
 ///Options: Historical OHLCV+
-#[derive(Deserialize, Debug)]
-pub struct CCOptionsOHLCV {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct OptionsOHLCV {
     #[serde(rename = "UNIT")]
     /// The level of granularity (e.g. MINUTE / HOUR / DAY).
     pub unit: String,
@@ -164,12 +204,97 @@ pub struct CCOptionsOHLCV {
 }
 
 
+// Options: Instrument Metadata
+
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct OptionsInstrumentMetadata {
+    #[serde(rename = "METADATA_VERSION")]
+    /// The version of metadata, used for version conversions/migrates.
+    pub metadata_version: i32,
+    #[serde(rename = "INSTRUMENT_STATUS")]
+    /// The status of the instrument, we only poll / stream / connect to the ACTIVE ones,
+    /// for the RETIRED / IGNORED / EXPIRED / READY_FOR_DECOMMISSIONING means we no longer query/stream data.
+    pub instrument_status: String,
+    #[serde(rename = "FIRST_SEEN_ON_POLLING_TS")]
+    /// This is the first time instrument was seen on instrumentListSourceType POLLING.
+    pub firt_seen_on_polling_ts: i64,
+    #[serde(rename = "LAST_SEEN_ON_POLLING_TS")]
+    /// This is the last time instrument was seen on instrumentListSourceType POLLING.
+    pub last_seen_on_polling_ts: i64,
+    #[serde(rename = "INSTRUMENT")]
+    /// The instrument ID as it is on the exchange with small modifications - we do not allow the following characters inside isntrument ids: ,/&?
+    pub instrument: String,
+    #[serde(rename = "INSTRUMENT_MAPPING")]
+    /// The current mapping information for this instrument
+    pub instrument_mapping: OptionsInstrumentMapping,
+    #[serde(rename = "INSTRUMENT_EXTERNAL_DATA")]
+    /// The full data we get from the polling endpoint for this specific instrument.
+    /// This is a JSON stringified object with different properties per exchange.
+    pub instrument_external_data: String,
+    #[serde(rename = "INSTRUMENT_AVAILABLE_ON_INSTRUMENTS_ENDPOINT")]
+    /// This flags the exchange instrument is currently available on instruments endpoint.
+    pub instrument_available_on_instruments_endpoint: bool,
+    #[serde(rename = "INDEX_ID")]
+    /// The id of the index the contract is based on.
+    pub index_id: String,
+    #[serde(rename = "INDEX_UNDERLYING")]
+    /// The underlying instrument of the index.
+    pub index_underlying: String,
+    #[serde(rename = "QUOTE_CURRENCY")]
+    /// The instrument that the contract is priced in.
+    pub quote_currency: String,
+    #[serde(rename = "SETTLEMENT_CURRENCY")]
+    /// The currency used to calculate contract PnL. The settlement currency can be different from the index underlying or quote currencies.
+    pub settlement_currency: String,
+    #[serde(rename = "CONTRACT_CURRENCY")]
+    /// The denomination of the CONTRACT_SIZE.
+    pub contract_currency: String,
+    #[serde(rename = "CONTRACT_SIZE")]
+    /// The contract size - how much of the contract currency does one contract contain.
+    pub contract_size: f64,
+    #[serde(rename = "TICK_SIZE")]
+    /// The minimum amount the price can move, denominated in QUOTE_CURRENCY.
+    pub tick_size: f64,
+    #[serde(rename = "CONTRACT_CREATION_TS")]
+    /// The contract creation timestamp we get for the specific derivative instrument.
+    pub contract_creation_ts:  i64,
+    #[serde(rename = "CONTRACT_EXPIRATION_TS")]
+    /// The contract expiration timestamp we get for the specific derivative instrument. Not needed for PERPETUAL contract types.
+    pub contract_expiration_ts: i64,
+    #[serde(rename = "CONTRACT_EXPIRATION_YEAR")]
+    /// Year in which the contract expires.
+    pub contract_expiration_year: i32,
+    #[serde(rename = "CONTRACT_EXPIRATION_MONTH_CODE")]
+    /// Month in which the contract expires.
+    pub contract_expiration_month_code: String,
+    #[serde(rename = "STRIKE_PRICE")]
+    /// The strike price.
+    pub strike_price: f64,
+    #[serde(rename = "STRIKE_CURRENCY")]
+    /// The denomination of the STRIKE_PRICE.
+    pub strike_currency: String,
+    #[serde(rename = "OPTION_TYPE")]
+    /// The type of option contract.
+    pub option_type: String,
+    #[serde(rename = "OPTION_STYLE")]
+    /// The style of option contract.
+    pub option_style: String,
+    #[serde(rename = "BASE_CURRENCY")]
+    /// The base currency of the contract underlying index.
+    pub base_currency: String,
+    #[serde(rename = "MIN_TRADE_AMOUNT")]
+    /// The minimum amount of contracts you can trade.
+    pub min_trade_amount: f64,
+}
+
+
 // Options: Markets
 
 
 /// Options: Markets
-#[derive(Deserialize, Debug)]
-pub struct CCOptionsMarkets {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct OptionsMarkets {
     #[serde(rename = "TYPE")]
     /// Type of the message.
     pub type_: String,
@@ -186,7 +311,7 @@ pub struct CCOptionsMarkets {
     pub unmapped_instruments_total: i64,
     #[serde(rename = "INSTRUMENT_STATUS")]
     /// An object with the total number of instrument for each of the available instrument statuses.
-    pub instrument_status: CCInstrumentStatus,
+    pub instrument_status: InstrumentStatus,
     #[serde(rename = "TOTAL_TRADES_OPTIONS")]
     /// The total number of options trades that this exchange has processed.
     pub total_trades_options: i64,

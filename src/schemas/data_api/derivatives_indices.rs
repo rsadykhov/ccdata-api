@@ -1,14 +1,17 @@
-use serde::Deserialize;
-use crate::utils::Market;
-use crate::schemas::data_api::CCInstrumentStatus;
+use std::fmt::Display;
+use serde::{Serialize, Deserialize};
+use crate::schemas::data_api::InstrumentStatus;
 
 
+#[derive(Clone, Copy, Debug, Default, Serialize, Deserialize)]
 /// The exchange to obtain data from.
-pub enum CCDerIndicesMarket {
+pub enum DerIndicesMarket {
     BINANCE,
+    BIT,
     BITGET,
     BITMEX,
     BTCEX,
+    BULLISH,
     BYBIT,
     COINBASEINTERNATIONAL,
     CROSSTOWER,
@@ -16,31 +19,40 @@ pub enum CCDerIndicesMarket {
     DERIBIT,
     DYDXV4,
     FTX,
+    GATEIO,
+    HUOBIPRO,
+    HYPERLIQUID,
+    #[default]
     KRAKEN,
+    KUCOIN,
     MOCK,
     OKEX,
 }
 
-impl Market for CCDerIndicesMarket {
-    /// Converts enum value to `String`.
-    fn to_string(&self) -> String {
+impl Display for DerIndicesMarket {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            CCDerIndicesMarket::BINANCE => String::from("binance"),
-            CCDerIndicesMarket::BITGET => String::from("bitget"),
-            CCDerIndicesMarket::BITMEX => String::from("bitmex"),
-            CCDerIndicesMarket::BTCEX => String::from("btcex"),
-            CCDerIndicesMarket::BYBIT => String::from("bybit"),
-            CCDerIndicesMarket::COINBASEINTERNATIONAL => String::from("coinbaseinternational"),
-            CCDerIndicesMarket::CROSSTOWER => String::from("crosstower"),
-            CCDerIndicesMarket::CRYPTODOTCOM => String::from("cryptodotcom"),
-            CCDerIndicesMarket::DERIBIT => String::from("deribit"),
-            CCDerIndicesMarket::DYDXV4 => String::from("dydxv4"),
-            CCDerIndicesMarket::FTX => String::from("ftx"),
-            CCDerIndicesMarket::KRAKEN => String::from("kraken"),
-            CCDerIndicesMarket::MOCK => String::from("mock"),
-            CCDerIndicesMarket::OKEX => String::from("okex"),
-
-        }
+            Self::BINANCE => write!(f, "binance"),
+            Self::BIT => write!(f, "bit"),
+            Self::BITGET => write!(f, "bitget"),
+            Self::BITMEX => write!(f, "bitmex"),
+            Self::BTCEX => write!(f, "btcex"),
+            Self::BULLISH => write!(f, "bullish"),
+            Self::BYBIT => write!(f, "bybit"),
+            Self::COINBASEINTERNATIONAL => write!(f, "coinbaseinternational"),
+            Self::CROSSTOWER => write!(f, "crosstower"),
+            Self::CRYPTODOTCOM => write!(f, "cryptodotcom"),
+            Self::DERIBIT => write!(f, "deribit"),
+            Self::DYDXV4 => write!(f, "dydxv4"),
+            Self::FTX => write!(f, "ftx"),
+            Self::GATEIO => write!(f, "gateio"),
+            Self::HUOBIPRO => write!(f, "huobipro"),
+            Self::HYPERLIQUID => write!(f, "hyperliquid"),
+            Self::KRAKEN => write!(f, "kraken"),
+            Self::KUCOIN => write!(f, "kucoin"),
+            Self::MOCK => write!(f, "mock"),
+            Self::OKEX => write!(f, "okex"),
+        }   
     }
 }
 
@@ -49,8 +61,8 @@ impl Market for CCDerIndicesMarket {
 
 
 /// Derivatives Indices: Historical OHLCV+
-#[derive(Deserialize, Debug)]
-pub struct CCDerIndicesOHLCV {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct DerIndicesOHLCV {
     #[serde(rename = "UNIT")]
     /// The unit of the historical period update: MINUTE for minute, HOUR for hour and DAY for day.
     pub unit: String,
@@ -108,18 +120,18 @@ pub struct CCDerIndicesOHLCV {
     pub total_index_updates: i32,
     #[serde(rename = "MAPPED_INSTRUMENT")]
     /// The instrument ID, as derived from our mapping rules. Only available on instruments that have been mapped.
-    pub mapped_instrument: String,
+    pub mapped_instrument: Option<String>,
     #[serde(rename = "CURRENCY")]
     /// The mapped index currency. Only available on instruments that have mapping.
-    pub currency: String,
+    pub currency: Option<String>,
     #[serde(rename = "CURRENCY_ID")]
     /// Represents the internal CoinDesk ID for the mapped index currency, e.g. 1. This ID is unique and immutable, ensuring consistent identification.
     // Applicable only to instruments with a mapping.
-    pub currency_id: i32,
+    pub currency_id: Option<i32>,
     #[serde(rename = "TRANSFORM_FUNCTION")]
     /// The transform function. This is the function we apply when we do mapping to change values into easier human readable ones and to make
     /// sure the mapped direction BASE - QUOTE is constant accross all instruments.
-    pub transform_function: String,
+    pub transform_function: Option<String>,
 }
 
 
@@ -127,8 +139,8 @@ pub struct CCDerIndicesOHLCV {
 
 
 /// Derivatives Indices: Markets
-#[derive(Deserialize, Debug)]
-pub struct CCDerIndicesMarkets {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct DerIndicesMarkets {
     #[serde(rename = "TYPE")]
     /// Type of the message.
     pub type_: String,
@@ -145,5 +157,5 @@ pub struct CCDerIndicesMarkets {
     pub unmapped_instruments_total: i64,
     #[serde(rename = "INSTRUMENT_STATUS")]
     /// An object with the total number of instrument for each of the available instrument statuses.
-    pub instrument_status: CCInstrumentStatus,
+    pub instrument_status: InstrumentStatus,
 }

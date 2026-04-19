@@ -1,15 +1,18 @@
-use serde::Deserialize;
-use crate::utils::Market;
-use crate::schemas::data_api::CCInstrumentStatus;
+use std::fmt::Display;
+use serde::{Serialize, Deserialize};
+use crate::schemas::data_api::InstrumentStatus;
 
 
+#[derive(Clone, Copy, Debug, Default, Serialize, Deserialize)]
 /// The exchange to obtain data from.
-pub enum CCFuturesMarket {
+pub enum FuturesMarket {
     BINANCE,
+    BIT,
     BITFINEX,
     BITGET,
     BITMEX,
     BTCEX,
+    BULLISH,
     BYBIT,
     COINBASE,
     COINBASEINTERNATIONAL,
@@ -18,34 +21,72 @@ pub enum CCFuturesMarket {
     DERIBIT,
     DYDXV4,
     FTX,
+    GATEIO,
+    HUOBIPRO,
+    HYPERLIQUID,
+    #[default]
     KRAKEN,
+    KUCOIN,
     MOCK,
     OKEX,
 }
 
-impl Market for CCFuturesMarket {
-    /// Converts enum value to `String`.
-    fn to_string(&self) -> String {
+impl Display for FuturesMarket {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            CCFuturesMarket::BINANCE => String::from("binance"),
-            CCFuturesMarket::BITFINEX => String::from("bitfinex"),
-            CCFuturesMarket::BITGET => String::from("bitget"),
-            CCFuturesMarket::BITMEX => String::from("bitmex"),
-            CCFuturesMarket::BTCEX => String::from("btcex"),
-            CCFuturesMarket::BYBIT => String::from("bybit"),
-            CCFuturesMarket::COINBASE => String::from("coinbase"),
-            CCFuturesMarket::COINBASEINTERNATIONAL => String::from("coinbaseinternational"),
-            CCFuturesMarket::CROSSTOWER => String::from("crosstower"),
-            CCFuturesMarket::CRYPTODOTCOM => String::from("cryptodotcom"),
-            CCFuturesMarket::DERIBIT => String::from("deribit"),
-            CCFuturesMarket::DYDXV4 => String::from("dydxv4"),
-            CCFuturesMarket::FTX => String::from("ftx"),
-            CCFuturesMarket::KRAKEN => String::from("kraken"),
-            CCFuturesMarket::MOCK => String::from("mock"),
-            CCFuturesMarket::OKEX => String::from("okex"),
-
-        }
+            Self::BINANCE => write!(f, "binance"),
+            Self::BIT => write!(f, "bit"),
+            Self::BITFINEX => write!(f, "bitfinex"),
+            Self::BITGET => write!(f, "bitget"),
+            Self::BITMEX => write!(f, "bitmex"),
+            Self::BTCEX => write!(f, "btcex"),
+            Self::BULLISH => write!(f, "bullish"),
+            Self::BYBIT => write!(f, "bybit"),
+            Self::COINBASE => write!(f, "coinbase"),
+            Self::COINBASEINTERNATIONAL => write!(f, "coinbaseinternational"),
+            Self::CROSSTOWER => write!(f, "crosstower"),
+            Self::CRYPTODOTCOM => write!(f, "cryptodotcom"),
+            Self::DERIBIT => write!(f, "deribit"),
+            Self::DYDXV4 => write!(f, "dydxv4"),
+            Self::FTX => write!(f, "ftx"),
+            Self::GATEIO => write!(f, "gateio"),
+            Self::HUOBIPRO => write!(f, "huobipro"),
+            Self::HYPERLIQUID => write!(f, "hyperliquid"),
+            Self::KRAKEN => write!(f, "kraken"),
+            Self::KUCOIN => write!(f, "kucoin"),
+            Self::MOCK => write!(f, "mock"),
+            Self::OKEX => write!(f, "okex"),
+        }   
     }
+}
+
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct FuturesInstrumentMapping {
+    #[serde(rename = "MAPPED_INSTRUMENT")]
+    pub mapped_instrument: String,
+    #[serde(rename = "INDEX_UNDERLYING")]
+    pub index_underlying: String,
+    #[serde(rename = "INDEX_UNDERLYING_ID")]
+    pub index_underlying_id: i32,
+    #[serde(rename = "QUOTE_CURRENCY")]
+    pub quote_currency: String,
+    #[serde(rename = "QUOTE_CURRENCY_ID")]
+    pub quote_currency_id: i32,
+    #[serde(rename = "SETTLEMENT_CURRENCY")]
+    pub settlement_currency: String,
+    #[serde(rename = "SETTLEMENT_CURRENCY_ID")]
+    pub settlement_currency_id: i32,
+    #[serde(rename = "CONTRACT_CURRENCY")]
+    pub contract_currency: String,
+    #[serde(rename = "CONTRACT_CURRENCY_ID")]
+    pub contract_currency_id: i32,
+    #[serde(rename = "DENOMINATION_TYPE")]
+    pub denomination_type: String,
+    #[serde(rename = "TRANSFORM_FUNCTION")]
+    pub transform_function: String,
+    #[serde(rename = "CREATED_ON")]
+    pub created_on: i64,
 }
 
 
@@ -53,8 +94,8 @@ impl Market for CCFuturesMarket {
 
 
 /// Futures: Historical OHLCV+
-#[derive(Deserialize, Debug)]
-pub struct CCFuturesOHLCV {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct FuturesOHLCV {
     #[serde(rename = "UNIT")]
     /// The level of granularity (e.g. MINUTE / HOUR / DAY).
     pub unit: String,
@@ -188,12 +229,89 @@ pub struct CCFuturesOHLCV {
 }
 
 
+// Futures: Instrument Metadata
+
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct FuturesInstrumentMetadata {
+    #[serde(rename = "METADATA_VERSION")]
+    /// The version of metadata, used for version conversions/migrates.
+    pub metadata_version: i32,
+    #[serde(rename = "INSTRUMENT_STATUS")]
+    /// The status of the instrument, we only poll / stream / connect to the ACTIVE ones,
+    /// for the RETIRED / IGNORED / EXPIRED / READY_FOR_DECOMMISSIONING means we no longer query/stream data.
+    pub instrument_status: String,
+    #[serde(rename = "FIRST_SEEN_ON_POLLING_TS")]
+    /// This is the first time instrument was seen on instrumentListSourceType POLLING.
+    pub first_seen_on_polling_ts: i64,
+    #[serde(rename = "LAST_SEEN_ON_POLLING_TS")]
+    /// This is the last time instrument was seen on instrumentListSourceType POLLING.
+    pub last_seen_on_polling_ts: i64,
+    #[serde(rename = "INSTRUMENT")]
+    /// The instrument ID as it is on the exchange with small modifications - we do not allow the following characters inside isntrument ids: ,/&?
+    pub instrument: String,
+    #[serde(rename = "INSTRUMENT_MAPPING")]
+    /// The current mapping information for this instrument.
+    pub instrument_mapping: FuturesInstrumentMapping,
+    #[serde(rename = "INSTRUMENT_EXTERNAL_DATA")]
+    /// The full data we get from the polling endpoint for this specific instrument. 
+    /// his is a JSON stringified object with different properties per exchange.
+    pub instrument_external_data: String,
+    #[serde(rename = "INSTRUMENT_AVAILABLE_ON_INSTRUMENTS_ENDPOINT")]
+    /// This flags the exchange instrument is currently available on instruments endpoint.
+    pub instrument_available_on_instruments_endpoint: bool,
+    #[serde(rename = "INDEX_ID")]
+    /// The id of the index the contract is based on.
+    pub index_id: String,
+    #[serde(rename = "INDEX_UNDERLYING")]
+    /// The underlying instrument of the index.
+    pub index_underlying: String,
+    #[serde(rename = "QUOTE_CURRENCY")]
+    /// The instrument that the contract is priced in.
+    pub quote_currency: String,
+    #[serde(rename = "SETTLEMENT_CURRENCY")]
+    /// The currency used to calculate contract PnL. The settlement currency can be different from the index underlying or quote currencies.
+    pub settlement_currency: String,
+    #[serde(rename = "DENOMINATION_TYPE")]
+    /// VANILLA = (SETTLEMENT_CURRENCY = QUOTE_CURRENCY), INVERSE = (SETTLEMENT_CURRENCY = INDEX_UNDERLYING),
+    /// QUANTO (SETTLEMENT_CURRENCY != INDEX_UNDERLYING or QUOTE_CURRENCY)
+    pub denomination_type: String,
+    #[serde(rename = "CONTRACT_CURRENCY")]
+    /// The denomination of the CONTRACT_SIZE.
+    pub contract_currency: String,
+    #[serde(rename = "CONTRACT_SIZE")]
+    /// The contract size - how much of the contract currency does one contract contain.
+    pub contract_size: f64,
+    #[serde(rename = "TICK_SIZE")]
+    /// The minimum amount the price can move, denominated in QUOTE_CURRENCY.
+    pub tick_size: f64,
+    #[serde(rename = "DELIVERY_METHOD")]
+    /// The settlement delivery method on the derivative product.
+    pub delivery_method: String,
+    #[serde(rename = "CONTRACT_TERM")]
+    /// The term / duration the contract represents e.g. 3xMONTH.
+    pub contract_term: String,
+    #[serde(rename = "CONTRACT_CREATION_TS")]
+    /// The contract creation timestamp we get for the specific derivative instrument.
+    pub contract_creation_ts: i64,
+    #[serde(rename = "CONTRACT_EXPIRATION_TS")]
+    /// The contract expiration timestamp we get for the specific derivative instrument. Not needed for PERPETUAL contract types.
+    pub contract_expiration_ts: Option<i64>,
+    #[serde(rename = "FIRST_OB_L2_MINUTE_SNAPSHOT_TS")]
+    /// Timestamp of the initial Level 2 minute snapshot.
+    pub first_ob_l2_minute_snapshot_t2s: i64,
+    #[serde(rename = "LAST_OB_L2_MINUTE_SNAPSHOT_TS")]
+    /// Timestamp of the latest Level 2 minute snapshot.
+    pub last_ob_l2_minute_snapshot_ts: i64,
+}
+
+
 // Futures: Markets
 
 
 /// Futures: Markets
-#[derive(Deserialize, Debug)]
-pub struct CCFuturesMarkets {
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct FuturesMarkets {
     #[serde(rename = "TYPE")]
     /// Type of the message.
     pub type_: String,
@@ -210,7 +328,7 @@ pub struct CCFuturesMarkets {
     pub unmapped_instruments_total: i64,
     #[serde(rename = "INSTRUMENT_STATUS")]
     /// An object with the total number of instrument for each of the available instrument statuses.
-    pub instrument_status: CCInstrumentStatus,
+    pub instrument_status: InstrumentStatus,
     #[serde(rename = "TOTAL_TRADES_FUTURES")]
     /// The total number of futures trades that this exchange has processed.
     pub total_trades_futures: i64,
