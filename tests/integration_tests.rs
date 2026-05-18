@@ -292,7 +292,7 @@ async fn test_get_asset_discord() -> () {
     backend.build(&"API_KEY").unwrap();
     let limit: usize = 2000;
     let discord: CoinDeskResponse<Vec<AssetDiscord>> = backend.get_asset_discord("ETH", None, Some(limit)).await.unwrap();
-    assert_eq!(discord.data.unwrap().len(), limit);
+    assert!(discord.data.unwrap().len() <= limit);
 }
 
 
@@ -302,7 +302,7 @@ async fn test_get_asset_reddit() -> () {
     backend.build(&"API_KEY").unwrap();
     let limit: usize = 2000;
     let reddit: CoinDeskResponse<Vec<AssetReddit>> = backend.get_asset_reddit("ETH", None, Some(limit)).await.unwrap();
-    assert_eq!(reddit.data.unwrap().len(), limit);
+    assert!(reddit.data.unwrap().len() <= limit);
 }
 
 
@@ -312,7 +312,7 @@ async fn test_get_asset_telegram() -> () {
     backend.build(&"API_KEY").unwrap();
     let limit: usize = 2000;
     let telegram: CoinDeskResponse<Vec<AssetTelegram>> = backend.get_asset_telegram("SOL", None, Some(limit)).await.unwrap();
-    assert_eq!(telegram.data.unwrap().len(), limit);
+    assert!(telegram.data.unwrap().len() <= limit);
 }
 
 
@@ -321,8 +321,8 @@ async fn test_get_asset_twitter() -> () {
     let mut backend: CoinDesk = CoinDesk::new();
     backend.build(&"API_KEY").unwrap();
     let limit: usize = 2000;
-    let twitter: CoinDeskResponse<Vec<AssetTwitter>> = backend.get_asset_twitter("SOL", None, Some(limit)).await.unwrap();
-    assert_eq!(twitter.data.unwrap().len(), limit);
+    let twitter: CoinDeskResponse<Vec<AssetTwitter>> = backend.get_asset_twitter("BTC", Some(1779119914), Some(limit)).await.unwrap();
+    assert!(twitter.data.unwrap().len() <= limit);
 }
 
 

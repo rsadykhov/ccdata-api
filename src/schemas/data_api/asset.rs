@@ -440,22 +440,22 @@ pub struct AssetReddit {
     pub asset_symbol: String,
     #[serde(rename = "TOTAL_SUBSCRIBERS")]
     /// The number of subscribers to the subreddit.
-    pub total_subscribers: i32,
+    pub total_subscribers: Option<i32>,
     #[serde(rename = "TOTAL_ACTIVE_USERS")]
     /// The number of currently active users in the subreddit.
     pub total_active_users: Option<i32>,
     #[serde(rename = "TOTAL_AVERAGE_POSTS_PER_DAY")]
     /// The average number of posts per day in the subreddit.
-    pub total_average_posts_per_day: f64,
+    pub total_average_posts_per_day: Option<f64>,
     #[serde(rename = "TOTAL_AVERAGE_POSTS_PER_HOUR")]
     /// The average number of posts per hour in the subreddit.
-    pub total_average_posts_per_hour: f64,
+    pub total_average_posts_per_hour: Option<f64>,
     #[serde(rename = "TOTAL_AVERAGE_COMMENTS_PER_DAY")]
     /// The average number of comments per day in the subreddit.
-    pub total_average_comments_per_day: f64,
+    pub total_average_comments_per_day: Option<f64>,
     #[serde(rename = "TOTAL_AVERAGE_COMMENTS_PER_HOUR")]
     /// The average number of comments per hour in the subreddit.
-    pub total_average_comments_per_hour: f64,
+    pub total_average_comments_per_hour: Option<f64>,
     #[serde(rename = "SUBREDDITS")]
     /// An array with all the data for each Subreddit used to calculate the total stats.
     pub subreddits: Option<Vec<AssetSubreddit>>,
@@ -469,16 +469,16 @@ pub struct AssetReddit {
 pub struct AssetTelegramGroup {
     #[serde(rename = "URL")]
     /// The URL of the Telegram group used to retrieve social metrics.
-    pub url: String,
+    pub url: Option<String>,
     #[serde(rename = "NAME")]
     /// The name of the Telegram group.
-    pub name: String,
+    pub name: Option<String>,
     #[serde(rename = "USERNAME")]
     /// The username of the Telegram group.
-    pub username: String,
+    pub username: Option<String>,
     #[serde(rename = "MEMBERS")]
     /// The total number of users/members in this Telegram group.
-    pub members: i32,
+    pub members: Option<i32>,
 }
 
 /// Asset: Historical Telegram
@@ -501,7 +501,7 @@ pub struct AssetTelegram {
     pub asset_symbol: String,
     #[serde(rename = "TOTAL_MEMBERS")]
     /// The total number of users/members in this Telegram group.
-    pub total_members: i32,
+    pub total_members: Option<i32>,
     #[serde(rename = "TELEGRAM_GROUPS")]
     /// An array with all the data for each Telegram group used to calculate the total stats.
     pub telegram_groups: Vec<AssetTelegramGroup>,
@@ -566,19 +566,19 @@ pub struct AssetTwitter {
     pub asset_symbol: String,
     #[serde(rename = "TOTAL_FOLLOWING")]
     /// The total number of accounts followed by this X account.
-    pub total_following: i32,
+    pub total_following: Option<i32>,
     #[serde(rename = "TOTAL_FOLLOWERS")]
     /// The total number of followers of this X account.
-    pub total_followers: i32,
+    pub total_followers: Option<i32>,
     #[serde(rename = "TOTAL_FAVOURITES")]
     /// The total number of tweets favorited by this X account.
-    pub total_favourites: i32,
+    pub total_favourites: Option<i32>,
     #[serde(rename = "TOTAL_LISTS")]
     /// The total number of lists this X account is a member of.
-    pub total_lists: i32,
+    pub total_lists: Option<i32>,
     #[serde(rename = "TOTAL_STATUSES")]
     /// The total number of tweets and retweets made by this X account.
-    pub total_statuses: i32,
+    pub total_statuses: Option<i32>,
     #[serde(rename = "TWITTER_ACCOUNTS")]
     /// An array with all the data for each X account used to calculate the total stats.
     pub twitter_accounts: Option<Vec<AssetTwitterAccount>>,
