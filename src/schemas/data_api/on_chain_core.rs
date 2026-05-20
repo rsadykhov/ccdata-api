@@ -2,7 +2,7 @@ use serde::{Serialize, Deserialize};
 use crate::schemas::data_api::{PreviousAssetSymbol, AssetAlternativeId, AssetIndustry, SpecialAddress};
 
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct OCCoreSupportedPlatforms {
     #[serde(rename = "BLOCKCHAIN")]
     /// This is linked to the asset representing a specific chain.
@@ -35,7 +35,7 @@ pub struct OCCoreSupportedPlatforms {
 // On-Chain Core: ETH Blocks
 
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct OCCoreETHTrace {
     #[serde(rename = "TYPE")]
     /// Type of the message.
@@ -115,7 +115,7 @@ pub struct OCCoreETHTrace {
     pub status: Option<String>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct OCCoreETHMetadata {
     #[serde(rename = "TYPE")]
     /// Type of the message.
@@ -209,7 +209,7 @@ pub struct OCCoreETHMetadata {
     pub withdrawals_root: String,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 /// This causes a transaction to warm (i.e. pre-cache) another addresses state and the specified storage keys, Available on EIP-2930 transactions.
 pub struct OCCoreETHTransactionAccessList {
     #[serde(rename = "TYPE")]
@@ -225,7 +225,7 @@ pub struct OCCoreETHTransactionAccessList {
     pub storage_keys: Option<Vec<String>>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 /// The current transaction blobs, null when there are no blobs attached to the transaction.
 pub struct OCCoreETHTransactionBlob {
     #[serde(rename = "TYPE")]
@@ -246,7 +246,7 @@ pub struct OCCoreETHTransactionBlob {
     pub data: Option<String>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 /// The chronological records of all activities such as transaction executions, contract interactions, errors, and changes that occur within a blockchain network.
 pub struct OCCoreETHTransactionLog {
     #[serde(rename = "TYPE")]
@@ -276,7 +276,7 @@ pub struct OCCoreETHTransactionLog {
     pub removed: Option<bool>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct OCCoreETHTransaction {
     #[serde(rename = "TYPE")]
     /// Type of the message.
@@ -397,14 +397,14 @@ pub struct OCCoreETHTransaction {
     pub mint: Option<i32>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct OCCoreETHUncle {
     #[serde(rename = "TYPE")]
     /// Type of the message.
     pub type_: String,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct OCCoreETHWithdrawal {
     #[serde(rename = "TYPE")]
     /// Type of the message.
@@ -433,7 +433,7 @@ pub struct OCCoreETHWithdrawal {
 }
 
 /// ON-Chain Core: ETH Blocks
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct OCCoreETHBlock {
     #[serde(rename = "TYPE")]
     /// Type of the message.
@@ -483,7 +483,7 @@ pub struct OCCoreETHBlock {
 // On-Chain Core: Assets Summary By Chain
 
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct ChainAssetSummary {
     #[serde(rename = "TYPE")]
     /// Type of the message.
@@ -509,7 +509,7 @@ pub struct ChainAssetSummary {
     pub launch_date: Option<i64>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct SupportedAsset {
     #[serde(rename = "TYPE")]
     /// Type of the message.
@@ -538,7 +538,7 @@ pub struct SupportedAsset {
 }
 
 /// On-Chain Core: Assets Summary By Chain
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct OCCoreAssetByChain {
     #[serde(rename = "CHAIN_ASSET_SUMMARY")]
     /// The statistics of the current page.
@@ -552,7 +552,7 @@ pub struct OCCoreAssetByChain {
 // On-Chain Core: Asset by Address
 
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct OCCoreSecurityMetric {
     #[serde(rename = "NAME")]
     pub name: String,
@@ -564,7 +564,7 @@ pub struct OCCoreSecurityMetric {
     pub updated_at: i64,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 /// A detailed breakdown of reserves backing a stablecoin asset, covering various categories such as cash, cryptocurrency, bonds, and
     /// other investments for transparency.
 pub struct OCCoreReservesBreakdown {
@@ -585,7 +585,7 @@ pub struct OCCoreReservesBreakdown {
     pub comments: String,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 /// Documents that might be relevant to the asset, they should all be .PDFs.
 pub struct OCCoreDocumentURLs {
     #[serde(rename = "TYPE")]
@@ -598,7 +598,7 @@ pub struct OCCoreDocumentURLs {
     pub comment: Option<String>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 /// Denotes the convesion asset ID, SYMBOL and ASSET_TYPE.
 pub struct OCCorePriceConversionAsset {
     #[serde(rename = "ID")]
@@ -612,7 +612,7 @@ pub struct OCCorePriceConversionAsset {
     pub asset_type: String,
 }
 
-#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Default, Serialize, Deserialize)]
 /// Indicates the asset's position in our global asset ranking. There are multiple ranks, each is determined by at least one factor,
 /// such as asset launch date, market cap, trading volume, etc...
 pub struct OCCoreToplistRank {
@@ -690,7 +690,7 @@ pub struct OCCoreToplistRank {
     pub spot_moving_30_day_change_percentage_usd: Option<f64>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 /// Individuals that contains founders, whitepaper authors, investors, resechers, and other important people related to a project.
 pub struct OCCoreProjectLeader {
     #[serde(rename = "LEADER_TYPE")]
@@ -699,7 +699,7 @@ pub struct OCCoreProjectLeader {
     pub fuill_name: String,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 /// Associated contact addresses for the team members, employees or affiliated contacts.
 pub struct OCCoreContactDetails {
     #[serde(rename = "CONTACT_TYPE")]
@@ -716,7 +716,7 @@ pub struct OCCoreContactDetails {
 }
 
 /// On-Chain Core: Asset by Address
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct OCCoreAssetByAddress {
     #[serde(rename = "ID")]
     /// The unique identifier for the asset entry.
@@ -1062,7 +1062,7 @@ pub struct OCCoreAssetByAddress {
 
 
 /// On-Chain Core: Historical Supply Day
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct OCCoreSupply {
     #[serde(rename = "UNIT")]
     /// The unit of the historical period update: HOUR for hour and DAY for day.

@@ -391,7 +391,7 @@ impl Display for SpotInstrumentStatus {
 }
 
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct SpotInstrumentMapping {
     #[serde(rename = "MAPPED_INSTRUMENT")]
     /// The current mapping dsv for this instrument.
@@ -423,7 +423,7 @@ pub struct SpotInstrumentMapping {
 
 
 /// Spot: Historical OHLCV+
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct SpotOHLCV {
     #[serde(rename = "UNIT")]
     /// The unit of the historical period update: MINUTE for minute, HOUR for hour and DAY for day.
@@ -545,7 +545,7 @@ pub struct SpotOHLCV {
 
 
 /// Spot: Instrument Metadata
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct SpotInstrumentMetdata {
     #[serde(rename = "METADATA_VERSION")]
     /// The version of metadata, used for version conversions/migrates.
@@ -579,7 +579,7 @@ pub struct SpotInstrumentMetdata {
 
 
 /// Spot: Markets
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct SpotMarkets {
     #[serde(rename = "TYPE")]
     /// Type of the message.
@@ -610,7 +610,7 @@ pub struct SpotMarkets {
 // Spot: Markets + Instruments
 
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct Instrument {
     #[serde(rename = "TYPE")]
     /// Type of the message.
@@ -647,7 +647,7 @@ pub struct Instrument {
 
 
 /// Spot: Markets + Instruments
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct SpotMarketsInstruments {
     #[serde(rename = "TYPE")]
     /// Type of the message.

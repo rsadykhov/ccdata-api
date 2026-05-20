@@ -61,7 +61,7 @@ impl Display for FuturesMarket {
 }
 
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct FuturesInstrumentMapping {
     #[serde(rename = "MAPPED_INSTRUMENT")]
     pub mapped_instrument: String,
@@ -94,7 +94,7 @@ pub struct FuturesInstrumentMapping {
 
 
 /// Futures: Historical OHLCV+
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct FuturesOHLCV {
     #[serde(rename = "UNIT")]
     /// The level of granularity (e.g. MINUTE / HOUR / DAY).
@@ -232,7 +232,7 @@ pub struct FuturesOHLCV {
 // Futures: Instrument Metadata
 
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct FuturesInstrumentMetadata {
     #[serde(rename = "METADATA_VERSION")]
     /// The version of metadata, used for version conversions/migrates.
@@ -310,7 +310,7 @@ pub struct FuturesInstrumentMetadata {
 
 
 /// Futures: Markets
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct FuturesMarkets {
     #[serde(rename = "TYPE")]
     /// Type of the message.

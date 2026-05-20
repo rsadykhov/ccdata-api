@@ -5,7 +5,7 @@ use serde::{Serialize, Deserialize};
 
 
 /// Overview: MktCap Historical OHLCV
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct OverviewMktCapOHLCV {
     #[serde(rename = "UNIT")]
     /// The unit of the message.

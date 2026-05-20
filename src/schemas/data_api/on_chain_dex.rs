@@ -45,7 +45,7 @@ impl Display for OCDEXMarket {
 
 
 /// On-Chain DEX: Historical OHLCV+
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct OCDEXOHLCV {
     #[serde(rename = "UNIT")]
     /// The unit of the historical period update: MINUTE for minute, HOUR for hour and DAY for day.
@@ -178,7 +178,7 @@ pub struct OCDEXOHLCV {
 
 
 /// On-Chain DEX: Market
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct OCDEXMarkets {
     #[serde(rename = "TYPE")]
     /// Type of the message.

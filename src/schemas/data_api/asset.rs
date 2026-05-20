@@ -5,14 +5,14 @@ use crate::schemas::data_api::{PreviousAssetSymbol, AssetAlternativeId, AssetInd
 // Asset: Full Asset Metadata
 
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct ConsensusMechanism {
     #[serde(rename = "NAME")]
     /// The type of consensus this blockhain / networks uses.
     pub name: Option<String>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct ConsensusAlgorithmType {
     #[serde(rename = "NAME")]
     /// The name of the algorithm this blockchain uses for the consensus mechanism.
@@ -22,7 +22,7 @@ pub struct ConsensusAlgorithmType {
     pub description: Option<String>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct HashingAlgorithmType {
     #[serde(rename = "NAME")]
     /// The types of algorithms this blockchain uses for hashing blocks, transactions etc.
@@ -30,7 +30,7 @@ pub struct HashingAlgorithmType {
 }
 
 /// Asset: Full Asset Metadata
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct AssetMetadata {
     #[serde(rename = "ID")]
     /// The unique identifier for the asset entry.
@@ -195,7 +195,7 @@ pub struct AssetMetadata {
 
 
 /// Asset: Events
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct AssetEvent {
     #[serde(rename = "TYPE")]
     /// Type of the message.
@@ -237,7 +237,7 @@ pub struct AssetEvent {
 // Asset: Historical: Code Repository Metrics Day
 
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct AssetCodeRepository {
     #[serde(rename = "URL")]
     /// The URL of the code repository used to retrieve social metrics.
@@ -269,7 +269,7 @@ pub struct AssetCodeRepository {
 }
 
 /// Asset: Historical: Code Repository Metrics Day
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct AssetCodeRepoMetrics {
     #[serde(rename = "UNIT")]
     /// The unit of the historical period update: HOUR for hour and DAY for day.
@@ -337,7 +337,7 @@ pub struct AssetCodeRepoMetrics {
 // Asset: Historical Discord
 
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct AssetDiscordServer {
     #[serde(rename = "URL")]
     /// The URL of the Discord server used to retrieve social metrics.
@@ -357,7 +357,7 @@ pub struct AssetDiscordServer {
 }
 
 /// Asset: Historical Discord
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct AssetDiscord {
     #[serde(rename = "UNIT")]
     /// The unit of the historical period update: HOUR for hour and DAY for day.
@@ -392,7 +392,7 @@ pub struct AssetDiscord {
 // Asset: Historical Reddit
 
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct AssetSubreddit {
     #[serde(rename = "URL")]
     /// The URL of the Subreddit used to retrieve social metrics.
@@ -421,7 +421,7 @@ pub struct AssetSubreddit {
 }
 
 /// Asset: Historical Reddit
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct AssetReddit {
     #[serde(rename = "UNIT")]
     /// The unit of the historical period update: HOUR for hour and DAY for day.
@@ -465,7 +465,7 @@ pub struct AssetReddit {
 // Asset: Historical Telegram
 
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct AssetTelegramGroup {
     #[serde(rename = "URL")]
     /// The URL of the Telegram group used to retrieve social metrics.
@@ -482,7 +482,7 @@ pub struct AssetTelegramGroup {
 }
 
 /// Asset: Historical Telegram
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct AssetTelegram {
     #[serde(rename = "UNIT")]
     /// The unit of the historical period update: HOUR for hour and DAY for day.
@@ -511,7 +511,7 @@ pub struct AssetTelegram {
 // Asset: Historical X (Twitter)
 
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct AssetTwitterAccount {
     #[serde(rename = "URL")]
     /// The URL of the X account used to retrieve social metrics.
@@ -547,7 +547,7 @@ pub struct AssetTwitterAccount {
 
 
 /// Asset: Historical X (Twitter)
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct AssetTwitter {
     #[serde(rename = "UNIT")]
     /// The unit of the historical period update: HOUR for hour and DAY for day.

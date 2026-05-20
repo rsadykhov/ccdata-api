@@ -45,7 +45,7 @@ impl<'de> Deserialize<'de> for StringOrInt {
 // Min-API Wrappers
 
 
-#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Default, Serialize, Deserialize)]
 pub struct CCCallsMade {
     pub second: i32,
     pub minute: i32,
@@ -55,7 +55,7 @@ pub struct CCCallsMade {
     pub total_calls: i32,
 }
 
-#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Default, Serialize, Deserialize)]
 pub struct CCMaxCalls {
     pub second: i32,
     pub minute: i32,
@@ -64,7 +64,7 @@ pub struct CCMaxCalls {
     pub month: i32,
 }
 
-#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Default, Serialize, Deserialize)]
 pub struct CCRateLimit {
     pub calls_made: Option<CCCallsMade>,
     pub max_calls: Option<CCMaxCalls>,
@@ -102,7 +102,7 @@ pub struct CCMinResponse<T> {
 // Data-API Wrappers
 
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct CCErrorOtherInfo {
     /// The parameter that is responsible for the error.
     pub param: Option<String>,
@@ -119,7 +119,7 @@ pub struct CCErrorOtherInfo {
     pub first_bucket: Option<i64>,
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 /// This object provides detailed information about an error encountered while processing the request. It includes an error code, a message explaining the error,
 /// and additional context about the parameters or values that caused the issue. This helps clients identify and resolve issues with their requests.
 pub struct CCError {

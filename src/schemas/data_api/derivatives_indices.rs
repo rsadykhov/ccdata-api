@@ -61,7 +61,7 @@ impl Display for DerIndicesMarket {
 
 
 /// Derivatives Indices: Historical OHLCV+
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct DerIndicesOHLCV {
     #[serde(rename = "UNIT")]
     /// The unit of the historical period update: MINUTE for minute, HOUR for hour and DAY for day.
@@ -139,7 +139,7 @@ pub struct DerIndicesOHLCV {
 
 
 /// Derivatives Indices: Markets
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct DerIndicesMarkets {
     #[serde(rename = "TYPE")]
     /// Type of the message.

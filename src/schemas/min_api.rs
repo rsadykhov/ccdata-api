@@ -4,7 +4,7 @@ use serde::{Serialize, Deserialize};
 // Blockchain Data: Balance Distribution Daily
 
 
-#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Default, Serialize, Deserialize)]
 pub struct SupplyBand {
     pub from: f64,
     pub to: f64,
@@ -15,7 +15,7 @@ pub struct SupplyBand {
 }
 
 /// Blockchain Data: Balance Distribution Daily
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct BalanceDistribution {
     pub id: i32,
     pub symbol: String,

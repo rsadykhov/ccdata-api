@@ -13,7 +13,7 @@ pub mod overview;
 use serde::{Serialize, Deserialize};
 
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct PreviousAssetSymbol {
     #[serde(rename = "SYMBOL")]
     /// A symbol this asset was previously associated with.
@@ -30,7 +30,7 @@ pub struct PreviousAssetSymbol {
 }
 
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct AssetAlternativeId {
     #[serde(rename = "NAME")]
     pub name: Option<String>,
@@ -40,7 +40,7 @@ pub struct AssetAlternativeId {
 }
 
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct AssetIndustry {
     #[serde(rename = "ASSET_INDUSTRY")]
     pub asset_industry: Option<String>,
@@ -50,7 +50,7 @@ pub struct AssetIndustry {
 }
 
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct SpecialAddress {
     #[serde(rename = "NAME")]
     /// The name of the address. Contract name or just the common name for this address.
@@ -67,7 +67,7 @@ pub struct SpecialAddress {
 }
 
 
-#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Default, Serialize, Deserialize)]
 pub struct InstrumentStatus {
     #[serde(rename = "ACTIVE")]
     /// The total number of instruments currently available on the market, which are considered active. An active instrument is defined as an instrument

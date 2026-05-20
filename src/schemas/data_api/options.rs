@@ -27,7 +27,7 @@ impl Display for OptionsMarket {
 }
 
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct OptionsInstrumentMapping {
     #[serde(rename = "MAPPED_INSTRUMENT")]
     pub mapped_instrument: String,
@@ -64,7 +64,7 @@ pub struct OptionsInstrumentMapping {
 
 
 ///Options: Historical OHLCV+
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct OptionsOHLCV {
     #[serde(rename = "UNIT")]
     /// The level of granularity (e.g. MINUTE / HOUR / DAY).
@@ -207,7 +207,7 @@ pub struct OptionsOHLCV {
 // Options: Instrument Metadata
 
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct OptionsInstrumentMetadata {
     #[serde(rename = "METADATA_VERSION")]
     /// The version of metadata, used for version conversions/migrates.
@@ -293,7 +293,7 @@ pub struct OptionsInstrumentMetadata {
 
 
 /// Options: Markets
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct OptionsMarkets {
     #[serde(rename = "TYPE")]
     /// Type of the message.

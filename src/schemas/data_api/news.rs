@@ -231,7 +231,7 @@ impl Display for NewsSourceID {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct CategoryData {
     #[serde(rename = "TYPE")]
     /// Type of the message.
@@ -247,7 +247,7 @@ pub struct CategoryData {
 }
 
 /// News: Latest Articles
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct NewsLatestArticle {
     #[serde(rename = "TYPE")]
     /// Type of the message.
@@ -323,13 +323,14 @@ pub struct NewsLatestArticle {
 // News: Sources
 
 
-#[derive(Clone, Copy, Debug, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Default, Serialize, Deserialize)]
 /// Specifies the type of integration used by the news source. Current allowed values are RSS, API, and TWITTER.
 /// 'RSS' indicates a source that distributes content via RSS feeds.
 /// 'API' refers to sources that provide data through a standardized programming interface.
 /// 'TWITTER' represents sources that disseminate information directly through Twitter.
 /// This parameter helps in selecting the method through which news content is retrieved.
 pub enum NewsSourceType {
+    #[default]
     RSS,
     API,
     TWITTER,
@@ -347,7 +348,7 @@ impl Display for NewsSourceType {
 
 
 /// News: Sources
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct NewsSource {
     #[serde(rename = "TYPE")]
     /// Type of the message.
@@ -400,7 +401,7 @@ pub struct NewsSource {
 
 
 /// The filters for the news category.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct CategoryFilter {
     #[serde(rename = "INCLUDED_WORDS")]
     /// Words related or included in news category.
@@ -415,7 +416,7 @@ pub struct CategoryFilter {
 
 
 /// News: Categories
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct NewsCategory {
     #[serde(rename = "TYPE")]
     /// Type of the message.

@@ -28,7 +28,7 @@ impl Display for IndicesMarket {
 
 
 /// Indices & Reference Rates: Historical OHLCV+
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct IndicesOHLCV {
     #[serde(rename = "UNIT")]
     /// The unit of the historical period update: MINUTE for minute, HOUR for hour and DAY for day.
